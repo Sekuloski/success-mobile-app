@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="20sp">
+
+    <TextView
+        android:id="@+id/month_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:padding="5sp"
+        android:textColor="@color/md_theme_dark_onBackground"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Month" />
+
+    <TextView
+        android:id="@+id/amount_left_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:padding="5sp"
+        android:text="@string/amount_left"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/month_name"
+        tools:text="@string/amount_left" />
+
+    <TextView
+        android:id="@+id/expenses_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:padding="5sp"
+        android:text="@string/expenses_amount"
+        android:textSize="28sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/amount_left_text"
+        tools:text="@string/expenses_amount" />
+
+    <TextView
+        android:id="@+id/amount_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10sp"
+        android:textColor="#4CAF50"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="@+id/amount_left_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/amount_left_text"
+        tools:text="150" />
+
+    <TextView
+        android:id="@+id/expenses_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10sp"
+        android:textColor="#E91E63"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="@+id/expenses_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/expenses_text"
+        tools:text="150" />
+
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/payment_view"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="120dp"-->
+<!--        android:paddingStart="20dp"-->
+<!--        android:paddingTop="10dp"-->
+<!--        android:scrollbars="horizontal"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.045"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/expenses_text"-->
+<!--        app:layoutManager="LinearLayoutManager"-->
+<!--        app:layout_constraintVertical_bias="1.0"-->
+<!--        android:orientation="horizontal"-->
+<!--        tools:ignore="RtlSymmetry" />-->
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
