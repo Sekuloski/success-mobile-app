@@ -12,6 +12,7 @@ import mk.sekuloski.success.databinding.ActivityMainBinding
 import mk.sekuloski.success.fragments.FinancesFragment
 import mk.sekuloski.success.fragments.HomeFragment
 import mk.sekuloski.success.fragments.WorkoutsFragment
+import mk.sekuloski.success.models.Month
 import okhttp3.*
 
 
@@ -24,12 +25,25 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        val homeFragment = HomeFragment()
-        val financesFragment = FinancesFragment()
-        val workoutsFragment = WorkoutsFragment()
+        val api = API()
+        val months: ArrayList<Month> = api.getMonths()
 
+        while(true)
+        {
+            if (months.size == 0)
+            {
+                continue
+            }
+
+            break
+        }
+        val homeFragment = HomeFragment()
         setCurrentFragment(homeFragment)
         binding.bottomNavigationView.selectedItemId = R.id.miHome
+
+
+        val financesFragment = FinancesFragment(months)
+        val workoutsFragment = WorkoutsFragment()
 
         binding.bottomNavigationView.setOnItemSelectedListener{
             when(it.itemId)   {
@@ -44,6 +58,7 @@ class MainActivity : AppCompatActivity() {
     private fun setCurrentFragment(fragment: Fragment) =
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment)
+            addToBackStack(null)
             commit()
         }
 

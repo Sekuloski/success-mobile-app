@@ -2,19 +2,18 @@ package mk.sekuloski.success.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import mk.sekuloski.success.Month
-import mk.sekuloski.success.Payment
-import mk.sekuloski.success.R
+import mk.sekuloski.success.MainActivity
 import mk.sekuloski.success.databinding.ListMonthBinding
+import mk.sekuloski.success.fragments.MonthFragment
+import mk.sekuloski.success.models.Month
+import mk.sekuloski.success.models.Payment
+
 
 class MonthAdapter(
-//    private val context: Context,
-    private val dataset: List<Month>,
-//    private val payments: List<Payment>
+    private val context: Context,
+    private val months: List<Month>,
 ) : RecyclerView.Adapter<MonthAdapter.MonthViewHolder>() {
 
     inner class MonthViewHolder(val binding: ListMonthBinding) : RecyclerView.ViewHolder(binding.root)
@@ -28,15 +27,22 @@ class MonthAdapter(
     override fun onBindViewHolder(holder: MonthViewHolder, position: Int) {
         with(holder)
         {
-            with(dataset[position])
+            with(months[position])
             {
                 binding.monthName.text = this.name
                 binding.amountLeft.text = this.amountLeft.toString()
-                binding.expensesAmount.text = this.expenses.toString()
+
+                binding.btnDetails.setOnClickListener {
+                    (context as MainActivity).supportFragmentManager.beginTransaction().apply {
+                        replace(mk.sekuloski.success.R.id.flFragment, MonthFragment(months[position]))
+                        addToBackStack(null)
+                        commit()
+                    }
+                }
             }
         }
 
     }
 
-    override fun getItemCount() = dataset.size
+    override fun getItemCount() = months.size
 }
