@@ -6,8 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineScope
-import mk.sekuloski.success.Payment
+import mk.sekuloski.success.models.Payment
 import mk.sekuloski.success.R
 
 class PaymentAdapter(

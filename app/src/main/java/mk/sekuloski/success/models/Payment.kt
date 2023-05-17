@@ -1,5 +1,7 @@
-package mk.sekuloski.success
+package mk.sekuloski.success.models
 
+import mk.sekuloski.success.ExpenseType
+import mk.sekuloski.success.PaymentType
 import org.json.JSONObject
 import java.time.LocalDateTime
 

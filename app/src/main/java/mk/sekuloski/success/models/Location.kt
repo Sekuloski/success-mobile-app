@@ -1,4 +1,4 @@
-package mk.sekuloski.success
+package mk.sekuloski.success.models
 
 import java.time.LocalDateTime
 

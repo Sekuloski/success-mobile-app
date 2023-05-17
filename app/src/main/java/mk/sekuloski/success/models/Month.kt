@@ -1,15 +1,12 @@
-package mk.sekuloski.success
+package mk.sekuloski.success.models
 
-class Month {
+class Month() {
     var amountLeft: Int = 0
     var expenses: Int = 0
     lateinit var name: String
     lateinit var payments: List<Payment>
 
-    constructor()
-
-    constructor(name: String, amountLeft: Int, expenses: Int, payments: List<Payment>)
-    {
+    constructor(name: String, amountLeft: Int, expenses: Int, payments: List<Payment>) : this() {
         this.name = name
         this.amountLeft = amountLeft
         this.expenses = expenses
