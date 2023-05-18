@@ -19,6 +19,8 @@ import java.time.format.DateTimeParseException
 
 const val payments_url = "https://finances.sekuloski.mk/payments"
 const val months_url = "https://finances.sekuloski.mk/months"
+const val dev_payments_url = "http://10.0.2.2:8000/payments"
+const val dev_months_url = "http://10.0.2.2:8000/months"
 val JSON = "application/json; charset=utf-8".toMediaType()
 val cookie = Cookie.Builder()
     .name("sekuloski-was-here")
@@ -61,7 +63,7 @@ class API
             .build()
 
         val request = Request.Builder()
-            .url(payments_url)
+            .url(dev_payments_url)
             .addHeader("Cookie", cookie.toString())
             .post(requestBody)
             .build()
@@ -112,13 +114,13 @@ class API
         val months = ArrayList<Month>()
 
         val request = Request.Builder()
-            .url(months_url)
+            .url(dev_months_url)
             .addHeader("Cookie", cookie.toString())
             .build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-
+                println(e.stackTraceToString())
             }
 
             override fun onResponse(call: Call, response: Response) {
