@@ -15,8 +15,8 @@
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Month" />
 
     <TextView
@@ -25,13 +25,13 @@
         android:layout_height="wrap_content"
         android:textColor="#4CAF50"
         android:textSize="28sp"
-        app:layout_constraintBottom_toBottomOf="@id/btnDetails"
-        app:layout_constraintEnd_toStartOf="@+id/btnDetails"
-        app:layout_constraintTop_toTopOf="@+id/btnDetails"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ivArrow"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="150" />
 
-    <ImageButton
-        android:id="@+id/btnDetails"
+    <ImageView
+        android:id="@+id/ivArrow"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:adjustViewBounds="true"
@@ -41,6 +41,16 @@
         android:src="@drawable/ic_right_arrow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnDetails"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#00FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
