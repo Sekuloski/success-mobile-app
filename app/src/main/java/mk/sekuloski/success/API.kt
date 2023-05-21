@@ -44,8 +44,30 @@ class API
         return zonedDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()
     }
 
-    fun getPayments(ids: ArrayList<Int>): ArrayList<Payment> {
-        if (ids.size == 0)
+    fun addPayment(json: JSONObject)
+    {
+        val requestBody = json.toString().toRequestBody(JSON)
+
+        val request = Request.Builder()
+            .url(getUrl(add_payment_url))
+            .addHeader("Cookie", cookie.toString())
+            .post(requestBody)
+            .build()
+
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                Log.d("API","Payment added!")
+            }
+        })
+    }
+
+    fun getPayments(ids: JSONArray): ArrayList<Payment> {
+        if (ids.length() == 0)
         {
             return ArrayList()
         }
