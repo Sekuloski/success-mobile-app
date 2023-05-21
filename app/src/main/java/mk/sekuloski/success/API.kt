@@ -17,7 +17,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
-const val local = true
+const val local = false
 const val main_url = "https://finances.sekuloski.mk"
 const val dev_url = "http://10.0.2.2:8000"
 const val payments_url = "/payments"
@@ -56,6 +56,34 @@ class API {
         }
 
         return zonedDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()
+    }
+
+    fun getMainInfo(): HashMap<String, Int>
+    {
+        val returnData = HashMap<String, Int>()
+
+        val request = Request.Builder()
+            .url(getUrl(""))
+            .addHeader("Cookie", cookie.toString())
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val data = JSONObject(response.body.string())
+
+                returnData["amount_left"] = data.getInt("amount_left")
+                returnData["salary"] = data.getInt("salary")
+                returnData["bank"] = data.getInt("bank")
+                returnData["cash"] = data.getInt("cash")
+                returnData["expenses"] = data.getInt("expenses")
+            }
+        })
+
+        return returnData
     }
 
     fun addPayment(json: JSONObject)
@@ -109,7 +137,6 @@ class API {
 
             override fun onResponse(call: Call, response: Response) {
                 val jsonArrayInfo = JSONArray(response.body.string())
-                println(jsonArrayInfo)
                 val size:Int = jsonArrayInfo.length()
                 for (i in 0 until size) {
                     val jsonObjectDetail: JSONObject = jsonArrayInfo.getJSONObject(i)

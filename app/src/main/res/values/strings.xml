@@ -16,4 +16,7 @@
     <string name="add">Add</string>
     <string name="pay">Pay</string>
     <string name="time">16:00:00</string>
+    <string name="bank">Bank</string>
+    <string name="salary">Salary</string>
+    <string name="expenses">Expenses</string>
 </resources>
