@@ -17,7 +17,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
-const val local = false
+const val local = true
 const val main_url = "https://finances.sekuloski.mk"
 const val dev_url = "http://10.0.2.2:8000"
 const val payments_url = "/payments"

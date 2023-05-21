@@ -12,7 +12,7 @@ import mk.sekuloski.success.databinding.FragmentHomeBinding
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private val api = API()
+    private var data = API().getMainInfo()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -25,7 +25,30 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val data = api.getMainInfo()
+        binding.swipeRefresh.setOnRefreshListener {
+            data = HashMap()
+            data = API().getMainInfo()
+
+            while(data.isEmpty())
+            {
+                continue
+            }
+
+            binding.tvAmountLeft.text = data["amount_left"].toString()
+            binding.tvBank.text = data["bank"].toString()
+            binding.tvCash.text = data["cash"].toString()
+            binding.tvSalary.text = data["salary"].toString()
+            binding.tvExpenses.text = data["expenses"].toString()
+            binding.swipeRefresh.isRefreshing = false
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        data = HashMap()
+        data = API().getMainInfo()
+
         while(data.isEmpty())
         {
             continue

@@ -9,14 +9,13 @@ import mk.sekuloski.success.*
 import mk.sekuloski.success.adapter.MonthAdapter
 import mk.sekuloski.success.databinding.FragmentFinancesBinding
 import mk.sekuloski.success.models.Month
-import mk.sekuloski.success.models.Payment
-import okhttp3.OkHttpClient
 
 class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_finances) {
     private var _binding: FragmentFinancesBinding? = null
     private val binding get() = _binding!!
     private var months = _months
     private val api = API()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -28,9 +27,9 @@ class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_f
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val locations = api.getLocations()
         val monthsRecyclerView = binding.rvMonths
+
         monthsRecyclerView.adapter = MonthAdapter(view.context, months)
         monthsRecyclerView.setHasFixedSize(true)
 
@@ -68,6 +67,25 @@ class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_f
                 commit()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        months = ArrayList()
+        months = api.getMonths()
+
+        while(true)
+        {
+            if (months.size == 0)
+            {
+                continue
+            }
+
+            break
+        }
+
+        binding.rvMonths.swapAdapter(context?.let { MonthAdapter(it, months) }, true)
     }
 
     override fun onDestroyView() {
