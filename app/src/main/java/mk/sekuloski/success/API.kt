@@ -1,10 +1,11 @@
 package mk.sekuloski.success
 
+import android.util.Log
+import mk.sekuloski.success.models.Location
 import mk.sekuloski.success.models.Month
 import mk.sekuloski.success.models.Payment
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONException
@@ -16,11 +17,14 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
+const val local = true
+const val main_url = "https://finances.sekuloski.mk"
+const val dev_url = "http://10.0.2.2:8000"
+const val payments_url = "/payments"
+const val months_url = "/months"
+const val add_payment_url = "/add/payment"
+const val locations_url = "/locations"
 
-const val payments_url = "https://finances.sekuloski.mk/payments"
-const val months_url = "https://finances.sekuloski.mk/months"
-const val dev_payments_url = "http://10.0.2.2:8000/payments"
-const val dev_months_url = "http://10.0.2.2:8000/months"
 val JSON = "application/json; charset=utf-8".toMediaType()
 val cookie = Cookie.Builder()
     .name("sekuloski-was-here")
@@ -28,10 +32,20 @@ val cookie = Cookie.Builder()
     .domain("finances.sekuloski.mk")
     .build()
 
-class API
-{
+class API {
     private val client = OkHttpClient()
 
+    private fun getUrl(endpoint: String): String
+    {
+        return if(local)
+        {
+            dev_url + endpoint
+        }
+        else
+        {
+            main_url + endpoint
+        }
+    }
     fun convertStringToDate(dateTimeString: String): LocalDateTime {
         val zonedDateTime: ZonedDateTime = try {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")
@@ -74,8 +88,6 @@ class API
         val payments = ArrayList<Payment>()
         val jsonObject = JSONObject()
         jsonObject.put("ids", ids)
-        println(jsonObject)
-        // Create the request body
         val requestBody = jsonObject.toString().toRequestBody(JSON)
 
         val cookie = Cookie.Builder()
@@ -85,7 +97,7 @@ class API
             .build()
 
         val request = Request.Builder()
-            .url(dev_payments_url)
+            .url(getUrl(payments_url))
             .addHeader("Cookie", cookie.toString())
             .post(requestBody)
             .build()
@@ -136,7 +148,7 @@ class API
         val months = ArrayList<Month>()
 
         val request = Request.Builder()
-            .url(dev_months_url)
+            .url(getUrl(months_url))
             .addHeader("Cookie", cookie.toString())
             .build()
 
@@ -151,19 +163,14 @@ class API
                 for (year: String in jsonObject.keys())
                 {
                     val monthsObject = jsonObject.getJSONObject(year)
+
                     for (month: String in monthsObject.keys())
                     {
                         val monthObject = monthsObject.getJSONObject(month)
                         val amountLeft = monthObject.getInt("Total Left")
-                        val expenses = monthObject.getInt("Expenses")
-                        val paymentsObject = monthObject.getJSONObject("Normal Payments")
-                        val paymentIds = ArrayList<Int>()
-                        paymentsObject.keys().forEach {
-                            paymentIds.add(it.toInt())
-                        }
-                        val payments = getPayments(paymentIds)
+                        val paymentIds = monthObject.getJSONArray("Payments")
 
-                        months.add(Month("$month $year", amountLeft, expenses, payments))
+                        months.add(Month(amountLeft, "$month $year", paymentIds))
                     }
                 }
 
@@ -171,5 +178,36 @@ class API
         })
 
         return months
+    }
+
+    fun getLocations(): ArrayList<Location> {
+        val locations = ArrayList<Location>()
+
+        val request = Request.Builder()
+            .url(getUrl(locations_url))
+            .addHeader("Cookie", cookie.toString())
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val jsonArrayInfo = JSONArray(response.body.string())
+                val size:Int = jsonArrayInfo.length()
+                for (i in 0 until size) {
+                    val jsonObjectDetail: JSONObject = jsonArrayInfo.getJSONObject(i)
+
+                    val id = jsonObjectDetail.getInt("id")
+                    val name = jsonObjectDetail.getString("name")
+                    val coordinates = jsonObjectDetail.getString("coordinates")
+
+                    locations.add(Location(id, name, coordinates))
+                }
+            }
+        })
+
+        return locations
     }
 }

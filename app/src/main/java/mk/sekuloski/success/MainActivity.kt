@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
         setCurrentFragment(homeFragment)
         binding.bottomNavigationView.selectedItemId = R.id.miHome
 
-
         val financesFragment = FinancesFragment(months)
         val workoutsFragment = WorkoutsFragment()
 

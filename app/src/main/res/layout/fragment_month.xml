@@ -41,15 +41,16 @@
         tools:text="150" />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/expenses_amount"
         android:textColor="@color/md_theme_dark_onPrimaryContainer"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/amount_left"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/amount_left"
-        android:text="@string/expenses_amount" />
+        app:layout_constraintTop_toBottomOf="@+id/amount_left" />
 
     <TextView
         android:id="@+id/expenses_amount"
@@ -62,15 +63,78 @@
         app:layout_constraintTop_toBottomOf="@+id/amount_left"
         tools:text="300" />
 
+    <TextView
+        android:id="@+id/tvNormalPayments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="124dp"
+        android:maxLines="3"
+        android:text="@string/normal_payments"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.051"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <Button
+        android:id="@+id/btnShowMoreNormal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="See more"
+        android:textAllCaps="false"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvNormalPayments"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.964"
+        app:layout_constraintStart_toEndOf="@id/tvNormalPayments"
+        app:layout_constraintTop_toTopOf="@+id/tvNormalPayments" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPayments"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="200dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/expenses_amount"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        app:layout_constraintTop_toBottomOf="@+id/tvNormalPayments"
+        tools:listitem="@layout/list_payment" />
 
+    <TextView
+        android:id="@+id/tvSixMonthPayments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:maxLines="3"
+        android:text="@string/six_month_payments"
+        android:textSize="20sp"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.053"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvPayments" />
+
+    <Button
+        android:id="@+id/btnShowMoreSixMonth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="See more"
+        android:textAllCaps="false"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvSixMonthPayments"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.964"
+        app:layout_constraintStart_toEndOf="@id/tvNormalPayments"
+        app:layout_constraintTop_toTopOf="@+id/tvSixMonthPayments" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSixMonthPayments"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSixMonthPayments"
+        tools:listitem="@layout/list_payment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

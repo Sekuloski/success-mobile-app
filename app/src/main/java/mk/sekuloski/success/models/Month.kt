@@ -1,18 +1,8 @@
 package mk.sekuloski.success.models
 
-class Month() {
-    var amountLeft: Int = 0
-    var expenses: Int = 0
-    lateinit var name: String
-    lateinit var payments: List<Payment>
+import org.json.JSONArray
 
-    constructor(name: String, amountLeft: Int, expenses: Int, payments: List<Payment>) : this() {
-        this.name = name
-        this.amountLeft = amountLeft
-        this.expenses = expenses
-        this.payments = payments
-    }
-}
+data class Month(val amountLeft: Int, val name: String, val payments: JSONArray)
 /*
 Total Left": 12212,
 "Starting Amount": 12212,

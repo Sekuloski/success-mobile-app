@@ -15,7 +15,8 @@ import okhttp3.OkHttpClient
 class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_finances) {
     private var _binding: FragmentFinancesBinding? = null
     private val binding get() = _binding!!
-    private val months = _months
+    private var months = _months
+    private val api = API()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -28,9 +29,45 @@ class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_f
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val monthsRecyclerView = binding.monthsRecyclerView
+        val locations = api.getLocations()
+        val monthsRecyclerView = binding.rvMonths
         monthsRecyclerView.adapter = MonthAdapter(view.context, months)
         monthsRecyclerView.setHasFixedSize(true)
+
+        binding.swipeRefresh.setOnRefreshListener {
+            months = ArrayList()
+            months = api.getMonths()
+
+            while(true)
+            {
+                if (months.size == 0)
+                {
+                    continue
+                }
+
+                break
+            }
+            monthsRecyclerView.swapAdapter(MonthAdapter(view.context, months), true)
+            binding.swipeRefresh.isRefreshing = false
+        }
+
+        while(true)
+        {
+            if (locations.size == 0)
+            {
+                continue
+            }
+
+            break
+        }
+
+        binding.fabAddPayment.setOnClickListener {
+            (context as MainActivity).supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, AddPaymentFragment(locations.associate { it.name to it.id } as HashMap<String, Int>))
+                addToBackStack(null)
+                commit()
+            }
+        }
     }
 
     override fun onDestroyView() {
