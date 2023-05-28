@@ -11,10 +11,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
-import mk.sekuloski.success.API
-import mk.sekuloski.success.ExpenseType
-import mk.sekuloski.success.MainActivity
-import mk.sekuloski.success.R
+import mk.sekuloski.success.*
 import mk.sekuloski.success.databinding.FragmentAddPaymentBinding
 import mk.sekuloski.success.models.Location
 import org.json.JSONObject
@@ -31,7 +28,7 @@ class AddPaymentFragment(_locations: HashMap<String, Int>) : Fragment(R.layout.f
     private var _binding: FragmentAddPaymentBinding? = null
     private val binding get() = _binding!!
     private val calendar = Calendar.getInstance()
-    private val api = API()
+    private val api = APISingleton.getInstance()
     private val locations = _locations
 
     override fun onCreateView(
@@ -137,7 +134,7 @@ class AddPaymentFragment(_locations: HashMap<String, Int>) : Fragment(R.layout.f
             jsonObject.put("location", locations[binding.spLocation.selectedItem])
             jsonObject.put("pay", pay)
             jsonObject.put("cash", binding.cbCash.isChecked)
-            api.addPayment(jsonObject)
+            api?.addPayment(jsonObject)
 
             parentFragmentManager.popBackStack()
         }

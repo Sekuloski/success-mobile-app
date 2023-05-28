@@ -14,7 +14,7 @@ class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_f
     private var _binding: FragmentFinancesBinding? = null
     private val binding get() = _binding!!
     private var months = _months
-    private val api = API()
+    private val api = APISingleton.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,7 +27,7 @@ class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_f
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val locations = api.getLocations()
+        val locations = api?.getLocations()
         val monthsRecyclerView = binding.rvMonths
 
         monthsRecyclerView.adapter = MonthAdapter(view.context, months)
@@ -35,7 +35,7 @@ class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_f
 
         binding.swipeRefresh.setOnRefreshListener {
             months = ArrayList()
-            months = api.getMonths()
+            months = api?.getMonths() ?: ArrayList()
 
             while(true)
             {
@@ -52,9 +52,10 @@ class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_f
 
         while(true)
         {
-            if (locations.size == 0)
-            {
-                continue
+            if (locations != null) {
+                if (locations.size == 0) {
+                    continue
+                }
             }
 
             break
@@ -62,7 +63,9 @@ class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_f
 
         binding.fabAddPayment.setOnClickListener {
             (context as MainActivity).supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, AddPaymentFragment(locations.associate { it.name to it.id } as HashMap<String, Int>))
+                if (locations != null) {
+                    replace(R.id.flFragment, AddPaymentFragment(locations.associate { it.name to it.id } as HashMap<String, Int>))
+                }
                 addToBackStack(null)
                 commit()
             }
@@ -73,7 +76,7 @@ class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_f
         super.onResume()
 
         months = ArrayList()
-        months = api.getMonths()
+        months = api?.getMonths() ?: ArrayList()
 
         while(true)
         {

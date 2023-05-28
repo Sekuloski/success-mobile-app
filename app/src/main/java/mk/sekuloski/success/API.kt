@@ -17,7 +17,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
-const val local = true
+const val local = false
 const val main_url = "https://finances.sekuloski.mk"
 const val dev_url = "http://10.0.2.2:8000"
 const val payments_url = "/payments"
@@ -31,6 +31,23 @@ val cookie = Cookie.Builder()
     .value("true")
     .domain("finances.sekuloski.mk")
     .build()
+
+object APISingleton {
+    @Volatile
+    private var INSTANCE: API? = null
+
+    fun getInstance(): API? {
+        if (INSTANCE == null) {
+            synchronized(this) {
+                if (INSTANCE == null) {
+                    INSTANCE = API()
+                }
+            }
+        }
+
+        return INSTANCE
+    }
+}
 
 class API {
     private val client = OkHttpClient()
@@ -194,10 +211,20 @@ class API {
                     for (month: String in monthsObject.keys())
                     {
                         val monthObject = monthsObject.getJSONObject(month)
-                        val amountLeft = monthObject.getInt("Total Left")
-                        val paymentIds = monthObject.getJSONArray("Payments")
+                        val amountLeft = monthObject.getInt("left")
+                        val expenses = monthObject.getInt("expenses")
 
-                        months.add(Month(amountLeft, "$month $year", paymentIds))
+                        val normalPaymentIds = monthObject.getJSONArray("normal")
+                        val normalPaymentSum = monthObject.getInt("normal_sum")
+
+                        val threeMonthIds = monthObject.getJSONArray("three_month")
+                        val threeMonthSum = monthObject.getInt("three_month_sum")
+
+                        val sixMonthIds = monthObject.getJSONArray("six_month")
+                        val sixMonthSum = monthObject.getInt("six_month_sum")
+
+                        months.add(Month(amountLeft, expenses, "$month $year", normalPaymentIds,
+                            normalPaymentSum, sixMonthIds, sixMonthSum, threeMonthIds, threeMonthSum))
                     }
                 }
 

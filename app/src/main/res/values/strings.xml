@@ -19,4 +19,5 @@
     <string name="bank">Bank</string>
     <string name="salary">Salary</string>
     <string name="expenses">Expenses</string>
+    <string name="three_month_payments">Three Month Payments</string>
 </resources>

@@ -6,13 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import mk.sekuloski.success.API
+import mk.sekuloski.success.APISingleton
 import mk.sekuloski.success.R
 import mk.sekuloski.success.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private var data = API().getMainInfo()
+    private val api = APISingleton.getInstance()
+    private var data = api?.getMainInfo()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -27,18 +29,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         binding.swipeRefresh.setOnRefreshListener {
             data = HashMap()
-            data = API().getMainInfo()
+            data = api?.getMainInfo()
 
-            while(data.isEmpty())
+            while(data?.isEmpty() == true)
             {
                 continue
             }
 
-            binding.tvAmountLeft.text = data["amount_left"].toString()
-            binding.tvBank.text = data["bank"].toString()
-            binding.tvCash.text = data["cash"].toString()
-            binding.tvSalary.text = data["salary"].toString()
-            binding.tvExpenses.text = data["expenses"].toString()
+            binding.tvAmountLeft.text = data?.get("amount_left")?.toString()
+            binding.tvBank.text = data?.get("bank")?.toString()
+            binding.tvCash.text = data?.get("cash")?.toString()
+            binding.tvSalary.text = data?.get("salary")?.toString()
+            binding.tvExpenses.text = data?.get("expenses")?.toString()
             binding.swipeRefresh.isRefreshing = false
         }
     }
@@ -47,18 +49,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onResume()
 
         data = HashMap()
-        data = API().getMainInfo()
+        data = api?.getMainInfo()
 
-        while(data.isEmpty())
+        while(data?.isEmpty() == true)
         {
             continue
         }
 
-        binding.tvAmountLeft.text = data["amount_left"].toString()
-        binding.tvBank.text = data["bank"].toString()
-        binding.tvCash.text = data["cash"].toString()
-        binding.tvSalary.text = data["salary"].toString()
-        binding.tvExpenses.text = data["expenses"].toString()
+        binding.tvAmountLeft.text = data?.get("amount_left").toString()
+        binding.tvBank.text = data?.get("bank").toString()
+        binding.tvCash.text = data?.get("cash").toString()
+        binding.tvSalary.text = data?.get("salary").toString()
+        binding.tvExpenses.text = data?.get("expenses").toString()
     }
     
 }

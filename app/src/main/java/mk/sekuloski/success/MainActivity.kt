@@ -18,8 +18,8 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        val api = API()
-        val months: ArrayList<Month> = api.getMonths()
+        val api = APISingleton.getInstance()
+        val months: ArrayList<Month> = api?.getMonths() ?: ArrayList()
         val homeFragment = HomeFragment()
         setCurrentFragment(homeFragment)
         binding.bottomNavigationView.selectedItemId = R.id.miHome

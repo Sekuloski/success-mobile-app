@@ -72,10 +72,25 @@
         android:text="@string/normal_payments"
         android:textColor="@color/md_theme_dark_onSecondaryContainer"
         android:textSize="20sp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.051"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/tvNormalSum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5sp"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+
+        app:layout_constraintBottom_toBottomOf="@+id/btnShowMoreNormal"
+
+        app:layout_constraintEnd_toStartOf="@+id/btnShowMoreNormal"
+        app:layout_constraintTop_toTopOf="@+id/btnShowMoreNormal"
+        tools:text="300" />
 
     <Button
         android:id="@+id/btnShowMoreNormal"
@@ -94,7 +109,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPayments"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="160dp"
+        android:layout_marginTop="10dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvNormalPayments"
@@ -104,7 +120,7 @@
         android:id="@+id/tvSixMonthPayments"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="10dp"
         android:maxLines="3"
         android:text="@string/six_month_payments"
         android:textSize="20sp"
@@ -113,6 +129,20 @@
         app:layout_constraintHorizontal_bias="0.053"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rvPayments" />
+
+    <TextView
+        android:id="@+id/tvSixMonthSum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5sp"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+
+        app:layout_constraintBottom_toBottomOf="@+id/btnShowMoreSixMonth"
+
+        app:layout_constraintEnd_toStartOf="@+id/btnShowMoreSixMonth"
+        app:layout_constraintTop_toTopOf="@+id/btnShowMoreSixMonth"
+        tools:text="300" />
 
     <Button
         android:id="@+id/btnShowMoreSixMonth"
@@ -125,16 +155,69 @@
         app:layout_constraintBottom_toBottomOf="@+id/tvSixMonthPayments"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.964"
-        app:layout_constraintStart_toEndOf="@id/tvNormalPayments"
+        app:layout_constraintStart_toEndOf="@id/tvSixMonthPayments"
         app:layout_constraintTop_toTopOf="@+id/tvSixMonthPayments" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSixMonthPayments"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="160dp"
+        android:layout_marginTop="10dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSixMonthPayments"
+        tools:listitem="@layout/list_payment" />
+
+    <TextView
+        android:id="@+id/tvThreeMonthPayments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:maxLines="3"
+        android:text="@string/three_month_payments"
+        android:textSize="20sp"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.053"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvSixMonthPayments" />
+
+    <TextView
+        android:id="@+id/tvThreeMonthSum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5sp"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+
+        app:layout_constraintBottom_toBottomOf="@+id/btnShowMoreThreeMonth"
+
+        app:layout_constraintEnd_toStartOf="@+id/btnShowMoreThreeMonth"
+        app:layout_constraintTop_toTopOf="@+id/btnShowMoreThreeMonth"
+        tools:text="300" />
+
+    <Button
+        android:id="@+id/btnShowMoreThreeMonth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="See more"
+        android:textAllCaps="false"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvThreeMonthPayments"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.964"
+        app:layout_constraintStart_toEndOf="@id/tvThreeMonthPayments"
+        app:layout_constraintTop_toTopOf="@+id/tvThreeMonthPayments" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvThreeMonthPayments"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_marginTop="10dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvThreeMonthPayments"
         tools:listitem="@layout/list_payment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
