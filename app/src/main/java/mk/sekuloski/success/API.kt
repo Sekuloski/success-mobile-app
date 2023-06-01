@@ -4,6 +4,7 @@ import android.util.Log
 import mk.sekuloski.success.models.Location
 import mk.sekuloski.success.models.Month
 import mk.sekuloski.success.models.Payment
+import mk.sekuloski.success.models.Subscription
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -22,6 +23,7 @@ const val main_url = "https://finances.sekuloski.mk"
 const val dev_url = "http://10.0.2.2:8000"
 const val payments_url = "/payments"
 const val months_url = "/months"
+const val subscriptions_url = "/subscriptions"
 const val add_payment_url = "/add/payment"
 const val locations_url = "/locations"
 
@@ -222,8 +224,12 @@ class API {
                         val sixMonthIds = monthObject.getJSONArray("six_month")
                         val sixMonthSum = monthObject.getInt("six_month_sum")
 
+                        val subscriptionsIds = monthObject.getJSONArray("subscriptions")
+                        val subscriptionSum = monthObject.getInt("subscription_sum")
+
                         months.add(Month(amountLeft, expenses, "$month $year", normalPaymentIds,
-                            normalPaymentSum, sixMonthIds, sixMonthSum, threeMonthIds, threeMonthSum))
+                            normalPaymentSum, sixMonthIds, sixMonthSum, threeMonthIds, threeMonthSum,
+                            subscriptionsIds, subscriptionSum))
                     }
                 }
 
@@ -262,5 +268,49 @@ class API {
         })
 
         return locations
+    }
+
+    fun getSubscriptions(ids: JSONArray): ArrayList<Subscription> {
+        if (ids.length() == 0)
+        {
+            return ArrayList()
+        }
+
+        val subscriptions = ArrayList<Subscription>()
+        val jsonObject = JSONObject()
+        jsonObject.put("ids", ids)
+
+        val requestBody = jsonObject.toString().toRequestBody(JSON)
+        val request = Request.Builder()
+            .url(getUrl(subscriptions_url))
+            .addHeader("Cookie", cookie.toString())
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val jsonArrayInfo = JSONArray(response.body.string())
+                val size:Int = jsonArrayInfo.length()
+                for (i in 0 until size) {
+                    val jsonObjectDetail: JSONObject = jsonArrayInfo.getJSONObject(i)
+
+                    val id = jsonObjectDetail.getInt("id")
+                    val name = jsonObjectDetail.getString("name")
+                    val date = convertStringToDate(jsonObjectDetail.getString("date"))
+                    val amount = jsonObjectDetail.getInt("amount")
+                    val necessary = jsonObjectDetail.getBoolean("necessary")
+                    val expenseType = ExpenseType.values()[jsonObjectDetail.getInt("expense_type")]
+                    val active = jsonObjectDetail.getBoolean("active")
+
+                    subscriptions.add(Subscription(id, amount, name, date, necessary, expenseType, active))
+                }
+            }
+        })
+
+        return subscriptions
     }
 }

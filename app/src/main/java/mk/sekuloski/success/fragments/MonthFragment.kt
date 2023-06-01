@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import mk.sekuloski.success.*
 import mk.sekuloski.success.adapter.PaymentAdapter
+import mk.sekuloski.success.adapter.SubscriptionAdapter
 import mk.sekuloski.success.databinding.FragmentMonthBinding
 import mk.sekuloski.success.models.Month
 import mk.sekuloski.success.models.Payment
@@ -25,7 +26,7 @@ class MonthFragment(_month: Month) : Fragment(R.layout.fragment_month) {
     private var normalPayments = api?.getPayments(month.normalPayments) ?: ArrayList()
     private var sixMonthPayments = api?.getPayments(month.sixMonthPayments) ?: ArrayList()
     private val threeMonthPayments = api?.getPayments(month.threeMonthPayments) ?: ArrayList()
-//    private val subscriptions = api?.getPay
+    private val subscriptions = api?.getSubscriptions(month.subscriptions) ?: ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,9 +42,11 @@ class MonthFragment(_month: Month) : Fragment(R.layout.fragment_month) {
         val normalPaymentsRecyclerView = binding.rvPayments
         val sixMonthPaymentsRecyclerView = binding.rvSixMonthPayments
         val threeMonthPaymentsRecyclerView = binding.rvThreeMonthPayments
+        val subscriptionsRecyclerView = binding.rvSubscriptions
         val fullNormalAdapter = PaymentAdapter(view.context, normalPayments)
         val fullSixMonthAdapter = PaymentAdapter(view.context, sixMonthPayments)
         val fullThreeMonthAdapter = PaymentAdapter(view.context, threeMonthPayments)
+        val fullSubscriptionAdapter = SubscriptionAdapter(view.context, subscriptions)
         val emptyAdapter = PaymentAdapter(view.context, ArrayList())
 
         binding.monthName.text = month.name
@@ -52,6 +55,7 @@ class MonthFragment(_month: Month) : Fragment(R.layout.fragment_month) {
         binding.tvNormalSum.text = month.normalSum.toString()
         binding.tvSixMonthSum.text = month.sixMonthSum.toString()
         binding.tvThreeMonthSum.text = month.threeMonthSum.toString()
+        binding.tvSubscriptionsSum.text = month.subscriptionSum.toString()
 
         binding.btnShowMoreNormal.setOnClickListener {
             if (binding.btnShowMoreNormal.text.toString() == "See more") {
@@ -89,6 +93,18 @@ class MonthFragment(_month: Month) : Fragment(R.layout.fragment_month) {
             }
         }
 
+        binding.btnShowMoreSubscriptions.setOnClickListener {
+            if (binding.btnShowMoreSubscriptions.text.toString() == "See more") {
+                subscriptionsRecyclerView.swapAdapter(fullSubscriptionAdapter, true)
+                subscriptionsRecyclerView.layoutParams.height = openedRecyclerViewHeight
+                binding.btnShowMoreSubscriptions.text = "See less"
+            } else {
+                subscriptionsRecyclerView.swapAdapter(emptyAdapter, true)
+                subscriptionsRecyclerView.layoutParams.height = closedRecyclerViewHeight
+                binding.btnShowMoreSubscriptions.text = "See more"
+            }
+        }
+
         normalPaymentsRecyclerView.adapter = emptyAdapter
         normalPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
         normalPaymentsRecyclerView.setHasFixedSize(true)
@@ -100,6 +116,10 @@ class MonthFragment(_month: Month) : Fragment(R.layout.fragment_month) {
         threeMonthPaymentsRecyclerView.adapter = emptyAdapter
         threeMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
         threeMonthPaymentsRecyclerView.setHasFixedSize(true)
+
+        subscriptionsRecyclerView.adapter = emptyAdapter
+        subscriptionsRecyclerView.layoutParams.height = closedRecyclerViewHeight
+        subscriptionsRecyclerView.setHasFixedSize(true)
     }
 
     override fun onDestroyView() {

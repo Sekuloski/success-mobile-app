@@ -12,4 +12,6 @@ data class Month(
     val sixMonthSum: Int,
     val threeMonthPayments: JSONArray,
     val threeMonthSum: Int,
+    val subscriptions: JSONArray,
+    val subscriptionSum: Int,
     )
