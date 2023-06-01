@@ -67,7 +67,7 @@
         android:id="@+id/tvNormalPayments"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="124dp"
+        android:layout_marginTop="20dp"
         android:maxLines="3"
         android:text="@string/normal_payments"
         android:textColor="@color/md_theme_dark_onSecondaryContainer"
@@ -109,7 +109,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPayments"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="110dp"
         android:layout_marginTop="10dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
@@ -161,7 +161,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSixMonthPayments"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="110dp"
         android:layout_marginTop="10dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
@@ -189,9 +189,7 @@
         android:padding="5sp"
         android:textColor="@color/md_theme_dark_onSecondaryContainer"
         android:textSize="20sp"
-
         app:layout_constraintBottom_toBottomOf="@+id/btnShowMoreThreeMonth"
-
         app:layout_constraintEnd_toStartOf="@+id/btnShowMoreThreeMonth"
         app:layout_constraintTop_toTopOf="@+id/btnShowMoreThreeMonth"
         tools:text="300" />
@@ -213,11 +211,62 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvThreeMonthPayments"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="110dp"
         android:layout_marginTop="10dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvThreeMonthPayments"
         tools:listitem="@layout/list_payment" />
+
+    <TextView
+        android:id="@+id/tvSubscriptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:maxLines="3"
+        android:text="@string/subscriptions"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.053"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvThreeMonthPayments" />
+
+    <TextView
+        android:id="@+id/tvSubscriptionsSum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5sp"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnShowMoreSubscriptions"
+        app:layout_constraintEnd_toStartOf="@+id/btnShowMoreSubscriptions"
+        app:layout_constraintTop_toTopOf="@+id/btnShowMoreSubscriptions"
+        tools:text="300" />
+
+    <Button
+        android:id="@+id/btnShowMoreSubscriptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="See more"
+        android:textAllCaps="false"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvSubscriptions"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.964"
+        app:layout_constraintStart_toEndOf="@id/tvSubscriptions"
+        app:layout_constraintTop_toTopOf="@+id/tvSubscriptions" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSubscriptions"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:layout_marginTop="10dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSubscriptions"
+        tools:listitem="@layout/list_payment" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

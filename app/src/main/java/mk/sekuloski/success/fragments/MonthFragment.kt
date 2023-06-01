@@ -25,6 +25,7 @@ class MonthFragment(_month: Month) : Fragment(R.layout.fragment_month) {
     private var normalPayments = api?.getPayments(month.normalPayments) ?: ArrayList()
     private var sixMonthPayments = api?.getPayments(month.sixMonthPayments) ?: ArrayList()
     private val threeMonthPayments = api?.getPayments(month.threeMonthPayments) ?: ArrayList()
+//    private val subscriptions = api?.getPay
 
     override fun onCreateView(
         inflater: LayoutInflater,

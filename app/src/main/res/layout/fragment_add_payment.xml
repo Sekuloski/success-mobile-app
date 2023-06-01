@@ -70,15 +70,32 @@
         app:layout_constraintStart_toStartOf="@+id/tvDate"
         app:layout_constraintTop_toBottomOf="@+id/tvDate" />
 
+    <EditText
+        android:id="@+id/etPayments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:autofillHints="Number of Payments"
+        android:ems="13"
+        android:hint="@string/number_of_payments"
+        android:inputType="number"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tvTime"
+        app:layout_constraintTop_toBottomOf="@+id/tvTime" />
+
     <Spinner
         android:id="@+id/spPaymentType"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        app:layout_constraintEnd_toEndOf="@+id/tvTime"
-        app:layout_constraintStart_toStartOf="@+id/tvTime"
-        app:layout_constraintTop_toBottomOf="@+id/tvTime" />
+        app:layout_constraintEnd_toEndOf="@+id/etPayments"
+        app:layout_constraintStart_toStartOf="@+id/etPayments"
+        app:layout_constraintTop_toBottomOf="@+id/etPayments" />
 
     <Spinner
         android:id="@+id/spLocation"

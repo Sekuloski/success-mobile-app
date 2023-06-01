@@ -84,6 +84,7 @@ class AddPaymentFragment(_locations: HashMap<String, Int>) : Fragment(R.layout.f
 
         binding.tvDate.text = sdf.format(calendar.time)
         binding.tvTime.text = "$hour:${minute.toString().padStart(2, '0')}:00"
+        binding.etPayments.setText("1")
 
         val locationSpinner: Spinner = binding.spLocation
         val paymentTypeSpinner: Spinner = binding.spPaymentType
@@ -93,7 +94,6 @@ class AddPaymentFragment(_locations: HashMap<String, Int>) : Fragment(R.layout.f
             R.layout.spinner_item,
             locations.keys.toList()
         )
-        println(locations.keys.toList())
         locationAdapter.setDropDownViewResource(R.layout.spinner_item)
 
         locationSpinner.adapter = locationAdapter
@@ -132,10 +132,21 @@ class AddPaymentFragment(_locations: HashMap<String, Int>) : Fragment(R.layout.f
             jsonObject.put("necessary", binding.cbNecessary.isChecked)
             jsonObject.put("expense_type", binding.spPaymentType.selectedItemId)
             jsonObject.put("location", locations[binding.spLocation.selectedItem])
+
+            val payments = binding.etPayments.text.toString().toInt()
+            val monthly = payments != 1
+
+            jsonObject.put("monthly", monthly)
             jsonObject.put("pay", pay)
             jsonObject.put("cash", binding.cbCash.isChecked)
-            api?.addPayment(jsonObject)
+            if (monthly)
+            {
+                jsonObject.put("payments", payments)
+                jsonObject.put("credit", false)
+                jsonObject.put("interest", 6.16)
+            }
 
+            api?.addPayment(jsonObject)
             parentFragmentManager.popBackStack()
         }
     }
