@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import mk.sekuloski.success.models.Payment
 import mk.sekuloski.success.R
 import mk.sekuloski.success.models.Subscription
 
@@ -15,7 +14,7 @@ class SubscriptionAdapter(
     private val dataset: List<Subscription>
     ) : RecyclerView.Adapter<SubscriptionAdapter.SubscriptionViewHolder>() {
 
-    class SubscriptionViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    class SubscriptionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val subscriptionName: TextView = view.findViewById(R.id.subscription_name)
         val subscriptionAmount: TextView = view.findViewById(R.id.subscription_amount)
 
