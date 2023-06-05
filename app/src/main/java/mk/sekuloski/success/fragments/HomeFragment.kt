@@ -35,7 +35,7 @@ class HomeFragment(_client: FinancesService) : Fragment(R.layout.fragment_home),
                     binding.tvAmountLeft.text = newData.amount_left.toString()
                     binding.tvBank.text = newData.bank.toString()
                     binding.tvCash.text = newData.cash.toString()
-                    binding.tvSalary.text = newData.salary.toString()
+//                    binding.tvSalary.text = newData.salary.toString()
                     binding.tvExpenses.text = newData.expenses.toString()
                     binding.swipeRefresh.isRefreshing = false
                 }

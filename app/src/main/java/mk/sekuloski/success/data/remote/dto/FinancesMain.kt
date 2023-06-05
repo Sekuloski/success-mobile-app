@@ -9,5 +9,6 @@ data class FinancesMain (
     val bank: Int,
     val cash: Int,
     val expenses: Int,
-    val reserved: Int
+    val reserved: Int,
+    val salary_received: Boolean
     )

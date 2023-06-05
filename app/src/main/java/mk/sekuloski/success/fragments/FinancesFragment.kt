@@ -38,6 +38,11 @@ class FinancesFragment(_client: FinancesService) : Fragment(R.layout.fragment_fi
         launch {
             months = client.getMonths()
             locations = client.getLocations()
+            val mainData = client.getMainInfo()
+            if (!mainData!!.salary_received)
+            {
+                binding.addSalary.visibility = View.VISIBLE
+            }
             monthsRecyclerView.adapter = MonthAdapter(view.context, months, client)
         }
 
@@ -57,6 +62,12 @@ class FinancesFragment(_client: FinancesService) : Fragment(R.layout.fragment_fi
                 replace(R.id.flFragment, AddPaymentFragment(locations.associate { it.name to it.id } as HashMap<String, Int>, client))
                 addToBackStack(null)
                 commit()
+            }
+        }
+
+        binding.addSalary.setOnClickListener {
+            launch {
+                client.addSalary()
             }
         }
     }

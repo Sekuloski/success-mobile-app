@@ -70,10 +70,15 @@ class FinancesServiceImpl(
         }
     }
 
-    override suspend fun getMonths(): ArrayList<Month> {
+    override suspend fun getMonths(months: Int): ArrayList<Month> {
+        val body = HashMap<String, Int>()
+        body["months"] = months
+
         return try {
-            client.get {
+            client.post {
                 url(HttpRoutes.MONTHS)
+                contentType(ContentType.Application.Json)
+                setBody(body)
             }.body()
         } catch(e: RedirectResponseException) {
             // 3xx - responses
@@ -161,6 +166,10 @@ class FinancesServiceImpl(
         } catch(e: Exception) {
             "Error: ${e.message}"
         }
+    }
+
+    override suspend fun addSalary(): String {
+        TODO("Not yet implemented")
     }
 
 }

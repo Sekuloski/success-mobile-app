@@ -27,6 +27,7 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
     private lateinit var fullNormalAdapter: PaymentAdapter
     private lateinit var fullSixMonthAdapter: PaymentAdapter
     private lateinit var fullThreeMonthAdapter: PaymentAdapter
+    private lateinit var fullLoanAdapter: PaymentAdapter
     private lateinit var fullSubscriptionAdapter: SubscriptionAdapter
 
 
@@ -45,6 +46,7 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
         val normalPaymentsRecyclerView = binding.rvPayments
         val sixMonthPaymentsRecyclerView = binding.rvSixMonthPayments
         val threeMonthPaymentsRecyclerView = binding.rvThreeMonthPayments
+        val loansRecyclerView = binding.rvLoans
         val subscriptionsRecyclerView = binding.rvSubscriptions
 
         binding.monthName.text = name
@@ -62,22 +64,28 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
         threeMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
         threeMonthPaymentsRecyclerView.setHasFixedSize(true)
 
+        loansRecyclerView.adapter = emptyAdapter
+        loansRecyclerView.layoutParams.height = closedRecyclerViewHeight
+        loansRecyclerView.setHasFixedSize(true)
+
         subscriptionsRecyclerView.adapter = emptyAdapter
         subscriptionsRecyclerView.layoutParams.height = closedRecyclerViewHeight
         subscriptionsRecyclerView.setHasFixedSize(true)
 
 
         launch {
-            fullNormalAdapter = PaymentAdapter(view.context, client.getPayments(month.normal))
-            fullSixMonthAdapter = PaymentAdapter(view.context, client.getPayments(month.six_month))
-            fullThreeMonthAdapter = PaymentAdapter(view.context, client.getPayments(month.three_month))
-            fullSubscriptionAdapter = SubscriptionAdapter(view.context, client.getSubscriptions(month.subscriptions))
+            fullNormalAdapter = PaymentAdapter(view.context, client.getPayments(month.normal_ids))
+            fullSixMonthAdapter = PaymentAdapter(view.context, client.getPayments(month.six_month_ids))
+            fullThreeMonthAdapter = PaymentAdapter(view.context, client.getPayments(month.three_month_ids))
+            fullLoanAdapter = PaymentAdapter(view.context, client.getPayments(month.loan_ids))
+            fullSubscriptionAdapter = SubscriptionAdapter(view.context, client.getSubscriptions(month.subscription_ids))
 
             binding.amountLeft.text = month.left.toString()
             binding.expensesAmount.text = month.expenses.toString()
             binding.tvNormalSum.text = month.normal_sum.toString()
             binding.tvSixMonthSum.text = month.six_month_sum.toString()
             binding.tvThreeMonthSum.text = month.three_month_sum.toString()
+            binding.tvLoansSum.text = month.loan_sum.toString()
             binding.tvSubscriptionsSum.text = month.subscription_sum.toString()
 
             binding.btnShowMoreNormal.setOnClickListener {
@@ -113,6 +121,18 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
                     threeMonthPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
                     threeMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
                     binding.btnShowMoreThreeMonth.text = "See more"
+                }
+            }
+
+            binding.btnShowMoreLoans.setOnClickListener {
+                if (binding.btnShowMoreLoans.text.toString() == "See more") {
+                    loansRecyclerView.swapAdapter(fullLoanAdapter, true)
+                    loansRecyclerView.layoutParams.height = openedRecyclerViewHeight
+                    binding.btnShowMoreLoans.text = "See less"
+                } else {
+                    loansRecyclerView.swapAdapter(emptyAdapter, true)
+                    loansRecyclerView.layoutParams.height = closedRecyclerViewHeight
+                    binding.btnShowMoreLoans.text = "See more"
                 }
             }
 

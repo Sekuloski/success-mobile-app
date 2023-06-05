@@ -17,13 +17,15 @@ interface FinancesService {
 
     suspend fun getSubscriptions(ids: JsonArray): ArrayList<Subscription>
 
-    suspend fun getMonths(): ArrayList<Month>
+    suspend fun getMonths(months: Int = 6): ArrayList<Month>
 
     suspend fun getLocations(): ArrayList<Location>
 
     suspend fun getMainInfo(): FinancesMain?
 
     suspend fun addPayment(paymentRequest: PaymentRequest): String
+
+    suspend fun addSalary(): String
 
     companion object {
         fun create(): FinancesService {
@@ -36,6 +38,7 @@ interface FinancesService {
                         json(Json {
                             prettyPrint = true
                             isLenient = true
+                            ignoreUnknownKeys = true
                         })
                     }
                     install(HttpCookies) {

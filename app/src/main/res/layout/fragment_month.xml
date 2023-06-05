@@ -110,8 +110,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPayments"
         android:layout_width="match_parent"
-        android:layout_height="110dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="50dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvNormalPayments"
@@ -161,8 +160,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSixMonthPayments"
         android:layout_width="match_parent"
-        android:layout_height="110dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="50dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSixMonthPayments"
@@ -212,8 +210,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvThreeMonthPayments"
         android:layout_width="match_parent"
-        android:layout_height="110dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="50dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvThreeMonthPayments"
@@ -263,11 +260,60 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSubscriptions"
         android:layout_width="match_parent"
-        android:layout_height="110dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="50dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSubscriptions"
+        tools:listitem="@layout/list_payment" />
+
+    <TextView
+        android:id="@+id/tvLoans"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:maxLines="3"
+        android:text="@string/loans"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.053"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvSubscriptions" />
+
+    <TextView
+        android:id="@+id/tvLoansSum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5sp"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+        android:text="@string/zero"
+        app:layout_constraintBottom_toBottomOf="@+id/btnShowMoreLoans"
+        app:layout_constraintEnd_toStartOf="@+id/btnShowMoreLoans"
+        app:layout_constraintTop_toTopOf="@+id/btnShowMoreLoans"
+        tools:text="300" />
+
+    <Button
+        android:id="@+id/btnShowMoreLoans"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="See more"
+        android:textAllCaps="false"
+        android:textColor="@color/md_theme_dark_onSecondaryContainer"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvLoans"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.964"
+        app:layout_constraintStart_toEndOf="@id/tvLoans"
+        app:layout_constraintTop_toTopOf="@+id/tvLoans" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvLoans"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvLoans"
         tools:listitem="@layout/list_payment" />
 
 

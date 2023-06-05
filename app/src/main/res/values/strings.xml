@@ -23,4 +23,6 @@
     <string name="subscriptions">Subscriptions</string>
     <string name="number_of_payments">Number of Payments</string>
     <string name="zero">0</string>
+    <string name="loans">Loans</string>
+    <string name="add_salary">Add Salary</string>
 </resources>
