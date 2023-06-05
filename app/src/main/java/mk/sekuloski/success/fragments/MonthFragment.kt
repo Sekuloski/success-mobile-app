@@ -5,28 +5,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import mk.sekuloski.success.*
 import mk.sekuloski.success.adapter.PaymentAdapter
 import mk.sekuloski.success.adapter.SubscriptionAdapter
+import mk.sekuloski.success.data.remote.FinancesService
 import mk.sekuloski.success.databinding.FragmentMonthBinding
-import mk.sekuloski.success.models.Month
-import mk.sekuloski.success.models.Payment
-import org.json.JSONArray
-import java.util.stream.Collectors
+import mk.sekuloski.success.data.remote.dto.Month
 
 const val openedRecyclerViewHeight = 480
 const val closedRecyclerViewHeight = 40
 
-class MonthFragment(_month: Month) : Fragment(R.layout.fragment_month) {
+class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fragment(R.layout.fragment_month), CoroutineScope by MainScope() {
     private var _binding: FragmentMonthBinding? = null
     private val binding get() = _binding!!
-    private val api = APISingleton.getInstance()
     private val month: Month = _month
+    private val name: String = _name
+    private val client: FinancesService = _client
+    private lateinit var fullNormalAdapter: PaymentAdapter
+    private lateinit var fullSixMonthAdapter: PaymentAdapter
+    private lateinit var fullThreeMonthAdapter: PaymentAdapter
+    private lateinit var fullSubscriptionAdapter: SubscriptionAdapter
 
-    private var normalPayments = api?.getPayments(month.normalPayments) ?: ArrayList()
-    private var sixMonthPayments = api?.getPayments(month.sixMonthPayments) ?: ArrayList()
-    private val threeMonthPayments = api?.getPayments(month.threeMonthPayments) ?: ArrayList()
-    private val subscriptions = api?.getSubscriptions(month.subscriptions) ?: ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,72 +41,15 @@ class MonthFragment(_month: Month) : Fragment(R.layout.fragment_month) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val normalPaymentsRecyclerView = binding.rvPayments
         val sixMonthPaymentsRecyclerView = binding.rvSixMonthPayments
         val threeMonthPaymentsRecyclerView = binding.rvThreeMonthPayments
         val subscriptionsRecyclerView = binding.rvSubscriptions
-        val fullNormalAdapter = PaymentAdapter(view.context, normalPayments)
-        val fullSixMonthAdapter = PaymentAdapter(view.context, sixMonthPayments)
-        val fullThreeMonthAdapter = PaymentAdapter(view.context, threeMonthPayments)
-        val fullSubscriptionAdapter = SubscriptionAdapter(view.context, subscriptions)
+
+        binding.monthName.text = name
+
         val emptyAdapter = PaymentAdapter(view.context, ArrayList())
-
-        binding.monthName.text = month.name
-        binding.amountLeft.text = month.amountLeft.toString()
-        binding.expensesAmount.text = month.expenses.toString()
-        binding.tvNormalSum.text = month.normalSum.toString()
-        binding.tvSixMonthSum.text = month.sixMonthSum.toString()
-        binding.tvThreeMonthSum.text = month.threeMonthSum.toString()
-        binding.tvSubscriptionsSum.text = month.subscriptionSum.toString()
-
-        binding.btnShowMoreNormal.setOnClickListener {
-            if (binding.btnShowMoreNormal.text.toString() == "See more") {
-                normalPaymentsRecyclerView.swapAdapter(fullNormalAdapter, true)
-                normalPaymentsRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                binding.btnShowMoreNormal.text = "See less"
-            } else {
-                normalPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
-                normalPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                binding.btnShowMoreNormal.text = "See more"
-            }
-        }
-
-        binding.btnShowMoreSixMonth.setOnClickListener {
-            if (binding.btnShowMoreSixMonth.text.toString() == "See more") {
-                sixMonthPaymentsRecyclerView.swapAdapter(fullSixMonthAdapter, true)
-                sixMonthPaymentsRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                binding.btnShowMoreSixMonth.text = "See less"
-            } else {
-                sixMonthPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
-                sixMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                binding.btnShowMoreSixMonth.text = "See more"
-            }
-        }
-
-        binding.btnShowMoreThreeMonth.setOnClickListener {
-            if (binding.btnShowMoreThreeMonth.text.toString() == "See more") {
-                threeMonthPaymentsRecyclerView.swapAdapter(fullThreeMonthAdapter, true)
-                threeMonthPaymentsRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                binding.btnShowMoreThreeMonth.text = "See less"
-            } else {
-                threeMonthPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
-                threeMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                binding.btnShowMoreThreeMonth.text = "See more"
-            }
-        }
-
-        binding.btnShowMoreSubscriptions.setOnClickListener {
-            if (binding.btnShowMoreSubscriptions.text.toString() == "See more") {
-                subscriptionsRecyclerView.swapAdapter(fullSubscriptionAdapter, true)
-                subscriptionsRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                binding.btnShowMoreSubscriptions.text = "See less"
-            } else {
-                subscriptionsRecyclerView.swapAdapter(emptyAdapter, true)
-                subscriptionsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                binding.btnShowMoreSubscriptions.text = "See more"
-            }
-        }
-
         normalPaymentsRecyclerView.adapter = emptyAdapter
         normalPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
         normalPaymentsRecyclerView.setHasFixedSize(true)
@@ -120,6 +65,69 @@ class MonthFragment(_month: Month) : Fragment(R.layout.fragment_month) {
         subscriptionsRecyclerView.adapter = emptyAdapter
         subscriptionsRecyclerView.layoutParams.height = closedRecyclerViewHeight
         subscriptionsRecyclerView.setHasFixedSize(true)
+
+
+        launch {
+            fullNormalAdapter = PaymentAdapter(view.context, client.getPayments(month.normal))
+            fullSixMonthAdapter = PaymentAdapter(view.context, client.getPayments(month.six_month))
+            fullThreeMonthAdapter = PaymentAdapter(view.context, client.getPayments(month.three_month))
+            fullSubscriptionAdapter = SubscriptionAdapter(view.context, client.getSubscriptions(month.subscriptions))
+
+            binding.amountLeft.text = month.left.toString()
+            binding.expensesAmount.text = month.expenses.toString()
+            binding.tvNormalSum.text = month.normal_sum.toString()
+            binding.tvSixMonthSum.text = month.six_month_sum.toString()
+            binding.tvThreeMonthSum.text = month.three_month_sum.toString()
+            binding.tvSubscriptionsSum.text = month.subscription_sum.toString()
+
+            binding.btnShowMoreNormal.setOnClickListener {
+                if (binding.btnShowMoreNormal.text.toString() == "See more") {
+                    normalPaymentsRecyclerView.swapAdapter(fullNormalAdapter, true)
+                    normalPaymentsRecyclerView.layoutParams.height = openedRecyclerViewHeight
+                    binding.btnShowMoreNormal.text = "See less"
+                } else {
+                    normalPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
+                    normalPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
+                    binding.btnShowMoreNormal.text = "See more"
+                }
+            }
+
+            binding.btnShowMoreSixMonth.setOnClickListener {
+                if (binding.btnShowMoreSixMonth.text.toString() == "See more") {
+                    sixMonthPaymentsRecyclerView.swapAdapter(fullSixMonthAdapter, true)
+                    sixMonthPaymentsRecyclerView.layoutParams.height = openedRecyclerViewHeight
+                    binding.btnShowMoreSixMonth.text = "See less"
+                } else {
+                    sixMonthPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
+                    sixMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
+                    binding.btnShowMoreSixMonth.text = "See more"
+                }
+            }
+
+            binding.btnShowMoreThreeMonth.setOnClickListener {
+                if (binding.btnShowMoreThreeMonth.text.toString() == "See more") {
+                    threeMonthPaymentsRecyclerView.swapAdapter(fullThreeMonthAdapter, true)
+                    threeMonthPaymentsRecyclerView.layoutParams.height = openedRecyclerViewHeight
+                    binding.btnShowMoreThreeMonth.text = "See less"
+                } else {
+                    threeMonthPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
+                    threeMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
+                    binding.btnShowMoreThreeMonth.text = "See more"
+                }
+            }
+
+            binding.btnShowMoreSubscriptions.setOnClickListener {
+                if (binding.btnShowMoreSubscriptions.text.toString() == "See more") {
+                    subscriptionsRecyclerView.swapAdapter(fullSubscriptionAdapter, true)
+                    subscriptionsRecyclerView.layoutParams.height = openedRecyclerViewHeight
+                    binding.btnShowMoreSubscriptions.text = "See less"
+                } else {
+                    subscriptionsRecyclerView.swapAdapter(emptyAdapter, true)
+                    subscriptionsRecyclerView.layoutParams.height = closedRecyclerViewHeight
+                    binding.btnShowMoreSubscriptions.text = "See more"
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {

@@ -1,16 +1,16 @@
-package mk.sekuloski.success.models
+package mk.sekuloski.success.data.remote.dto
 
-import mk.sekuloski.success.ExpenseType
-import mk.sekuloski.success.PaymentType
-import org.json.JSONObject
+import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 
+@Serializable
 data class Subscription (
     val id: Int = 0,
     val amount: Int = 0,
     val name: String,
+    @Serializable(with = DateSerializer::class)
     val date: LocalDateTime,
     val necessary: Boolean = false,
-    val expenseType: ExpenseType,
+    val expense_type: Int,
     val active: Boolean
-)
+    )

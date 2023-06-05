@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import mk.sekuloski.success.R
-import mk.sekuloski.success.models.Subscription
+import mk.sekuloski.success.data.remote.dto.Subscription
 
 class SubscriptionAdapter(
     private val context: Context,

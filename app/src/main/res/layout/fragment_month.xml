@@ -35,6 +35,7 @@
         android:layout_height="wrap_content"
         android:textColor="#4CAF50"
         android:textSize="28sp"
+        android:text="@string/zero"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/month_name"
         app:layout_constraintTop_toBottomOf="@+id/month_name"
@@ -58,6 +59,7 @@
         android:layout_height="wrap_content"
         android:textColor="#E91E63"
         android:textSize="28sp"
+        android:text="@string/zero"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/month_name"
         app:layout_constraintTop_toBottomOf="@+id/amount_left"
@@ -85,9 +87,8 @@
         android:padding="5sp"
         android:textColor="@color/md_theme_dark_onSecondaryContainer"
         android:textSize="20sp"
-
+        android:text="@string/zero"
         app:layout_constraintBottom_toBottomOf="@+id/btnShowMoreNormal"
-
         app:layout_constraintEnd_toStartOf="@+id/btnShowMoreNormal"
         app:layout_constraintTop_toTopOf="@+id/btnShowMoreNormal"
         tools:text="300" />
@@ -137,9 +138,8 @@
         android:padding="5sp"
         android:textColor="@color/md_theme_dark_onSecondaryContainer"
         android:textSize="20sp"
-
+        android:text="@string/zero"
         app:layout_constraintBottom_toBottomOf="@+id/btnShowMoreSixMonth"
-
         app:layout_constraintEnd_toStartOf="@+id/btnShowMoreSixMonth"
         app:layout_constraintTop_toTopOf="@+id/btnShowMoreSixMonth"
         tools:text="300" />
@@ -189,6 +189,7 @@
         android:padding="5sp"
         android:textColor="@color/md_theme_dark_onSecondaryContainer"
         android:textSize="20sp"
+        android:text="@string/zero"
         app:layout_constraintBottom_toBottomOf="@+id/btnShowMoreThreeMonth"
         app:layout_constraintEnd_toStartOf="@+id/btnShowMoreThreeMonth"
         app:layout_constraintTop_toTopOf="@+id/btnShowMoreThreeMonth"
@@ -239,6 +240,7 @@
         android:padding="5sp"
         android:textColor="@color/md_theme_dark_onSecondaryContainer"
         android:textSize="20sp"
+        android:text="@string/zero"
         app:layout_constraintBottom_toBottomOf="@+id/btnShowMoreSubscriptions"
         app:layout_constraintEnd_toStartOf="@+id/btnShowMoreSubscriptions"
         app:layout_constraintTop_toTopOf="@+id/btnShowMoreSubscriptions"

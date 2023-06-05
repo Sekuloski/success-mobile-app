@@ -3,14 +3,16 @@ package mk.sekuloski.success
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import mk.sekuloski.success.data.remote.FinancesService
 import mk.sekuloski.success.databinding.ActivityMainBinding
 import mk.sekuloski.success.fragments.FinancesFragment
 import mk.sekuloski.success.fragments.HomeFragment
 import mk.sekuloski.success.fragments.WorkoutsFragment
-import mk.sekuloski.success.models.Month
+import mk.sekuloski.success.data.remote.dto.Month
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val client = FinancesService.create()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,12 +21,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         val api = APISingleton.getInstance()
-        val months: ArrayList<Month> = api?.getMonths() ?: ArrayList()
-        val homeFragment = HomeFragment()
+//        val months: ArrayList<Month> = api?.getMonths() ?: ArrayList()
+
+        val homeFragment = HomeFragment(client)
         setCurrentFragment(homeFragment)
         binding.bottomNavigationView.selectedItemId = R.id.miHome
 
-        val financesFragment = FinancesFragment(months)
+        val financesFragment = FinancesFragment(client)
         val workoutsFragment = WorkoutsFragment()
 
         binding.bottomNavigationView.setOnItemSelectedListener{

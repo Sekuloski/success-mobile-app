@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import mk.sekuloski.success.models.Payment
+import mk.sekuloski.success.data.remote.dto.Payment
 import mk.sekuloski.success.R
 
 class PaymentAdapter(

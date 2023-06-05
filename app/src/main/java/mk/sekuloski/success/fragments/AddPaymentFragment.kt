@@ -10,25 +10,33 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.encoding.Decoder
 import mk.sekuloski.success.*
+import mk.sekuloski.success.data.remote.FinancesService
+import mk.sekuloski.success.data.remote.dto.DateSerializer
+import mk.sekuloski.success.data.remote.dto.PaymentRequest
 import mk.sekuloski.success.databinding.FragmentAddPaymentBinding
-import mk.sekuloski.success.models.Location
 import org.json.JSONObject
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
 const val KOZLE = 8
 
 
-class AddPaymentFragment(_locations: HashMap<String, Int>) : Fragment(R.layout.fragment_add_payment) {
+class AddPaymentFragment(_locations: HashMap<String, Int>, _client: FinancesService) : Fragment(R.layout.fragment_add_payment), CoroutineScope by MainScope() {
     private var _binding: FragmentAddPaymentBinding? = null
     private val binding get() = _binding!!
     private val calendar = Calendar.getInstance()
-    private val api = APISingleton.getInstance()
+    private val client = _client
     private val locations = _locations
 
     override fun onCreateView(
@@ -83,7 +91,7 @@ class AddPaymentFragment(_locations: HashMap<String, Int>) : Fragment(R.layout.f
         }
 
         binding.tvDate.text = sdf.format(calendar.time)
-        binding.tvTime.text = "$hour:${minute.toString().padStart(2, '0')}:00"
+        binding.tvTime.text = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00"
         binding.etPayments.setText("1")
 
         val locationSpinner: Spinner = binding.spLocation
@@ -119,35 +127,36 @@ class AddPaymentFragment(_locations: HashMap<String, Int>) : Fragment(R.layout.f
     }
 
     private fun addPayment(pay: Boolean) {
-        val jsonObject = JSONObject()
-
         if (binding.etAmount.text.toString() == "") {
             binding.etAmount.error = "Amount is required!"
         } else if (binding.etPaymentName.text.toString() == "") {
             binding.etPaymentName.error = "Payment name is required!"
         } else {
-            jsonObject.put("amount", binding.etAmount.text.toString().toInt())
-            jsonObject.put("name", binding.etPaymentName.text)
-            jsonObject.put("date", "${binding.tvDate.text}T${binding.tvTime.text}+01:00")
-            jsonObject.put("necessary", binding.cbNecessary.isChecked)
-            jsonObject.put("expense_type", binding.spPaymentType.selectedItemId)
-            jsonObject.put("location", locations[binding.spLocation.selectedItem])
+            val amount = binding.etAmount.text.toString().toInt()
+            val name = binding.etPaymentName.text.toString()
+            val dateString = "${binding.tvDate.text}T${binding.tvTime.text}+01:00"
+            val necessary = binding.cbNecessary.isChecked
+            val expenseType = binding.spPaymentType.selectedItemId.toInt()
+            val location = locations[binding.spLocation.selectedItem] ?: 9
+
+            val date = LocalDateTime.parse(dateString, DateTimeFormatter.ISO_DATE_TIME) as LocalDateTime
 
             val payments = binding.etPayments.text.toString().toInt()
             val monthly = payments != 1
+            val cash = binding.cbCash.isChecked
 
-            jsonObject.put("monthly", monthly)
-            jsonObject.put("pay", pay)
-            jsonObject.put("cash", binding.cbCash.isChecked)
-            if (monthly)
-            {
-                jsonObject.put("payments", payments)
-                jsonObject.put("credit", false)
-                jsonObject.put("interest", 6.16)
+            val credit = false
+            val interest = 0.0
+
+            val paymentRequest = PaymentRequest(amount, name, date, necessary, expenseType, cash, monthly, credit, interest, location, pay)
+
+            launch {
+                val toast = Toast(context)
+                toast.setText(client.addPayment(paymentRequest))
+                toast.show()
+                parentFragmentManager.popBackStack()
             }
-
-            api?.addPayment(jsonObject)
-            parentFragmentManager.popBackStack()
+//            api?.addPayment(jsonObject)
         }
     }
 

@@ -5,16 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import mk.sekuloski.success.*
 import mk.sekuloski.success.adapter.MonthAdapter
+import mk.sekuloski.success.data.remote.FinancesService
+import mk.sekuloski.success.data.remote.dto.Location
 import mk.sekuloski.success.databinding.FragmentFinancesBinding
-import mk.sekuloski.success.models.Month
+import mk.sekuloski.success.data.remote.dto.Month
 
-class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_finances) {
+class FinancesFragment(_client: FinancesService) : Fragment(R.layout.fragment_finances), CoroutineScope by MainScope() {
     private var _binding: FragmentFinancesBinding? = null
     private val binding get() = _binding!!
-    private var months = _months
-    private val api = APISingleton.getInstance()
+    private val client = _client
+    private lateinit var locations: ArrayList<Location>
+    private lateinit var months: ArrayList<Month>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,45 +33,28 @@ class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_f
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val locations = api?.getLocations()
         val monthsRecyclerView = binding.rvMonths
 
-        monthsRecyclerView.adapter = MonthAdapter(view.context, months)
+        launch {
+            months = client.getMonths()
+            locations = client.getLocations()
+            monthsRecyclerView.adapter = MonthAdapter(view.context, months, client)
+        }
+
         monthsRecyclerView.setHasFixedSize(true)
 
         binding.swipeRefresh.setOnRefreshListener {
-            months = ArrayList()
-            months = api?.getMonths() ?: ArrayList()
-
-            while(true)
-            {
-                if (months.size == 0)
-                {
-                    continue
-                }
-
-                break
+            launch {
+                months = client.getMonths()
+                monthsRecyclerView.adapter = MonthAdapter(view.context, months, client)
+                monthsRecyclerView.swapAdapter(MonthAdapter(view.context, months, client), true)
+                binding.swipeRefresh.isRefreshing = false
             }
-            monthsRecyclerView.swapAdapter(MonthAdapter(view.context, months), true)
-            binding.swipeRefresh.isRefreshing = false
-        }
-
-        while(true)
-        {
-            if (locations != null) {
-                if (locations.size == 0) {
-                    continue
-                }
-            }
-
-            break
         }
 
         binding.fabAddPayment.setOnClickListener {
             (context as MainActivity).supportFragmentManager.beginTransaction().apply {
-                if (locations != null) {
-                    replace(R.id.flFragment, AddPaymentFragment(locations.associate { it.name to it.id } as HashMap<String, Int>))
-                }
+                replace(R.id.flFragment, AddPaymentFragment(locations.associate { it.name to it.id } as HashMap<String, Int>, client))
                 addToBackStack(null)
                 commit()
             }
@@ -74,21 +63,10 @@ class FinancesFragment(_months: ArrayList<Month>) : Fragment(R.layout.fragment_f
 
     override fun onResume() {
         super.onResume()
-
-        months = ArrayList()
-        months = api?.getMonths() ?: ArrayList()
-
-        while(true)
-        {
-            if (months.size == 0)
-            {
-                continue
-            }
-
-            break
+        launch {
+            months = client.getMonths()
+            binding.rvMonths.swapAdapter(context?.let { MonthAdapter(it, months, client) }, true)
         }
-
-        binding.rvMonths.swapAdapter(context?.let { MonthAdapter(it, months) }, true)
     }
 
     override fun onDestroyView() {
