@@ -5,12 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import io.ktor.client.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import mk.sekuloski.success.API
-import mk.sekuloski.success.APISingleton
 import mk.sekuloski.success.R
 import mk.sekuloski.success.data.remote.FinancesService
 import mk.sekuloski.success.databinding.FragmentHomeBinding

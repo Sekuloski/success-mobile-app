@@ -9,7 +9,6 @@ import mk.sekuloski.success.data.remote.FinancesService
 import mk.sekuloski.success.databinding.ListMonthBinding
 import mk.sekuloski.success.fragments.MonthFragment
 import mk.sekuloski.success.data.remote.dto.Month
-import mk.sekuloski.success.months_url
 
 
 class MonthAdapter(
