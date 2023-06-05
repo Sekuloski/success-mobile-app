@@ -10,15 +10,16 @@ import mk.sekuloski.success.ExpenseType
 import mk.sekuloski.success.PaymentType
 import org.json.JSONObject
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 @Serializable
 data class PaymentRequest (
-    val amount: Int = 0,
+    val amount: Int,
     val name: String,
     @Serializable(with = DateSerializer::class)
-    val date: LocalDateTime,
-    val necessary: Boolean = false,
+    val date: ZonedDateTime,
+    val necessary: Boolean,
     val expense_type: Int,
     val cash: Boolean,
     val monthly: Boolean,

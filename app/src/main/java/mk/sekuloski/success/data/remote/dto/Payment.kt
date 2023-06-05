@@ -21,7 +21,7 @@ data class Payment (
     val amount: Int = 0,
     val name: String,
     @Serializable(with = DateSerializer::class)
-    val date: LocalDateTime,
+    val date: ZonedDateTime,
     val necessary: Boolean = false,
     val expense_type: Int,
     val payment_type: Int,
@@ -32,16 +32,16 @@ data class Payment (
     )
 
 @OptIn(ExperimentalSerializationApi::class)
-@Serializer(forClass = LocalDateTime::class)
+@Serializer(forClass = ZonedDateTime::class)
 object DateSerializer {
     private val formatter = DateTimeFormatter.ISO_DATE_TIME
 
-    override fun deserialize(decoder: Decoder): LocalDateTime {
+    override fun deserialize(decoder: Decoder): ZonedDateTime {
         val dateString = decoder.decodeString()
-        return LocalDateTime.parse(dateString, formatter) as LocalDateTime
+        return ZonedDateTime.parse(dateString, formatter)
     }
 
-    override fun serialize(encoder: Encoder, value: LocalDateTime) {
+    override fun serialize(encoder: Encoder, value: ZonedDateTime) {
         val dateString = formatter.format(value)
         encoder.encodeString(dateString)
     }

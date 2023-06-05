@@ -24,6 +24,7 @@ import mk.sekuloski.success.databinding.FragmentAddPaymentBinding
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.HashMap
@@ -139,7 +140,7 @@ class AddPaymentFragment(_locations: HashMap<String, Int>, _client: FinancesServ
             val expenseType = binding.spPaymentType.selectedItemId.toInt()
             val location = locations[binding.spLocation.selectedItem] ?: 9
 
-            val date = LocalDateTime.parse(dateString, DateTimeFormatter.ISO_DATE_TIME) as LocalDateTime
+            val date = ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_DATE_TIME)
 
             val payments = binding.etPayments.text.toString().toInt()
             val monthly = payments != 1
