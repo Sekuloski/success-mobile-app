@@ -76,7 +76,7 @@ class FinancesFragment(_client: FinancesService) : Fragment(R.layout.fragment_fi
             val powerBillAmount = dialogLayout.findViewById<EditText>(R.id.etPowerBill)
 
             val dialog = AlertDialog.Builder(it.context)
-                .setTitle("Enter Water and Power bills:")
+                .setTitle("Enter Bills:")
                 .setPositiveButton("OK") { _, _ ->
                     println("OK")
                 }
@@ -110,6 +110,11 @@ class FinancesFragment(_client: FinancesService) : Fragment(R.layout.fragment_fi
         super.onResume()
         launch {
             months = client.getMonths()
+            val salaryReceived = client.getSalaryInfo()
+            if (!salaryReceived)
+            {
+                binding.addSalary.visibility = View.VISIBLE
+            }
             binding.rvMonths.swapAdapter(context?.let { MonthAdapter(it, months, client) }, true)
         }
     }

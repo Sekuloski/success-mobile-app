@@ -1,25 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <EditText
-        android:layout_width="wrap_content"
+        android:id="@+id/etWaterBill"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:autofillHints="Water Bill"
         android:hint="@string/enter_water_bill"
         android:inputType="number"
-        android:id="@+id/etWaterBill"
         android:textSize="16sp"
-        android:autofillHints="Water Bill" />
+        app:layout_constraintEnd_toStartOf="@+id/etPowerBill"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:layout_width="wrap_content"
+        android:id="@+id/etPowerBill"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:autofillHints="Water Bill"
         android:hint="@string/enter_power_bill"
         android:inputType="number"
-        android:id="@+id/etPowerBill"
         android:textSize="16sp"
-        android:autofillHints="Water Bill" />
-    
-</LinearLayout>
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/etWaterBill"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
