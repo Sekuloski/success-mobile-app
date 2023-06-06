@@ -5,6 +5,7 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -201,7 +202,7 @@ class FinancesServiceImpl(
         return try {
             client.get {
                 url(HttpRoutes.SALARY)
-            }.body()
+            }.bodyAsText() == "True"
         } catch(e: RedirectResponseException) {
             // 3xx - responses
             println("3xx Error: ${e.response.status.description}")
@@ -215,6 +216,7 @@ class FinancesServiceImpl(
             println("5xx Error: ${e.response.status.description}")
             false
         } catch(e: Exception) {
+            println(e.message)
             false
         }
     }
