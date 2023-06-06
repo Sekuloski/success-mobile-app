@@ -1,5 +1,6 @@
 package mk.sekuloski.success.data.remote
 
+import android.health.connect.datatypes.units.Power
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -168,8 +169,54 @@ class FinancesServiceImpl(
         }
     }
 
-    override suspend fun addSalary(): String {
-        TODO("Not yet implemented")
+    override suspend fun addSalary(water: Int, power: Int): String {
+        val body = HashMap<String, Int>()
+        body["water"] = water
+        body["power"] = power
+
+        return try {
+            client.post{
+                url(HttpRoutes.ADD_SALARY)
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }.body()
+        } catch(e: RedirectResponseException) {
+            // 3xx - responses
+            println("3xx Error: ${e.response.status.description}")
+            e.message
+        } catch(e: ClientRequestException) {
+            // 4xx - responses
+            println("4xx Error: ${e.response.status.description}")
+            e.message
+        } catch(e: ServerResponseException) {
+            // 5xx - responses
+            println("5xx Error: ${e.response.status.description}")
+            e.message
+        } catch(e: Exception) {
+            "Something went wrong!"
+        }
+    }
+
+    override suspend fun getSalaryInfo(): Boolean {
+        return try {
+            client.get {
+                url(HttpRoutes.SALARY)
+            }.body()
+        } catch(e: RedirectResponseException) {
+            // 3xx - responses
+            println("3xx Error: ${e.response.status.description}")
+            false
+        } catch(e: ClientRequestException) {
+            // 4xx - responses
+            println("4xx Error: ${e.response.status.description}")
+            false
+        } catch(e: ServerResponseException) {
+            // 5xx - responses
+            println("5xx Error: ${e.response.status.description}")
+            false
+        } catch(e: Exception) {
+            false
+        }
     }
 
 }

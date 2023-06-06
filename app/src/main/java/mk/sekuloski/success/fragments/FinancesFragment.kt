@@ -1,9 +1,13 @@
 package mk.sekuloski.success.fragments
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -31,6 +35,7 @@ class FinancesFragment(_client: FinancesService) : Fragment(R.layout.fragment_fi
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val monthsRecyclerView = binding.rvMonths
@@ -38,8 +43,8 @@ class FinancesFragment(_client: FinancesService) : Fragment(R.layout.fragment_fi
         launch {
             months = client.getMonths()
             locations = client.getLocations()
-            val mainData = client.getMainInfo()
-            if (!mainData!!.salary_received)
+            val salaryReceived = client.getSalaryInfo()
+            if (!salaryReceived)
             {
                 binding.addSalary.visibility = View.VISIBLE
             }
@@ -65,10 +70,39 @@ class FinancesFragment(_client: FinancesService) : Fragment(R.layout.fragment_fi
             }
         }
 
-        binding.addSalary.setOnClickListener {
-            launch {
-                client.addSalary()
+        binding.addSalary.setOnClickListener { it ->
+            val dialogLayout = layoutInflater.inflate(R.layout.add_salary, null)
+            val waterBillAmount = dialogLayout.findViewById<EditText>(R.id.etWaterBill)
+            val powerBillAmount = dialogLayout.findViewById<EditText>(R.id.etPowerBill)
+
+            val dialog = AlertDialog.Builder(it.context)
+                .setTitle("Enter Water and Power bills:")
+                .setPositiveButton("OK") { _, _ ->
+                    println("OK")
+                }
+                .setNegativeButton("Cancel") {_, _ ->
+                    println("Cancelled")
+                }
+                .setView(dialogLayout)
+                .show()
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                if (waterBillAmount.text.toString() == "") {
+                    waterBillAmount.error = "Amount is required!"
+                }
+                else if (powerBillAmount.text.toString() == "") {
+                    powerBillAmount.error = "Amount is required!"
+                } else {
+                    launch {
+                        val response = client.addSalary(waterBillAmount.text.toString().toInt(), powerBillAmount.text.toString().toInt())
+                        val toast = Toast(it.context)
+                        toast.setText(response)
+                        toast.show()
+                        dialog.dismiss()
+                    }
+                }
             }
+
         }
     }
 

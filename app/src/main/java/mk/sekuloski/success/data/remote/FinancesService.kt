@@ -23,9 +23,11 @@ interface FinancesService {
 
     suspend fun getMainInfo(): FinancesMain?
 
+    suspend fun getSalaryInfo(): Boolean
+
     suspend fun addPayment(paymentRequest: PaymentRequest): String
 
-    suspend fun addSalary(): String
+    suspend fun addSalary(water: Int, power: Int): String
 
     companion object {
         fun create(): FinancesService {

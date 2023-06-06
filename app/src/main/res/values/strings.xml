@@ -25,4 +25,6 @@
     <string name="zero">0</string>
     <string name="loans">Loans</string>
     <string name="add_salary">Add Salary</string>
+    <string name="enter_water_bill">Enter Water Bill</string>
+    <string name="enter_power_bill">Enter Power Bill</string>
 </resources>
