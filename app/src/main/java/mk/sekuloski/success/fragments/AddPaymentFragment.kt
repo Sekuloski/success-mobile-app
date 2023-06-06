@@ -15,15 +15,11 @@ import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encoding.Decoder
 import mk.sekuloski.success.*
 import mk.sekuloski.success.data.remote.FinancesService
-import mk.sekuloski.success.data.remote.dto.DateSerializer
 import mk.sekuloski.success.data.remote.dto.PaymentRequest
 import mk.sekuloski.success.databinding.FragmentAddPaymentBinding
-import org.json.JSONObject
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -65,7 +61,7 @@ class AddPaymentFragment(_locations: HashMap<String, Int>, _client: FinancesServ
                 binding.tvDate.text = sdf.format(calendar.time)
             }
 
-        binding.tvDate.setOnClickListener(View.OnClickListener {
+        binding.tvDate.setOnClickListener {
             DatePickerDialog(
                 view.context,
                 date,
@@ -73,7 +69,7 @@ class AddPaymentFragment(_locations: HashMap<String, Int>, _client: FinancesServ
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             ).show()
-        })
+        }
 
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
         val minute = calendar.get(Calendar.MINUTE)
@@ -135,7 +131,7 @@ class AddPaymentFragment(_locations: HashMap<String, Int>, _client: FinancesServ
         } else {
             val amount = binding.etAmount.text.toString().toInt()
             val name = binding.etPaymentName.text.toString()
-            val dateString = "${binding.tvDate.text}T${binding.tvTime.text}+01:00"
+            val dateString = "${binding.tvDate.text}T${binding.tvTime.text}+02:00"
             val necessary = binding.cbNecessary.isChecked
             val expenseType = binding.spPaymentType.selectedItemId.toInt()
             val location = locations[binding.spLocation.selectedItem] ?: 9
@@ -149,7 +145,7 @@ class AddPaymentFragment(_locations: HashMap<String, Int>, _client: FinancesServ
             val credit = false
             val interest = 0.0
 
-            val paymentRequest = PaymentRequest(amount, name, date, necessary, expenseType, cash, monthly, credit, interest, location, pay)
+            val paymentRequest = PaymentRequest(amount, name, date, necessary, expenseType, cash, monthly, payments, credit, interest, location, pay)
 
             launch {
                 val toast = Toast(context)
@@ -157,7 +153,6 @@ class AddPaymentFragment(_locations: HashMap<String, Int>, _client: FinancesServ
                 toast.show()
                 parentFragmentManager.popBackStack()
             }
-//            api?.addPayment(jsonObject)
         }
     }
 
