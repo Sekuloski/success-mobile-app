@@ -6,14 +6,8 @@ import kotlinx.serialization.Serializer
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonObject
-import mk.sekuloski.success.ExpenseType
-import mk.sekuloski.success.PaymentType
-import org.json.JSONObject
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 @Serializable
 data class Payment (

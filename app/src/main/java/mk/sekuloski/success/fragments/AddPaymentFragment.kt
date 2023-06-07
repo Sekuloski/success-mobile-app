@@ -17,6 +17,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mk.sekuloski.success.*
 import mk.sekuloski.success.data.remote.FinancesService
+import mk.sekuloski.success.data.remote.dto.ExpenseType
 import mk.sekuloski.success.data.remote.dto.PaymentRequest
 import mk.sekuloski.success.databinding.FragmentAddPaymentBinding
 import java.text.SimpleDateFormat
