@@ -9,9 +9,8 @@ import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.renderer.PieChartRenderer
 import com.github.mikephil.charting.utils.ViewPortHandler
-import mk.sekuloski.success.R
 
-class CustomPieChartRenderer(chart: PieChart?, animator: ChartAnimator?, viewPortHandler: ViewPortHandler?) : PieChartRenderer(chart, animator, viewPortHandler) {
+class CustomPieChartRenderer(chart: PieChart?, animator: ChartAnimator?, viewPortHandler: ViewPortHandler?, colors: HashMap<String, Int>) : PieChartRenderer(chart, animator, viewPortHandler) {
 
     private var mHasLabelData = false
     private var mHasValueData = false
@@ -20,6 +19,7 @@ class CustomPieChartRenderer(chart: PieChart?, animator: ChartAnimator?, viewPor
     private var mEntryLabel: String = ""
     private var mValueText: String = ""
     private var mEntryLabelX = 0f
+    private var mColors: HashMap<String, Int> = colors
     private var mValueX = 0f
     private var mEntryLabelY = 0f
     private var mValueY = 0f
@@ -70,6 +70,7 @@ class CustomPieChartRenderer(chart: PieChart?, animator: ChartAnimator?, viewPor
     @SuppressLint("ResourceAsColor")
     private fun drawEntryLabelData(c: Canvas?, label: String, x: Float, y: Float) {
         val mEntryLabelsPaint: Paint = paintEntryLabels
+        mEntryLabelsPaint.color = mColors[label] ?: Color.BLACK
         mEntryLabelsPaint.typeface = Typeface.DEFAULT_BOLD
         mEntryLabelsPaint.textAlign = Paint.Align.CENTER
         c?.drawText(label, x, y, mEntryLabelsPaint)
