@@ -1,6 +1,5 @@
 package mk.sekuloski.success.fragments
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -73,8 +72,6 @@ class HomeFragment(_client: FinancesService) : Fragment(R.layout.fragment_home),
     private fun initPie() {
         pieChart = binding.pieChart
         pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler)
-        pieChart.setNoDataText("Loading...")
-        pieChart.setNoDataTextColor(R.color.md_theme_dark_onPrimaryContainer)
 
         pieChart.description.isEnabled = false
         pieChart.setExtraOffsets(60f, 60f, 60f, 60f)
@@ -141,6 +138,11 @@ class HomeFragment(_client: FinancesService) : Fragment(R.layout.fragment_home),
         if (sports_gear > 0)
         {
             entries.add(PieEntry(sports_gear.toFloat(), "Sports Gear"))
+        }
+
+        if (entries.size == 0)
+        {
+            return
         }
 
         val dataSet = PieDataSet(entries, "Expense Types")

@@ -1,6 +1,5 @@
 package mk.sekuloski.success.data.remote
 
-import android.health.connect.datatypes.units.Power
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -72,9 +71,10 @@ class FinancesServiceImpl(
         }
     }
 
-    override suspend fun getMonths(months: Int): ArrayList<Month> {
+    override suspend fun getMonths(months: Int, offset: Int): ArrayList<Month> {
         val body = HashMap<String, Int>()
         body["months"] = months
+        body["offset"] = offset
 
         return try {
             client.post {

@@ -1,6 +1,6 @@
 package mk.sekuloski.success.fragments
 
-import android.graphics.Color
+import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -53,6 +53,7 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -176,8 +177,6 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
     private fun initPie() {
         pieChart = binding.pieChart
         pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler)
-        pieChart.setNoDataText("Loading...")
-        pieChart.setNoDataTextColor(R.color.md_theme_dark_onPrimaryContainer)
 
         pieChart.description.isEnabled = false
         pieChart.setExtraOffsets(60f, 60f, 60f, 60f)
@@ -244,6 +243,11 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
         if (sports_gear > 0)
         {
             entries.add(PieEntry(sports_gear.toFloat(), "Sports Gear"))
+        }
+
+        if (entries.size == 0)
+        {
+            return
         }
 
         val dataSet = PieDataSet(entries, "Expense Types")
