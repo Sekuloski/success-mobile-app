@@ -1,6 +1,7 @@
 package mk.sekuloski.success.fragments
 
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,7 @@ import mk.sekuloski.success.adapter.SubscriptionAdapter
 import mk.sekuloski.success.data.remote.FinancesService
 import mk.sekuloski.success.databinding.FragmentMonthBinding
 import mk.sekuloski.success.data.remote.dto.Month
+import mk.sekuloski.success.utils.CustomPieChartRenderer
 import mk.sekuloski.success.utils.ValuesFormatter
 
 const val openedRecyclerViewHeight = 480
@@ -34,7 +36,7 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
     private val month: Month = _month
     private val name: String = _name
     private val client: FinancesService = _client
-    lateinit var pieChart: PieChart
+    private lateinit var pieChart: PieChart
     private lateinit var fullNormalAdapter: PaymentAdapter
     private lateinit var fullSixMonthAdapter: PaymentAdapter
     private lateinit var fullThreeMonthAdapter: PaymentAdapter
@@ -53,11 +55,6 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        pieChart = binding.pieChart
-        pieChart.setNoDataText("Loading...")
-        pieChart.setNoDataTextColor(R.color.white)
-        pieChart.invalidate()
 
         val normalPaymentsRecyclerView = binding.rvPayments
         val sixMonthPaymentsRecyclerView = binding.rvSixMonthPayments
@@ -177,15 +174,26 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
     }
 
     private fun initPie() {
+        pieChart = binding.pieChart
+        pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler)
+        pieChart.setNoDataText("Loading...")
+        pieChart.setNoDataTextColor(R.color.md_theme_dark_onPrimaryContainer)
+
         pieChart.description.isEnabled = false
-        pieChart.setExtraOffsets(5f, 10f, 5f, 5f)
+        pieChart.setExtraOffsets(60f, 60f, 60f, 60f)
+
         pieChart.dragDecelerationFrictionCoef = 0.95f
 
         pieChart.isDrawHoleEnabled = true
-        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_secondaryContainer) }
+        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_background) }
             ?.let { pieChart.setHoleColor(it) }
-        pieChart.holeRadius = 25f
-        pieChart.transparentCircleRadius = 25f
+        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_background) }
+            ?.let { pieChart.setTransparentCircleColor(it) }
+        pieChart.setTransparentCircleAlpha(110)
+
+        pieChart.transparentCircleRadius = 62f
+        pieChart.holeRadius = 50f
+
         pieChart.setDrawCenterText(true)
         pieChart.rotationAngle = 0f
         pieChart.isRotationEnabled = true
@@ -194,8 +202,10 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
         pieChart.animateY(1400, Easing.EaseInOutQuad)
 
         pieChart.legend.isEnabled = false
-        pieChart.setEntryLabelColor(Color.BLACK)
-        pieChart.setEntryLabelTextSize(14f)
+        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_onPrimaryContainer) }
+            ?.let { pieChart.setEntryLabelColor(it) }
+        pieChart.setEntryLabelTextSize(16f)
+        pieChart.setEntryLabelTypeface(Typeface.DEFAULT_BOLD)
         pieChart.highlightValues(null)
 
         pieChart.invalidate()
@@ -242,25 +252,25 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
         dataSet.iconsOffset = MPPointF(0f, 40f)
         dataSet.selectionShift = 5f
 
-        // add a lot of colors
-        val colors = ArrayList<Int>()
-        for (c in ColorTemplate.VORDIPLOM_COLORS) colors.add(c)
-        for (c in ColorTemplate.JOYFUL_COLORS) colors.add(c)
-        for (c in ColorTemplate.COLORFUL_COLORS) colors.add(c)
-        for (c in ColorTemplate.LIBERTY_COLORS) colors.add(c)
-        for (c in ColorTemplate.PASTEL_COLORS) colors.add(c)
-        colors.add(ColorTemplate.getHoloBlue())
-        dataSet.colors = colors
+        dataSet.colors = ColorTemplate.MATERIAL_COLORS.asList()
         dataSet.selectionShift = 0f
         val data = PieData(dataSet)
+
+        dataSet.xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
+        dataSet.yValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
+        dataSet.valueLinePart1OffsetPercentage = 100f
+        dataSet.valueLinePart1Length = 1.2f
+        dataSet.valueLinePart2Length = 0f
+        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_onPrimaryContainer) }
+            ?.let { dataSet.valueTextColor = it}
+        dataSet.valueTypeface = Typeface.DEFAULT_BOLD
+        dataSet.valueLineColor = ColorTemplate.COLOR_NONE
 
 //        data.setValueFormatter(PercentFormatter())
         data.setValueFormatter(ValuesFormatter())
         data.setValueTextSize(18f)
-        context?.let { ContextCompat.getColor(it, R.color.black) }
-            ?.let { data.setValueTextColor(it)}
-        pieChart.data = data
 
+        pieChart.data = data
         // undo all highlights
         pieChart.highlightValues(null)
         pieChart.invalidate()
