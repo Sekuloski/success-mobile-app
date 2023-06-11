@@ -14,5 +14,6 @@ data class Subscription (
     val necessary: Boolean = false,
     val expense_type: Int,
     val active: Boolean,
+    val hypothetical: Boolean,
     val history: JsonObject
     )
