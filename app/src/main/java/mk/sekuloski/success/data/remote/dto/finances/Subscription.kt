@@ -1,4 +1,4 @@
-package mk.sekuloski.success.data.remote.dto
+package mk.sekuloski.success.data.remote.dto.finances
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject

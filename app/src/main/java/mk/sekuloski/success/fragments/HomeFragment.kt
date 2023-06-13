@@ -22,7 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mk.sekuloski.success.R
-import mk.sekuloski.success.data.remote.FinancesService
+import mk.sekuloski.success.data.remote.services.FinancesService
 import mk.sekuloski.success.databinding.FragmentHomeBinding
 import mk.sekuloski.success.utils.CustomPieChartRenderer
 import mk.sekuloski.success.utils.ValuesFormatter

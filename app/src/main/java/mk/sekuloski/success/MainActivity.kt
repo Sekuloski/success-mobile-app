@@ -3,12 +3,11 @@ package mk.sekuloski.success
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import mk.sekuloski.success.data.remote.FinancesService
+import mk.sekuloski.success.data.remote.services.FinancesService
 import mk.sekuloski.success.databinding.ActivityMainBinding
-import mk.sekuloski.success.fragments.FinancesFragment
+import mk.sekuloski.success.fragments.finances.FinancesFragment
 import mk.sekuloski.success.fragments.HomeFragment
-import mk.sekuloski.success.fragments.WorkoutsFragment
-import mk.sekuloski.success.data.remote.dto.Month
+import mk.sekuloski.success.fragments.workouts.WorkoutsFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

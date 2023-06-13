@@ -1,4 +1,4 @@
-package mk.sekuloski.success.fragments
+package mk.sekuloski.success.fragments.finances
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -13,11 +13,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mk.sekuloski.success.*
-import mk.sekuloski.success.adapter.MonthAdapter
-import mk.sekuloski.success.data.remote.FinancesService
-import mk.sekuloski.success.data.remote.dto.Location
+import mk.sekuloski.success.adapter.finances.MonthAdapter
+import mk.sekuloski.success.data.remote.services.FinancesService
+import mk.sekuloski.success.data.remote.dto.finances.Location
 import mk.sekuloski.success.databinding.FragmentFinancesBinding
-import mk.sekuloski.success.data.remote.dto.Month
+import mk.sekuloski.success.data.remote.dto.finances.Month
 
 class FinancesFragment(_client: FinancesService) : Fragment(R.layout.fragment_finances), CoroutineScope by MainScope() {
     private var _binding: FragmentFinancesBinding? = null

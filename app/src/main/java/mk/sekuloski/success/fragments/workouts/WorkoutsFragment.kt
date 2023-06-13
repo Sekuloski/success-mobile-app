@@ -1,4 +1,4 @@
-package mk.sekuloski.success.fragments
+package mk.sekuloski.success.fragments.workouts
 
 import androidx.fragment.app.Fragment
 import mk.sekuloski.success.R

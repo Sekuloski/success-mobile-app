@@ -1,4 +1,4 @@
-package mk.sekuloski.success.data.remote
+package mk.sekuloski.success.data.remote.services
 
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -8,7 +8,12 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
-import mk.sekuloski.success.data.remote.dto.*
+import mk.sekuloski.success.data.remote.dto.finances.FinancesMain
+import mk.sekuloski.success.data.remote.dto.finances.Location
+import mk.sekuloski.success.data.remote.dto.finances.Month
+import mk.sekuloski.success.data.remote.dto.finances.Payment
+import mk.sekuloski.success.data.remote.dto.finances.PaymentRequest
+import mk.sekuloski.success.data.remote.dto.finances.Subscription
 
 class FinancesServiceImpl(
     private val client: HttpClient
@@ -21,7 +26,7 @@ class FinancesServiceImpl(
             body["ids"] = ids
 
             client.post {
-                url(HttpRoutes.PAYMENTS)
+                url(FinanceApiRoutes.PAYMENTS)
                 contentType(ContentType.Application.Json)
                 setBody(JsonObject(body))
             }.body()
@@ -49,7 +54,7 @@ class FinancesServiceImpl(
             body["ids"] = ids
 
             client.post {
-                url(HttpRoutes.SUBSCRIPTIONS)
+                url(FinanceApiRoutes.SUBSCRIPTIONS)
                 contentType(ContentType.Application.Json)
                 setBody(JsonObject(body))
             }.body()
@@ -78,7 +83,7 @@ class FinancesServiceImpl(
 
         return try {
             client.post {
-                url(HttpRoutes.MONTHS)
+                url(FinanceApiRoutes.MONTHS)
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }.body()
@@ -103,7 +108,7 @@ class FinancesServiceImpl(
     override suspend fun getMainInfo(): FinancesMain? {
         return try {
             client.get {
-                url(HttpRoutes.MAIN)
+                url(FinanceApiRoutes.MAIN)
             }.body()
         } catch(e: RedirectResponseException) {
             // 3xx - responses
@@ -126,7 +131,7 @@ class FinancesServiceImpl(
     override suspend fun getLocations(): ArrayList<Location> {
         return try {
             client.get {
-                url(HttpRoutes.LOCATIONS)
+                url(FinanceApiRoutes.LOCATIONS)
             }.body()
         } catch(e: RedirectResponseException) {
             // 3xx - responses
@@ -149,7 +154,7 @@ class FinancesServiceImpl(
     override suspend fun addPayment(paymentRequest: PaymentRequest): String {
         return try {
             client.post {
-                url(HttpRoutes.ADD_PAYMENT)
+                url(FinanceApiRoutes.ADD_PAYMENT)
                 contentType(ContentType.Application.Json)
                 setBody(paymentRequest)
             }.body()
@@ -177,7 +182,7 @@ class FinancesServiceImpl(
 
         return try {
             client.post{
-                url(HttpRoutes.ADD_SALARY)
+                url(FinanceApiRoutes.ADD_SALARY)
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }.body()
@@ -201,7 +206,7 @@ class FinancesServiceImpl(
     override suspend fun getSalaryInfo(): Boolean {
         return try {
             client.get {
-                url(HttpRoutes.SALARY)
+                url(FinanceApiRoutes.SALARY)
             }.bodyAsText() == "True"
         } catch(e: RedirectResponseException) {
             // 3xx - responses

@@ -1,4 +1,4 @@
-package mk.sekuloski.success.adapter
+package mk.sekuloski.success.adapter.finances
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import mk.sekuloski.success.R
-import mk.sekuloski.success.data.remote.dto.Subscription
+import mk.sekuloski.success.data.remote.dto.finances.Subscription
 
 class SubscriptionAdapter(
     private val context: Context,

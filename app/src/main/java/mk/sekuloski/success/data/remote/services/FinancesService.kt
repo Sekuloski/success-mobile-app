@@ -1,4 +1,4 @@
-package mk.sekuloski.success.data.remote
+package mk.sekuloski.success.data.remote.services
 
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
@@ -9,7 +9,12 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
-import mk.sekuloski.success.data.remote.dto.*
+import mk.sekuloski.success.data.remote.dto.finances.FinancesMain
+import mk.sekuloski.success.data.remote.dto.finances.Location
+import mk.sekuloski.success.data.remote.dto.finances.Month
+import mk.sekuloski.success.data.remote.dto.finances.Payment
+import mk.sekuloski.success.data.remote.dto.finances.PaymentRequest
+import mk.sekuloski.success.data.remote.dto.finances.Subscription
 
 interface FinancesService {
 

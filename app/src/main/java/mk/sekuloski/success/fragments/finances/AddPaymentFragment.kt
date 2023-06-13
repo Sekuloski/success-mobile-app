@@ -1,4 +1,4 @@
-package mk.sekuloski.success.fragments
+package mk.sekuloski.success.fragments.finances
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -16,9 +16,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mk.sekuloski.success.*
-import mk.sekuloski.success.data.remote.FinancesService
-import mk.sekuloski.success.data.remote.dto.ExpenseType
-import mk.sekuloski.success.data.remote.dto.PaymentRequest
+import mk.sekuloski.success.data.remote.services.FinancesService
+import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
+import mk.sekuloski.success.data.remote.dto.finances.PaymentRequest
 import mk.sekuloski.success.databinding.FragmentAddPaymentBinding
 import java.text.SimpleDateFormat
 import java.time.ZonedDateTime

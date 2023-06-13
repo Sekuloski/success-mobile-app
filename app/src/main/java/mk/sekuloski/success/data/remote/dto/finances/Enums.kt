@@ -1,4 +1,4 @@
-package mk.sekuloski.success.data.remote.dto
+package mk.sekuloski.success.data.remote.dto.finances
 
 enum class ExpenseType {
     BILL, GAMING_GEAR, MUSIC_GEAR, SPORTS_GEAR, CLOTHES, TAKEAWAY_FOOD, TRAVEL,
@@ -6,6 +6,6 @@ enum class ExpenseType {
     DEBT, MEDICAL
 }
 
-enum class PaymentType {
-    SINGLE_PAYMENT, THREE_MONTHS, SIX_MONTHS, CREDIT
-}
+//enum class PaymentType {
+//    SINGLE_PAYMENT, THREE_MONTHS, SIX_MONTHS, CREDIT
+//}

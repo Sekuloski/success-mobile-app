@@ -1,14 +1,14 @@
-package mk.sekuloski.success.adapter
+package mk.sekuloski.success.adapter.finances
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import mk.sekuloski.success.MainActivity
-import mk.sekuloski.success.data.remote.FinancesService
+import mk.sekuloski.success.data.remote.services.FinancesService
 import mk.sekuloski.success.databinding.ListMonthBinding
-import mk.sekuloski.success.fragments.MonthFragment
-import mk.sekuloski.success.data.remote.dto.Month
+import mk.sekuloski.success.fragments.finances.MonthFragment
+import mk.sekuloski.success.data.remote.dto.finances.Month
 
 
 class MonthAdapter(

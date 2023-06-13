@@ -1,4 +1,4 @@
-package mk.sekuloski.success.fragments
+package mk.sekuloski.success.fragments.finances
 
 import android.annotation.SuppressLint
 import android.graphics.Color
@@ -20,11 +20,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mk.sekuloski.success.*
-import mk.sekuloski.success.adapter.PaymentAdapter
-import mk.sekuloski.success.adapter.SubscriptionAdapter
-import mk.sekuloski.success.data.remote.FinancesService
+import mk.sekuloski.success.adapter.finances.PaymentAdapter
+import mk.sekuloski.success.adapter.finances.SubscriptionAdapter
+import mk.sekuloski.success.data.remote.services.FinancesService
 import mk.sekuloski.success.databinding.FragmentMonthBinding
-import mk.sekuloski.success.data.remote.dto.Month
+import mk.sekuloski.success.data.remote.dto.finances.Month
 import mk.sekuloski.success.utils.CustomPieChartRenderer
 import mk.sekuloski.success.utils.ValuesFormatter
 

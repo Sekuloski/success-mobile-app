@@ -1,4 +1,4 @@
-package mk.sekuloski.success.adapter
+package mk.sekuloski.success.adapter.finances
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import mk.sekuloski.success.data.remote.dto.Payment
+import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.R
 
 class PaymentAdapter(
@@ -14,7 +14,7 @@ class PaymentAdapter(
     private val dataset: List<Payment>
     ) : RecyclerView.Adapter<PaymentAdapter.PaymentViewHolder>() {
 
-    class PaymentViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+    class PaymentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val paymentName: TextView = view.findViewById(R.id.payment_name)
         val paymentAmount: TextView = view.findViewById(R.id.payment_amount)
 
