@@ -9,8 +9,8 @@ fun getWorkouts(): List<Workout>
     pullUp.next_progression = weightedPullUp
     pushUp.next_progression = weightedPushUp
 
-    val workout1 = Workout(listOf(pullUp, weightedPullUp, pushUp, weightedPushUp), listOf(0, 2, 4))
-    val workout2 = Workout(listOf(pullUp, weightedPullUp, pushUp, weightedPushUp), listOf(1, 3, 5))
+    val workout1 = Workout("Full Body 1", listOf(pullUp, weightedPullUp, pushUp, weightedPushUp), listOf(0, 2, 4))
+    val workout2 = Workout("Full Body 2", listOf(pullUp, weightedPullUp, pushUp, weightedPushUp), listOf(1, 3, 5))
 
     return listOf(workout1, workout2)
 }
