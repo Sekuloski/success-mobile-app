@@ -6,6 +6,7 @@ import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
+import io.ktor.util.Hash
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import mk.sekuloski.success.data.remote.dto.finances.FinancesMain
@@ -200,6 +201,35 @@ class FinancesServiceImpl(
             e.message
         } catch(e: Exception) {
             "Something went wrong!"
+        }
+    }
+
+    override suspend fun deletePayment(id: Int, cash: Boolean): String {
+        try {
+            val body = HashMap<String, Any>()
+            body["id"] = id
+//            body["cash"] = cash
+            val response: String = client.delete {
+                url(FinanceApiRoutes.DELETE_PAYMENT)
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }.body()
+            return response
+        } catch(e: RedirectResponseException) {
+            // 3xx - responses
+            println("3xx Error: ${e.response.status.description}")
+            return "3xx Error: ${e.response.status.description}"
+        } catch(e: ClientRequestException) {
+            // 4xx - responses
+            println("4xx Error: ${e.response.status.description}")
+            return "4xx Error: ${e.response.status.description}"
+        } catch(e: ServerResponseException) {
+            // 5xx - responses
+            println("5xx Error: ${e.response.status.description}")
+            return "5xx Error: ${e.response.status.description}"
+        } catch(e: Exception) {
+            println(e.message)
+            return ""
         }
     }
 

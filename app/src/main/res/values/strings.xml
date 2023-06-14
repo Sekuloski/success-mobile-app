@@ -28,4 +28,9 @@
     <string name="enter_water_bill">Enter Water Bill</string>
     <string name="enter_power_bill">Enter Power Bill</string>
     <string name="start_workout">Start Workout</string>
+    <string name="pay_payment">Pay Payment</string>
+    <string name="delete">DELETE</string>
+    <string name="paid">Paid</string>
+    <string name="date">Date</string>
+    <string name="cost">Cost</string>
 </resources>

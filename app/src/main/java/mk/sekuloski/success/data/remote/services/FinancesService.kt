@@ -34,6 +34,8 @@ interface FinancesService {
 
     suspend fun addSalary(water: Int, power: Int): String
 
+    suspend fun deletePayment(id: Int, cash: Boolean): String
+
     companion object {
         fun create(): FinancesService {
             return FinancesServiceImpl(
