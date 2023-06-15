@@ -46,6 +46,7 @@ class PaymentFragment(_payment: Payment) : Fragment(R.layout.fragment_payment), 
         binding.tvPaymentCost.text = payment.amount.toString()
         binding.tvPaymentDate.text = payment.date.toString()
         binding.tvPaymentPaid.text = payment.paid.toString()
+        binding.tvPaymentMonthly.text = payment.monthly.toString()
         if (payment.monthly)
         {
             launch {
@@ -66,6 +67,8 @@ class PaymentFragment(_payment: Payment) : Fragment(R.layout.fragment_payment), 
                 }
                 catch (e: java.lang.NumberFormatException)
                 {
+                    payments = listOf(payment)
+                    payment.monthly = false
                     val toast = Toast(view.context)
                     toast.setText("Not a valid monthly payment!")
                     toast.show()

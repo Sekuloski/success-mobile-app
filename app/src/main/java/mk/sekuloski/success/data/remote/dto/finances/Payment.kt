@@ -15,7 +15,7 @@ data class Payment (
     val expense_type: Int,
     val payment_type: Int,
     val paid: Boolean = false,
-    val monthly: Boolean = false,
+    var monthly: Boolean = false,
     val location: String,
     val parts: JsonObject
     )
