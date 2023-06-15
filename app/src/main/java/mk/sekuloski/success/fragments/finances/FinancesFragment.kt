@@ -24,7 +24,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mk.sekuloski.success.*
 import mk.sekuloski.success.adapter.finances.MonthAdapter
-import mk.sekuloski.success.data.remote.dto.finances.FinancesMain
 import mk.sekuloski.success.data.remote.services.FinancesService
 import mk.sekuloski.success.data.remote.dto.finances.Location
 import mk.sekuloski.success.databinding.FragmentFinancesBinding

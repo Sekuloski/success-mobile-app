@@ -1,11 +1,14 @@
 package mk.sekuloski.success.fragments.finances
 
+import android.app.AlertDialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -25,6 +28,7 @@ class PaymentFragment(_payment: Payment) : Fragment(R.layout.fragment_payment), 
     private val binding get() = _binding!!
     private val payment = _payment
     private val client = FinancesService.create()
+    private lateinit var payments: List<Payment>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,14 +46,6 @@ class PaymentFragment(_payment: Payment) : Fragment(R.layout.fragment_payment), 
         binding.tvPaymentCost.text = payment.amount.toString()
         binding.tvPaymentDate.text = payment.date.toString()
         binding.tvPaymentPaid.text = payment.paid.toString()
-        binding.btnDelete.setOnClickListener {
-            launch {
-                val toast = Toast(context)
-                toast.setText(client.deletePayment(payment.id, false))
-                toast.show()
-                parentFragmentManager.popBackStack()
-            }
-        }
         if (payment.monthly)
         {
             launch {
@@ -61,7 +57,8 @@ class PaymentFragment(_payment: Payment) : Fragment(R.layout.fragment_payment), 
                     val array = ArrayList<JsonElement>()
                     for (i in 0 until parts[1].toInt()) array.add(JsonPrimitive(startId + i))
                     val paymentIds = JsonArray(array)
-                    val adapter = PaymentAdapter(view.context, client.getPayments(paymentIds))
+                    payments = client.getPayments(paymentIds)
+                    val adapter = PaymentAdapter(view.context, payments)
 
                     val monthlyPaymentsRecyclerView = binding.rvMonthlyPayments
                     monthlyPaymentsRecyclerView.adapter = adapter
@@ -74,6 +71,46 @@ class PaymentFragment(_payment: Payment) : Fragment(R.layout.fragment_payment), 
                     toast.show()
                 }
             }
+        }
+
+        binding.btnDelete.setOnClickListener {
+            val dialogLayout = layoutInflater.inflate(R.layout.delete_dialog, null)
+            val adapter = if (payment.monthly) {
+                ArrayAdapter(
+                    view.context,
+                    R.layout.list_payment_name,
+                    payments.map { individual_payment -> individual_payment.name }
+                )
+            } else {
+                ArrayAdapter(view.context, R.layout.list_payment_name, listOf(payment.name))
+            }
+
+            val listView = dialogLayout.findViewById<ListView>(R.id.lvPayments)
+            listView.adapter = adapter
+
+            AlertDialog.Builder(it.context)
+                .setTitle("Deleting Payments")
+                .setPositiveButton("Yes") { _, _ ->
+                    launch {
+                        val toast = Toast(context)
+                        if (payment.monthly)
+                        {
+
+                            toast.setText(client.deleteMonthlyPayment(payment.name.split(" ").dropLast(1).joinToString(" ")))
+                        }
+                        else
+                        {
+                            toast.setText(client.deletePayment(payment.id, false))
+                        }
+                        toast.show()
+                        parentFragmentManager.popBackStack()
+                    }
+                }
+                .setNegativeButton("Cancel") {_, _ ->
+                    println("Cancelled")
+                }
+                .setView(dialogLayout)
+                .show()
         }
     }
 }

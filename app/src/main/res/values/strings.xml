@@ -40,4 +40,5 @@
     <string name="add_icon">Add Icon</string>
     <string name="remove_icon">Remove Icon</string>
     <string name="exercise">Exercise</string>
+    <string name="delete_confirmation">Are you sure you want to delete these payments?</string>
 </resources>
