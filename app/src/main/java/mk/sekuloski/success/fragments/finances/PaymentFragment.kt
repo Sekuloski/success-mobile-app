@@ -9,11 +9,14 @@ import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
 import mk.sekuloski.success.MainActivity
 import mk.sekuloski.success.R
+import mk.sekuloski.success.adapter.finances.PaymentAdapter
 import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.data.remote.services.FinancesService
-import mk.sekuloski.success.databinding.FragmentMonthBinding
 import mk.sekuloski.success.databinding.FragmentPaymentBinding
 
 
@@ -42,9 +45,34 @@ class PaymentFragment(_payment: Payment) : Fragment(R.layout.fragment_payment), 
         binding.btnDelete.setOnClickListener {
             launch {
                 val toast = Toast(context)
-                toast.setText(client.deletePayment(payment.id, false).toString())
+                toast.setText(client.deletePayment(payment.id, false))
                 toast.show()
                 parentFragmentManager.popBackStack()
+            }
+        }
+        if (payment.monthly)
+        {
+            launch {
+                try
+                {
+                    val id = payment.id
+                    val parts = payment.name.split(" ").last().split("/")
+                    val startId = id + 1 - parts[0].toInt()
+                    val array = ArrayList<JsonElement>()
+                    for (i in 0 until parts[1].toInt()) array.add(JsonPrimitive(startId + i))
+                    val paymentIds = JsonArray(array)
+                    val adapter = PaymentAdapter(view.context, client.getPayments(paymentIds))
+
+                    val monthlyPaymentsRecyclerView = binding.rvMonthlyPayments
+                    monthlyPaymentsRecyclerView.adapter = adapter
+                    monthlyPaymentsRecyclerView.setHasFixedSize(true)
+                }
+                catch (e: java.lang.NumberFormatException)
+                {
+                    val toast = Toast(view.context)
+                    toast.setText("Not a valid monthly payment!")
+                    toast.show()
+                }
             }
         }
     }

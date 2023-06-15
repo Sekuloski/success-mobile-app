@@ -33,4 +33,5 @@
     <string name="paid">Paid</string>
     <string name="date">Date</string>
     <string name="cost">Cost</string>
+    <string name="monthly">Monthly</string>
 </resources>
