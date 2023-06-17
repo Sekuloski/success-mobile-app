@@ -7,6 +7,7 @@ object FinanceApiRoutes {
     private const val DEV_BASE_URL = "http://10.0.2.2:8000"
     private val isRunningOnEmulator: Boolean = Build.HARDWARE.contains("ranchu")
     private val BASE_URL = if (isRunningOnEmulator) DEV_BASE_URL else REAL_BASE_URL
+//    private val BASE_URL = if (isRunningOnEmulator) REAL_BASE_URL else DEV_BASE_URL
     val PAYMENTS = "$BASE_URL/payments"
     val ADD_PAYMENT = "$BASE_URL/add/payment"
     val MONTHS = "$BASE_URL/months"

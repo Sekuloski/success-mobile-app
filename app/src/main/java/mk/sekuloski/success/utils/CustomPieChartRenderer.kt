@@ -10,7 +10,7 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.renderer.PieChartRenderer
 import com.github.mikephil.charting.utils.ViewPortHandler
 
-class CustomPieChartRenderer(chart: PieChart?, animator: ChartAnimator?, viewPortHandler: ViewPortHandler?, colors: HashMap<String, Int>) : PieChartRenderer(chart, animator, viewPortHandler) {
+class CustomPieChartRenderer(chart: PieChart?, animator: ChartAnimator?, viewPortHandler: ViewPortHandler?, colors: MutableMap<String, Int>) : PieChartRenderer(chart, animator, viewPortHandler) {
 
     private var mHasLabelData = false
     private var mHasValueData = false
@@ -19,7 +19,7 @@ class CustomPieChartRenderer(chart: PieChart?, animator: ChartAnimator?, viewPor
     private var mEntryLabel: String = ""
     private var mValueText: String = ""
     private var mEntryLabelX = 0f
-    private var mColors: HashMap<String, Int> = colors
+    private var mColors: MutableMap<String, Int> = colors
     private var mValueX = 0f
     private var mEntryLabelY = 0f
     private var mValueY = 0f

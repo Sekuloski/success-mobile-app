@@ -8,7 +8,7 @@ data class Month(
     val left: Int,
     val expenses: Int,
     var name: String,
-    val gaming_gear: Int,
+    val football: Int,
     val music_gear: Int,
     val sports_gear: Int,
     val takeaway_food: Int,
