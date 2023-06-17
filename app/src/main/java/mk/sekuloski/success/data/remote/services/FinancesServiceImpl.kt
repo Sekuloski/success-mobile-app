@@ -49,30 +49,77 @@ class FinancesServiceImpl(
         }
     }
 
-    override suspend fun getSubscriptions(ids: JsonArray): ArrayList<Subscription> {
+    override suspend fun getMonthPayments(month: Int, year: Int): List<Payment> {
         return try {
-            val body = HashMap<String, JsonArray>()
-            body["ids"] = ids
+            val body = HashMap<String, Int>()
+            if (month != -1)
+            {
+                body["month"] = month
+            }
+            if (year != -1)
+            {
+                body["year"] = year
+            }
 
             client.post {
-                url(FinanceApiRoutes.SUBSCRIPTIONS)
+                url(FinanceApiRoutes.MONTH_PAYMENTS)
                 contentType(ContentType.Application.Json)
-                setBody(JsonObject(body))
+                if (body.isNotEmpty()) setBody(body)
             }.body()
         } catch(e: RedirectResponseException) {
             // 3xx - responses
             println("Error: ${e.response.status.description}")
-            ArrayList()
+            emptyList()
         } catch(e: ClientRequestException) {
             // 4xx - responses
             println("Error: ${e.response.status.description}")
-            ArrayList()
+            emptyList()
         } catch(e: ServerResponseException) {
             // 5xx - responses
             println("Error: ${e.response.status.description}")
-            ArrayList()
+            emptyList()
         } catch(e: Exception) {
             println("Error: ${e.message}")
+            emptyList()
+        }
+    }
+
+    override suspend fun getSubscriptions(ids: JsonArray?): ArrayList<Subscription> {
+        return try {
+            val body = HashMap<String, JsonArray>()
+            val response: ArrayList<Subscription>
+            if (!ids.isNullOrEmpty())
+            {
+                body["ids"] = ids
+                response = client.post {
+                    url(FinanceApiRoutes.SUBSCRIPTIONS)
+                    contentType(ContentType.Application.Json)
+                    setBody(JsonObject(body))
+                }.body()
+            }
+            else
+            {
+                response = client.get {
+                    url(FinanceApiRoutes.SUBSCRIPTIONS)
+                    contentType(ContentType.Application.Json)
+                }.body()
+            }
+            response
+
+        } catch(e: RedirectResponseException) {
+            // 3xx - responses
+            Log.e("Finances Service", "Error: ${e.response.status.description}")
+            ArrayList()
+        } catch(e: ClientRequestException) {
+            // 4xx - responses
+            Log.e("Finances Service", "Error: ${e.response.status.description}")
+            ArrayList()
+        } catch(e: ServerResponseException) {
+            // 5xx - responses
+            Log.e("Finances Service", "Error: ${e.response.status.description}")
+            ArrayList()
+        } catch(e: Exception) {
+            Log.e("Finances Service", "Error: ${e.message}")
             ArrayList()
         }
     }

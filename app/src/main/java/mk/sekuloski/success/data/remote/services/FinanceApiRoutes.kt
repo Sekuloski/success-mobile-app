@@ -9,6 +9,7 @@ object FinanceApiRoutes {
     private val BASE_URL = if (isRunningOnEmulator) DEV_BASE_URL else REAL_BASE_URL
 //    private val BASE_URL = if (isRunningOnEmulator) REAL_BASE_URL else DEV_BASE_URL
     val PAYMENTS = "$BASE_URL/payments"
+    val MONTH_PAYMENTS = "$BASE_URL/payments/month"
     val ADD_PAYMENT = "$BASE_URL/add/payment"
     val MONTHS = "$BASE_URL/months"
     val SUBSCRIPTIONS = "$BASE_URL/subscriptions"
