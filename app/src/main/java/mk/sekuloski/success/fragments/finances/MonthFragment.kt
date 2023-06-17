@@ -1,7 +1,5 @@
 package mk.sekuloski.success.fragments.finances
 
-import android.annotation.SuppressLint
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,11 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.utils.ColorTemplate
-import com.github.mikephil.charting.utils.MPPointF
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -26,7 +19,7 @@ import mk.sekuloski.success.data.remote.services.FinancesService
 import mk.sekuloski.success.databinding.FragmentMonthBinding
 import mk.sekuloski.success.data.remote.dto.finances.Month
 import mk.sekuloski.success.utils.CustomPieChartRenderer
-import mk.sekuloski.success.utils.ValuesFormatter
+import mk.sekuloski.success.utils.setData
 
 const val openedRecyclerViewHeight = 480
 const val closedRecyclerViewHeight = 40
@@ -43,7 +36,6 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
     private lateinit var fullLoanAdapter: PaymentAdapter
     private lateinit var fullSubscriptionAdapter: SubscriptionAdapter
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,9 +45,53 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
         return binding.root
     }
 
-    @SuppressLint("SetTextI18n")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun initPie(
+        groceries: Int,
+        takeaway_food: Int,
+        football: Int,
+        hanging_out: Int,
+        music_gear: Int,
+        sports_gear: Int
+    ) {
+        pieChart = binding.pieChart
+
+        val colors = setData(pieChart, groceries, takeaway_food, football, hanging_out, music_gear, sports_gear)
+        pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler, colors)
+
+        pieChart.description.isEnabled = false
+        pieChart.setExtraOffsets(60f, 60f, 60f, 60f)
+
+        pieChart.dragDecelerationFrictionCoef = 0.95f
+
+        pieChart.isDrawHoleEnabled = true
+        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_background) }
+            ?.let { pieChart.setHoleColor(it) }
+        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_background) }
+            ?.let { pieChart.setTransparentCircleColor(it) }
+        pieChart.setTransparentCircleAlpha(110)
+
+        pieChart.transparentCircleRadius = 62f
+        pieChart.holeRadius = 50f
+
+        pieChart.setDrawCenterText(true)
+        pieChart.rotationAngle = 0f
+        pieChart.isRotationEnabled = true
+        pieChart.isHighlightPerTapEnabled = true
+
+        pieChart.animateY(1400, Easing.EaseInOutQuad)
+
+        pieChart.legend.isEnabled = false
+        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_onPrimaryContainer) }
+            ?.let { pieChart.setEntryLabelColor(it) }
+        pieChart.setEntryLabelTextSize(16f)
+        pieChart.setEntryLabelTypeface(Typeface.DEFAULT_BOLD)
+        pieChart.highlightValues(null)
+
+        pieChart.invalidate()
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         val normalPaymentsRecyclerView = binding.rvPayments
         val sixMonthPaymentsRecyclerView = binding.rvSixMonthPayments
@@ -65,7 +101,7 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
 
         binding.monthName.text = name
 
-        val emptyAdapter = PaymentAdapter(view.context, ArrayList())
+        val emptyAdapter = PaymentAdapter(requireContext(), ArrayList())
         normalPaymentsRecyclerView.adapter = emptyAdapter
         normalPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
         normalPaymentsRecyclerView.setHasFixedSize(true)
@@ -88,11 +124,11 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
 
 
         launch {
-            fullNormalAdapter = PaymentAdapter(view.context, client.getPayments(month.normal_ids))
-            fullSixMonthAdapter = PaymentAdapter(view.context, client.getPayments(month.six_month_ids))
-            fullThreeMonthAdapter = PaymentAdapter(view.context, client.getPayments(month.three_month_ids))
-            fullLoanAdapter = PaymentAdapter(view.context, client.getPayments(month.loan_ids))
-            fullSubscriptionAdapter = SubscriptionAdapter(view.context, client.getSubscriptions(month.subscription_ids))
+            fullNormalAdapter = PaymentAdapter(requireContext(), client.getPayments(month.normal_ids))
+            fullSixMonthAdapter = PaymentAdapter(requireContext(), client.getPayments(month.six_month_ids))
+            fullThreeMonthAdapter = PaymentAdapter(requireContext(), client.getPayments(month.three_month_ids))
+            fullLoanAdapter = PaymentAdapter(requireContext(), client.getPayments(month.loan_ids))
+            fullSubscriptionAdapter = SubscriptionAdapter(requireContext(), client.getSubscriptions(month.subscription_ids))
 
             binding.amountLeft.text = month.left.toString()
             binding.expensesAmount.text = month.expenses.toString()
@@ -105,7 +141,7 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
             initPie(
                 month.groceries,
                 month.takeaway_food,
-                month.gaming_gear,
+                month.football,
                 month.hanging_out,
                 month.music_gear,
                 month.sports_gear
@@ -171,124 +207,6 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
                 }
             }
         }
-    }
-
-    private fun initPie(
-        groceries: Int,
-        takeaway_food: Int,
-        gaming_gear: Int,
-        hanging_out: Int,
-        music_gear: Int,
-        sports_gear: Int
-    ) {
-        pieChart = binding.pieChart
-
-        val colors = setData(groceries, takeaway_food, gaming_gear, hanging_out, music_gear, sports_gear)
-        pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler, colors)
-
-        pieChart.description.isEnabled = false
-        pieChart.setExtraOffsets(60f, 60f, 60f, 60f)
-
-        pieChart.dragDecelerationFrictionCoef = 0.95f
-
-        pieChart.isDrawHoleEnabled = true
-        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_background) }
-            ?.let { pieChart.setHoleColor(it) }
-        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_background) }
-            ?.let { pieChart.setTransparentCircleColor(it) }
-        pieChart.setTransparentCircleAlpha(110)
-
-        pieChart.transparentCircleRadius = 62f
-        pieChart.holeRadius = 50f
-
-        pieChart.setDrawCenterText(true)
-        pieChart.rotationAngle = 0f
-        pieChart.isRotationEnabled = true
-        pieChart.isHighlightPerTapEnabled = true
-
-        pieChart.animateY(1400, Easing.EaseInOutQuad)
-
-        pieChart.legend.isEnabled = false
-        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_onPrimaryContainer) }
-            ?.let { pieChart.setEntryLabelColor(it) }
-        pieChart.setEntryLabelTextSize(16f)
-        pieChart.setEntryLabelTypeface(Typeface.DEFAULT_BOLD)
-        pieChart.highlightValues(null)
-
-        pieChart.invalidate()
-    }
-
-    private fun setData(
-        groceries: Int,
-        takeaway_food: Int,
-        gaming_gear: Int,
-        hanging_out: Int,
-        music_gear: Int,
-        sports_gear: Int
-    ): HashMap<String, Int> {
-        val entries = ArrayList<PieEntry>()
-        val colors = HashMap<String, Int>()
-
-        if (groceries > 0)
-        {
-            entries.add(PieEntry(groceries.toFloat(), "Groceries"))
-            colors["Groceries"] = Color.parseColor("#4777c0")
-        }
-        if (takeaway_food > 0)
-        {
-            entries.add(PieEntry(takeaway_food.toFloat(), "Takeaway Food"))
-            colors["Takeaway Food"] = Color.parseColor("#a374c6")
-        }
-        if (gaming_gear > 0)
-        {
-            entries.add(PieEntry(gaming_gear.toFloat(), "Gaming Gear"))
-            colors["Gaming Gear"] = Color.parseColor("#4fb3e8")
-        }
-        if (hanging_out > 0)
-        {
-            entries.add(PieEntry(hanging_out.toFloat(), "Hang Outs"))
-            colors["Hang Outs"] = Color.parseColor("#99cf43")
-        }
-        if (music_gear > 0)
-        {
-            entries.add(PieEntry(music_gear.toFloat(), "Music Gear"))
-            colors["Music Gear"] = Color.parseColor("#fdc135")
-        }
-        if (sports_gear > 0)
-        {
-            entries.add(PieEntry(sports_gear.toFloat(), "Sports Gear"))
-            colors["Sports Gear"] = Color.parseColor("#fd9a47")
-        }
-
-        if (entries.size == 0)
-        {
-            return colors
-        }
-
-        val dataSet = PieDataSet(entries, "Expense Types")
-        dataSet.setDrawIcons(false)
-        dataSet.sliceSpace = 4.5f
-        dataSet.iconsOffset = MPPointF(0f, 40f)
-        dataSet.selectionShift = 5f
-
-        dataSet.colors = colors.values.toList()
-        dataSet.setValueTextColors(colors.values.toList())
-        dataSet.selectionShift = 0f
-        val data = PieData(dataSet)
-
-        dataSet.xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
-        dataSet.yValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
-        dataSet.valueLinePart1OffsetPercentage = 100f
-        dataSet.valueLinePart1Length = 1.0f
-        dataSet.valueLinePart2Length = 0f
-        dataSet.valueTypeface = Typeface.DEFAULT_BOLD
-        dataSet.valueLineColor = ColorTemplate.COLOR_NONE
-
-        data.setValueFormatter(ValuesFormatter())
-        data.setValueTextSize(18f)
-
-        pieChart.data = data
-        return colors
     }
 
     override fun onDestroyView() {

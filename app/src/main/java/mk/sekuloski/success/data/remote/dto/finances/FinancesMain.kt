@@ -10,7 +10,7 @@ data class FinancesMain (
     val cash: Int,
     val expenses: Int,
     val reserved: Int,
-    val gaming_gear: Int,
+    val football: Int,
     val music_gear: Int,
     val sports_gear: Int,
     val takeaway_food: Int,
