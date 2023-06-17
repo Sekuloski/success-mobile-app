@@ -15,10 +15,15 @@ import kotlinx.coroutines.launch
 import mk.sekuloski.success.*
 import mk.sekuloski.success.adapter.finances.PaymentAdapter
 import mk.sekuloski.success.adapter.finances.SubscriptionAdapter
+import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
 import mk.sekuloski.success.data.remote.services.FinancesService
 import mk.sekuloski.success.databinding.FragmentMonthBinding
 import mk.sekuloski.success.data.remote.dto.finances.Month
+import mk.sekuloski.success.data.remote.dto.finances.Payment
+import mk.sekuloski.success.data.remote.dto.finances.PaymentType
+import mk.sekuloski.success.data.remote.dto.finances.Subscription
 import mk.sekuloski.success.utils.CustomPieChartRenderer
+import mk.sekuloski.success.utils.initPie
 import mk.sekuloski.success.utils.setData
 
 const val openedRecyclerViewHeight = 480
@@ -43,51 +48,6 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
     ): View {
         _binding = FragmentMonthBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    private fun initPie(
-        groceries: Int,
-        takeaway_food: Int,
-        football: Int,
-        hanging_out: Int,
-        music_gear: Int,
-        sports_gear: Int
-    ) {
-        pieChart = binding.pieChart
-
-        val colors = setData(pieChart, groceries, takeaway_food, football, hanging_out, music_gear, sports_gear)
-        pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler, colors)
-
-        pieChart.description.isEnabled = false
-        pieChart.setExtraOffsets(60f, 60f, 60f, 60f)
-
-        pieChart.dragDecelerationFrictionCoef = 0.95f
-
-        pieChart.isDrawHoleEnabled = true
-        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_background) }
-            ?.let { pieChart.setHoleColor(it) }
-        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_background) }
-            ?.let { pieChart.setTransparentCircleColor(it) }
-        pieChart.setTransparentCircleAlpha(110)
-
-        pieChart.transparentCircleRadius = 62f
-        pieChart.holeRadius = 50f
-
-        pieChart.setDrawCenterText(true)
-        pieChart.rotationAngle = 0f
-        pieChart.isRotationEnabled = true
-        pieChart.isHighlightPerTapEnabled = true
-
-        pieChart.animateY(1400, Easing.EaseInOutQuad)
-
-        pieChart.legend.isEnabled = false
-        context?.let { ContextCompat.getColor(it, R.color.md_theme_dark_onPrimaryContainer) }
-            ?.let { pieChart.setEntryLabelColor(it) }
-        pieChart.setEntryLabelTextSize(16f)
-        pieChart.setEntryLabelTypeface(Typeface.DEFAULT_BOLD)
-        pieChart.highlightValues(null)
-
-        pieChart.invalidate()
     }
 
     override fun onResume() {
@@ -124,27 +84,80 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
 
 
         launch {
-            fullNormalAdapter = PaymentAdapter(requireContext(), client.getPayments(month.normal_ids))
-            fullSixMonthAdapter = PaymentAdapter(requireContext(), client.getPayments(month.six_month_ids))
-            fullThreeMonthAdapter = PaymentAdapter(requireContext(), client.getPayments(month.three_month_ids))
-            fullLoanAdapter = PaymentAdapter(requireContext(), client.getPayments(month.loan_ids))
-            fullSubscriptionAdapter = SubscriptionAdapter(requireContext(), client.getSubscriptions(month.subscription_ids))
+            val payments = client.getMonthPayments(month.id, month.name.split(" ")[1].toInt())
+            val allSubscriptions = client.getSubscriptions()
+            var groceries = 0; var takeawayFood = 0; var football = 0; var hangingOut = 0; var musicGear = 0; var sportsGear = 0; var gamingGear = 0
+            var normalSum = 0; var threeMonthSum = 0; var sixMonthSum = 0; var loanSum = 0; var subscriptionSum = 0
+            val normal = ArrayList<Payment>(); val threeMonth =  ArrayList<Payment>(); val sixMonth = ArrayList<Payment>(); val loan =  ArrayList<Payment>()
+            val activeSubscriptions = ArrayList<Subscription>()
+
+            for (subscription: Subscription in allSubscriptions)
+            {
+                if (subscription.active)
+                {
+                    activeSubscriptions.add(subscription)
+                    subscriptionSum += subscription.amount
+                }
+            }
+
+            for (payment: Payment in payments)
+            {
+                when (payment.expense_type) {
+                    ExpenseType.GROCERIES.ordinal -> groceries += payment.amount
+                    ExpenseType.TAKEAWAY_FOOD.ordinal -> takeawayFood += payment.amount
+                    ExpenseType.FOOTBALL.ordinal -> football += payment.amount
+                    ExpenseType.HANGING_OUT.ordinal -> hangingOut += payment.amount
+                    ExpenseType.MUSIC_GEAR.ordinal -> musicGear += payment.amount
+                    ExpenseType.SPORTS_GEAR.ordinal -> sportsGear += payment.amount
+                    ExpenseType.GAMING_GEAR.ordinal -> gamingGear += payment.amount
+                }
+                when (payment.payment_type) {
+                    PaymentType.SINGLE_PAYMENT.ordinal ->
+                    {
+                        normal.add(payment)
+                        normalSum += payment.amount
+                    }
+                    PaymentType.THREE_MONTHS.ordinal ->
+                    {
+                        threeMonth.add(payment)
+                        threeMonthSum += payment.amount
+                    }
+                    PaymentType.SIX_MONTHS.ordinal ->
+                    {
+                        sixMonth.add(payment)
+                        sixMonthSum += payment.amount
+                    }
+                    PaymentType.LOAN.ordinal ->
+                    {
+                        loan.add(payment)
+                        loanSum += payment.amount
+                    }
+                }
+            }
+            fullNormalAdapter = PaymentAdapter(requireContext(), normal)
+            fullSixMonthAdapter = PaymentAdapter(requireContext(), threeMonth)
+            fullThreeMonthAdapter = PaymentAdapter(requireContext(), sixMonth)
+            fullLoanAdapter = PaymentAdapter(requireContext(), loan)
+            fullSubscriptionAdapter = SubscriptionAdapter(requireContext(), activeSubscriptions)
 
             binding.amountLeft.text = month.left.toString()
             binding.expensesAmount.text = month.expenses.toString()
-            binding.tvNormalSum.text = month.normal_sum.toString()
-            binding.tvSixMonthSum.text = month.six_month_sum.toString()
-            binding.tvThreeMonthSum.text = month.three_month_sum.toString()
-            binding.tvLoansSum.text = month.loan_sum.toString()
-            binding.tvSubscriptionsSum.text = month.subscription_sum.toString()
+            binding.tvNormalSum.text = normalSum.toString()
+            binding.tvSixMonthSum.text = sixMonthSum.toString()
+            binding.tvThreeMonthSum.text = threeMonthSum.toString()
+            binding.tvLoansSum.text = loanSum.toString()
+            binding.tvSubscriptionsSum.text = subscriptionSum.toString()
 
             initPie(
-                month.groceries,
-                month.takeaway_food,
-                month.football,
-                month.hanging_out,
-                month.music_gear,
-                month.sports_gear
+                binding.pieChart,
+                requireContext(),
+                groceries,
+                takeawayFood,
+                football,
+                hangingOut,
+                musicGear,
+                sportsGear,
+                gamingGear
             )
 
             binding.btnShowMoreNormal.setOnClickListener {

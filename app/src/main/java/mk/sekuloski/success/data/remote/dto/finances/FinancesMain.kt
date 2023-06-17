@@ -9,11 +9,5 @@ data class FinancesMain (
     val bank: Int,
     val cash: Int,
     val expenses: Int,
-    val reserved: Int,
-    val football: Int,
-    val music_gear: Int,
-    val sports_gear: Int,
-    val takeaway_food: Int,
-    val hanging_out: Int,
-    val groceries: Int,
+    val reserved: Int
     )

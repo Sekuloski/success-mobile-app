@@ -1,14 +1,64 @@
 package mk.sekuloski.success.utils
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.util.Log
+import androidx.core.content.ContextCompat
+import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.github.mikephil.charting.utils.MPPointF
+import mk.sekuloski.success.R
+
+fun initPie(
+    pieChart: PieChart,
+    context: Context,
+    groceries: Int,
+    takeawayFood: Int,
+    football: Int,
+    hanging_out: Int,
+    musicGear: Int,
+    sportsGear: Int,
+    gamingGear: Int
+) {
+    val colors = setData(pieChart, groceries, takeawayFood, football, hanging_out, musicGear, sportsGear, gamingGear)
+    pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler, colors)
+
+    pieChart.description.isEnabled = false
+    pieChart.setExtraOffsets(60f, 60f, 60f, 60f)
+
+    pieChart.dragDecelerationFrictionCoef = 0.95f
+
+    pieChart.isDrawHoleEnabled = true
+    context.let { ContextCompat.getColor(it, R.color.md_theme_dark_background) }
+           .let { pieChart.setHoleColor(it) }
+    context.let { ContextCompat.getColor(it, R.color.md_theme_dark_background) }
+           .let { pieChart.setTransparentCircleColor(it) }
+    pieChart.setTransparentCircleAlpha(110)
+
+    pieChart.transparentCircleRadius = 62f
+    pieChart.holeRadius = 50f
+
+    pieChart.setDrawCenterText(true)
+    pieChart.rotationAngle = 0f
+    pieChart.isRotationEnabled = true
+    pieChart.isHighlightPerTapEnabled = true
+
+    pieChart.animateY(1400, Easing.EaseInOutQuad)
+
+    pieChart.legend.isEnabled = false
+    context.let { ContextCompat.getColor(it, R.color.md_theme_dark_onPrimaryContainer) }
+           .let { pieChart.setEntryLabelColor(it) }
+    pieChart.setEntryLabelTextSize(16f)
+    pieChart.setEntryLabelTypeface(Typeface.DEFAULT_BOLD)
+    pieChart.highlightValues(null)
+
+    pieChart.invalidate()
+}
 
 fun setData(
     pieChart: PieChart,
@@ -17,7 +67,8 @@ fun setData(
     football: Int,
     hanging_out: Int,
     music_gear: Int,
-    sports_gear: Int
+    sports_gear: Int,
+    gaming_gear: Int
 ): MutableMap<String, Int> {
     val entries = ArrayList<PieEntry>()
     val colors = HashMap<String, Int>()
@@ -28,7 +79,10 @@ fun setData(
         "#99cf43",
         "#a374c6",
         "#fd9a47",
-        "#fdc135")
+        "#fdc135",
+        "#eb6e7a",
+        "#6785c2"
+        )
         .sorted()
         .toMutableList()
 
@@ -74,6 +128,12 @@ fun setData(
     {
         val label = "$counter. Takeaway Food"
         entries.add(PieEntry(takeaway_food.toFloat(), label))
+        colors[label] = Color.parseColor(allColors.removeAt(0))
+    }
+    if (gaming_gear > 0)
+    {
+        val label = "$counter. Gaming Gear"
+        entries.add(PieEntry(gaming_gear.toFloat(), label))
         colors[label] = Color.parseColor(allColors.removeAt(0))
     }
 

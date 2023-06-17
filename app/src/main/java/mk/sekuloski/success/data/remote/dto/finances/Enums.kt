@@ -6,6 +6,6 @@ enum class ExpenseType {
     DEBT, MEDICAL
 }
 
-//enum class PaymentType {
-//    SINGLE_PAYMENT, THREE_MONTHS, SIX_MONTHS, CREDIT
-//}
+enum class PaymentType {
+    SINGLE_PAYMENT, THREE_MONTHS, SIX_MONTHS, LOAN
+}

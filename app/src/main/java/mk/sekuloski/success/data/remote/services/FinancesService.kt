@@ -20,7 +20,9 @@ interface FinancesService {
 
     suspend fun getPayments(ids: JsonArray): List<Payment>
 
-    suspend fun getSubscriptions(ids: JsonArray): ArrayList<Subscription>
+    suspend fun getMonthPayments(month: Int = -1, year: Int = -1): List<Payment>
+
+    suspend fun getSubscriptions(ids: JsonArray? = null): ArrayList<Subscription>
 
     suspend fun getMonths(months: Int = 12, offset: Int = 0): ArrayList<Month>
 
