@@ -19,14 +19,13 @@ import mk.sekuloski.success.MainActivity
 import mk.sekuloski.success.R
 import mk.sekuloski.success.adapter.finances.PaymentAdapter
 import mk.sekuloski.success.data.remote.dto.finances.Payment
-import mk.sekuloski.success.data.remote.services.FinancesService
+import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.databinding.FragmentPaymentBinding
 
 
-class PaymentFragment(_payment: Payment) : Fragment(R.layout.fragment_payment), CoroutineScope by MainScope() {
+class PaymentFragment(private val payment: Payment) : Fragment(R.layout.fragment_payment), CoroutineScope by MainScope() {
     private var _binding: FragmentPaymentBinding? = null
     private val binding get() = _binding!!
-    private val payment = _payment
     private val client = FinancesService.create()
     private lateinit var payments: List<Payment>
 

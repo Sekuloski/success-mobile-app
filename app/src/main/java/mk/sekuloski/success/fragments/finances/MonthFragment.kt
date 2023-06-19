@@ -1,14 +1,10 @@
 package mk.sekuloski.success.fragments.finances
 
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.charts.PieChart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -16,25 +12,19 @@ import mk.sekuloski.success.*
 import mk.sekuloski.success.adapter.finances.PaymentAdapter
 import mk.sekuloski.success.adapter.finances.SubscriptionAdapter
 import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
-import mk.sekuloski.success.data.remote.services.FinancesService
+import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.databinding.FragmentMonthBinding
 import mk.sekuloski.success.data.remote.dto.finances.Month
 import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.data.remote.dto.finances.PaymentType
 import mk.sekuloski.success.data.remote.dto.finances.Subscription
-import mk.sekuloski.success.utils.CustomPieChartRenderer
 import mk.sekuloski.success.utils.initPie
-import mk.sekuloski.success.utils.setData
 
 const val openedRecyclerViewHeight = 480
 const val closedRecyclerViewHeight = 40
-class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fragment(R.layout.fragment_month), CoroutineScope by MainScope() {
+class MonthFragment(private val month: Month, private val client: FinancesService, private val name: String) : Fragment(R.layout.fragment_month), CoroutineScope by MainScope() {
     private var _binding: FragmentMonthBinding? = null
     private val binding get() = _binding!!
-    private val month: Month = _month
-    private val name: String = _name
-    private val client: FinancesService = _client
-    private lateinit var pieChart: PieChart
     private lateinit var fullNormalAdapter: PaymentAdapter
     private lateinit var fullSixMonthAdapter: PaymentAdapter
     private lateinit var fullThreeMonthAdapter: PaymentAdapter
@@ -50,6 +40,12 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.monthName.text = name
+    }
+
     override fun onResume() {
         super.onResume()
 
@@ -59,7 +55,6 @@ class MonthFragment(_month: Month, _client: FinancesService, _name: String) : Fr
         val loansRecyclerView = binding.rvLoans
         val subscriptionsRecyclerView = binding.rvSubscriptions
 
-        binding.monthName.text = name
 
         val emptyAdapter = PaymentAdapter(requireContext(), ArrayList())
         normalPaymentsRecyclerView.adapter = emptyAdapter

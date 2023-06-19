@@ -21,7 +21,7 @@
             android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_weight="1"
+            android:layout_weight="8"
             android:id="@+id/rvMonths"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -30,11 +30,21 @@
             tools:listitem="@layout/list_month" />
 
         <com.github.mikephil.charting.charts.PieChart
-            android:layout_weight="1"
+            android:layout_weight="8"
             android:id="@+id/pieChart"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_margin="20dp"
+            />
+
+        <TextView
+            android:id="@+id/tvCategories"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:padding="12dp"
+            android:gravity="start"
+            android:hint="Select Categories"
             />
 
     </LinearLayout>
@@ -58,9 +68,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:visibility="gone"
+        android:visibility="visible"
         android:src="@drawable/ic_add"
+        android:backgroundTintMode="multiply"
+        android:backgroundTint="@color/md_theme_dark_background"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/add_payment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

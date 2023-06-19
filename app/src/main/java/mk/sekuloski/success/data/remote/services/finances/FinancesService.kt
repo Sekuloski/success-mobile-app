@@ -1,4 +1,4 @@
-package mk.sekuloski.success.data.remote.services
+package mk.sekuloski.success.data.remote.services.finances
 
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
