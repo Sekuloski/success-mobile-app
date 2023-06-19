@@ -23,7 +23,10 @@ import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.databinding.FragmentPaymentBinding
 
 
-class PaymentFragment(private val payment: Payment) : Fragment(R.layout.fragment_payment), CoroutineScope by MainScope() {
+class PaymentFragment(
+    private val payment: Payment
+    ) : Fragment(R.layout.fragment_payment), CoroutineScope by MainScope() {
+
     private var _binding: FragmentPaymentBinding? = null
     private val binding get() = _binding!!
     private val client = FinancesService.create()

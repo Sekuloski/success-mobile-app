@@ -22,7 +22,12 @@ import mk.sekuloski.success.utils.initPie
 
 const val openedRecyclerViewHeight = 480
 const val closedRecyclerViewHeight = 40
-class MonthFragment(private val month: Month, private val client: FinancesService, private val name: String) : Fragment(R.layout.fragment_month), CoroutineScope by MainScope() {
+class MonthFragment(
+    private val month: Month,
+    private val client: FinancesService,
+    private val name: String
+    ) : Fragment(R.layout.fragment_month), CoroutineScope by MainScope() {
+
     private var _binding: FragmentMonthBinding? = null
     private val binding get() = _binding!!
     private lateinit var fullNormalAdapter: PaymentAdapter
@@ -110,22 +115,22 @@ class MonthFragment(private val month: Month, private val client: FinancesServic
                     PaymentType.SINGLE_PAYMENT.ordinal ->
                     {
                         normal.add(payment)
-                        normalSum += payment.amount
+                        if (payment.amount > 0) normalSum += payment.amount
                     }
                     PaymentType.THREE_MONTHS.ordinal ->
                     {
                         threeMonth.add(payment)
-                        threeMonthSum += payment.amount
+                        if (payment.amount > 0) threeMonthSum += payment.amount
                     }
                     PaymentType.SIX_MONTHS.ordinal ->
                     {
                         sixMonth.add(payment)
-                        sixMonthSum += payment.amount
+                        if (payment.amount > 0) sixMonthSum += payment.amount
                     }
                     PaymentType.LOAN.ordinal ->
                     {
                         loan.add(payment)
-                        loanSum += payment.amount
+                        if (payment.amount > 0) loanSum += payment.amount
                     }
                 }
             }
