@@ -36,6 +36,8 @@ interface FinancesService {
 
     suspend fun addSalary(water: Int, power: Int): String
 
+    suspend fun payPayments(ids: List<Int>): String
+
     suspend fun deletePayment(id: Int, cash: Boolean): String
 
     suspend fun deleteMonthlyPayment(name: String): String

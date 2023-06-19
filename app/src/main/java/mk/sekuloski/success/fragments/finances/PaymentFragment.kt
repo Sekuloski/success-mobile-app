@@ -114,5 +114,45 @@ class PaymentFragment(private val payment: Payment) : Fragment(R.layout.fragment
                 .setView(dialogLayout)
                 .show()
         }
+
+        binding.btnPay.setOnClickListener {
+            val dialogLayout = layoutInflater.inflate(R.layout.pay_dialog, null)
+            val adapter = if (payment.monthly) {
+                ArrayAdapter(
+                    view.context,
+                    R.layout.list_payment_name,
+                    payments.map { individual_payment -> individual_payment.name }
+                )
+            } else {
+                ArrayAdapter(view.context, R.layout.list_payment_name, listOf(payment.name))
+            }
+
+            val listView = dialogLayout.findViewById<ListView>(R.id.lvPayments)
+            listView.adapter = adapter
+
+            AlertDialog.Builder(it.context)
+                .setTitle("Paying Payments")
+                .setPositiveButton("Yes") { _, _ ->
+                    launch {
+                        val toast = Toast(context)
+                        if (payment.monthly)
+                        {
+//                            toast.setText(client.deleteMonthlyPayment(payment.name.split(" ").dropLast(1).joinToString(" ")))
+                            toast.setText(client.payPayments(listOf(payment.id)))
+                        }
+                        else
+                        {
+                            toast.setText(client.payPayments(listOf(payment.id)))
+                        }
+                        toast.show()
+                        parentFragmentManager.popBackStack()
+                    }
+                }
+                .setNegativeButton("Cancel") {_, _ ->
+                    println("Cancelled")
+                }
+                .setView(dialogLayout)
+                .show()
+        }
     }
 }

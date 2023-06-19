@@ -254,6 +254,35 @@ class FinancesServiceImpl(
         }
     }
 
+    override suspend fun payPayments(ids: List<Int>): String {
+        try {
+            val body = HashMap<String, Any>()
+            body["ids"] = ids
+//            body["cash"] = cash
+            val response: String = client.post {
+                url(FinanceApiRoutes.PAY_PAYMENTS)
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }.body()
+            return response
+        } catch(e: RedirectResponseException) {
+            // 3xx - responses
+            println("3xx Error: ${e.response.status.description}")
+            return "3xx Error: ${e.response.status.description}"
+        } catch(e: ClientRequestException) {
+            // 4xx - responses
+            println("4xx Error: ${e.response.status.description}")
+            return "4xx Error: ${e.response.status.description}"
+        } catch(e: ServerResponseException) {
+            // 5xx - responses
+            println("5xx Error: ${e.response.status.description}")
+            return "5xx Error: ${e.response.status.description}"
+        } catch(e: Exception) {
+            println(e.message)
+            return ""
+        }
+    }
+
     override suspend fun deletePayment(id: Int, cash: Boolean): String {
         try {
             val body = HashMap<String, Any>()
