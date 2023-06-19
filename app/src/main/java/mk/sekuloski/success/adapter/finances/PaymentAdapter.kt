@@ -30,6 +30,10 @@ class PaymentAdapter(
             with(payments[position])
             {
                 binding.paymentName.text = this.name
+                if (this.paid)
+                {
+                    binding.ivPaid.setImageResource(R.drawable.ic_paid)
+                }
                 binding.paymentAmount.text = this.amount.toString()
 
                 binding.btnPayment.setOnClickListener {

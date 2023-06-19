@@ -58,7 +58,7 @@ class PaymentFragment(private val payment: Payment) : Fragment(R.layout.fragment
                     for (i in 0 until parts[1].toInt()) array.add(JsonPrimitive(startId + i))
                     val paymentIds = JsonArray(array)
                     payments = client.getPayments(paymentIds)
-                    val adapter = PaymentAdapter(view.context, payments)
+                    val adapter = PaymentAdapter(view.context, payments.sortedBy { it.name })
 
                     val monthlyPaymentsRecyclerView = binding.rvMonthlyPayments
                     monthlyPaymentsRecyclerView.adapter = adapter
