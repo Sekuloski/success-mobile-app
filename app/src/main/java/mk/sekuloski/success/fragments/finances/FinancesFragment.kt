@@ -62,23 +62,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
 
             binding.fabAddPayment.visibility = View.VISIBLE
 
-            for (payment: Payment in payments)
-            {
-                when (payment.expense_type) {
-                    ExpenseType.GROCERIES.ordinal -> groceries += payment.amount
-                    ExpenseType.TAKEAWAY_FOOD.ordinal -> takeawayFood += payment.amount
-                    ExpenseType.FOOTBALL.ordinal -> football += payment.amount
-                    ExpenseType.HANGING_OUT.ordinal -> hangingOut += payment.amount
-                    ExpenseType.MUSIC_GEAR.ordinal -> musicGear += payment.amount
-                    ExpenseType.SPORTS_GEAR.ordinal -> sportsGear += payment.amount
-                    ExpenseType.GAMING_GEAR.ordinal -> gamingGear += payment.amount
-                }
-            }
-            initPie(
-                binding.pieChart,
-                requireContext(),
-                groceries, takeawayFood, football, hangingOut, musicGear, sportsGear, gamingGear
-            )
+            configurePie()
 
             selectedCategories.fill(true)
             binding.tvCategories.setOnClickListener {
@@ -172,7 +156,6 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
 
             payments = client.getMonthPayments()
             binding.fabAddPayment.visibility = View.VISIBLE
-
             configurePie()
 
             binding.swipeRefresh.isRefreshing = false
@@ -181,6 +164,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
 
     private fun configurePie()
     {
+        groceries = 0; takeawayFood = 0; football = 0; hangingOut = 0; musicGear = 0; sportsGear = 0; gamingGear = 0
         for (payment: Payment in payments) {
             when (payment.expense_type) {
                 ExpenseType.GROCERIES.ordinal -> if (ExpenseType.GROCERIES in expenseList) groceries += payment.amount
