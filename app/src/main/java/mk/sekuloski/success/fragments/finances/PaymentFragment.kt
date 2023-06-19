@@ -130,29 +130,42 @@ class PaymentFragment(private val payment: Payment) : Fragment(R.layout.fragment
             val listView = dialogLayout.findViewById<ListView>(R.id.lvPayments)
             listView.adapter = adapter
 
-            AlertDialog.Builder(it.context)
+            val builder = AlertDialog.Builder(it.context)
                 .setTitle("Paying Payments")
-                .setPositiveButton("Yes") { _, _ ->
-                    launch {
-                        val toast = Toast(context)
-                        if (payment.monthly)
-                        {
-//                            toast.setText(client.deleteMonthlyPayment(payment.name.split(" ").dropLast(1).joinToString(" ")))
-                            toast.setText(client.payPayments(listOf(payment.id)))
-                        }
-                        else
-                        {
-                            toast.setText(client.payPayments(listOf(payment.id)))
-                        }
-                        toast.show()
-                        parentFragmentManager.popBackStack()
-                    }
-                }
                 .setNegativeButton("Cancel") {_, _ ->
                     println("Cancelled")
                 }
                 .setView(dialogLayout)
-                .show()
+            if (payment.monthly)
+            {
+                builder.setNeutralButton("Pay One") { _, _ ->
+                    launch {
+                        val toast = Toast(context)
+                        toast.setText(client.payPayments(listOf(payment.id)))
+                        toast.show()
+                        parentFragmentManager.popBackStack()
+                    }
+                }
+                builder.setPositiveButton("Pay All") { _, _ ->
+                    launch {
+                        val toast = Toast(context)
+                        toast.setText(client.payPayments(payments.map { individual_payment -> individual_payment.id }))
+                        toast.show()
+                        parentFragmentManager.popBackStack()
+                    }
+                }
+            }
+            else {
+                builder.setPositiveButton("Yes") { _, _ ->
+                    launch {
+                        val toast = Toast(context)
+                        toast.setText(client.payPayments(listOf(payment.id)))
+                        toast.show()
+                        parentFragmentManager.popBackStack()
+                    }
+                }
+            }
+            builder.show()
         }
     }
 }
