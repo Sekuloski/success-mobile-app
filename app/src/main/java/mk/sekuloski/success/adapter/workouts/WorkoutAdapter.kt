@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import mk.sekuloski.success.MainActivity
+import mk.sekuloski.success.data.remote.dto.workouts.Exercise
 import mk.sekuloski.success.data.remote.dto.workouts.Workout
 import mk.sekuloski.success.databinding.WorkoutCardBinding
 import mk.sekuloski.success.fragments.workouts.WorkoutFragment
@@ -12,7 +13,7 @@ import mk.sekuloski.success.fragments.workouts.WorkoutFragment
 
 class WorkoutAdapter(
     private val context: Context,
-    private val workouts: List<Workout>
+    private val workouts: List<Workout>,
 ) : RecyclerView.Adapter<WorkoutAdapter.WorkoutViewHolder>() {
 
     inner class WorkoutViewHolder(val binding: WorkoutCardBinding) : RecyclerView.ViewHolder(binding.root)
@@ -32,7 +33,7 @@ class WorkoutAdapter(
                 binding.exercise1.text = this.exercises[0].name
                 binding.exercise2.text = this.exercises[1].name
                 binding.exercise3.text = this.exercises[2].name
-                binding.exercise4.text = this.exercises[3].name
+//                binding.exercise4.text = allExercises[exercises[3].toString().toInt()]?.name ?: ""
                 binding.btnWorkout.setOnClickListener {
                     (context as MainActivity).supportFragmentManager.beginTransaction().apply {
                         replace(mk.sekuloski.success.R.id.flFragment, WorkoutFragment(workouts[position]))

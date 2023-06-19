@@ -7,12 +7,13 @@
 
     <ImageView
         android:id="@+id/ivExercise"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="96dp"
+        android:layout_width="480dp"
+        android:layout_height="480dp"
+        android:layout_marginTop="48dp"
         android:contentDescription="@string/exercise"
         android:src="@drawable/ic_dip"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -20,7 +21,7 @@
         android:id="@+id/tvExerciseName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="112dp"
+        android:layout_marginTop="68dp"
         android:gravity="center"
         android:textColor="@color/md_theme_dark_onBackground"
         android:textSize="40sp"
@@ -58,11 +59,24 @@
         app:layout_constraintTop_toBottomOf="@+id/tvExerciseName"
         tools:text="0 0 0 0 0" />
 
+    <TextView
+        android:id="@+id/tvTimer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:gravity="center"
+        android:textSize="40sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvReps"
+        tools:text="00:00" />
+
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/llRepCount"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="36dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvReps">
@@ -99,11 +113,10 @@
         android:id="@+id/btnNext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/next"
+        android:text="@string/done"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout"
-        />
+        app:layout_constraintTop_toBottomOf="@id/llRepCount" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
