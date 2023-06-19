@@ -29,7 +29,7 @@ fun initPie(
     pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler, colors)
 
     pieChart.description.isEnabled = false
-    pieChart.setExtraOffsets(60f, 60f, 60f, 60f)
+    pieChart.setExtraOffsets(50f, 50f, 50f, 50f)
 
     pieChart.dragDecelerationFrictionCoef = 0.95f
 
@@ -53,7 +53,7 @@ fun initPie(
     pieChart.legend.isEnabled = false
     context.let { ContextCompat.getColor(it, R.color.md_theme_dark_onPrimaryContainer) }
            .let { pieChart.setEntryLabelColor(it) }
-    pieChart.setEntryLabelTextSize(16f)
+    pieChart.setEntryLabelTextSize(13f)
     pieChart.setEntryLabelTypeface(Typeface.DEFAULT_BOLD)
     pieChart.highlightValues(null)
 
@@ -163,7 +163,7 @@ fun setData(
     dataSet.valueLineColor = ColorTemplate.COLOR_NONE
 
     data.setValueFormatter(ValuesFormatter())
-    data.setValueTextSize(18f)
+    data.setValueTextSize(16f)
 
     pieChart.data = data
     return finalColors

@@ -129,11 +129,11 @@ class MonthFragment(private val month: Month, private val client: FinancesServic
                     }
                 }
             }
-            fullNormalAdapter = PaymentAdapter(requireContext(), normal)
-            fullSixMonthAdapter = PaymentAdapter(requireContext(), threeMonth)
-            fullThreeMonthAdapter = PaymentAdapter(requireContext(), sixMonth)
-            fullLoanAdapter = PaymentAdapter(requireContext(), loan)
-            fullSubscriptionAdapter = SubscriptionAdapter(requireContext(), activeSubscriptions)
+            fullNormalAdapter = PaymentAdapter(requireContext(), normal.sortedBy { it.name })
+            fullSixMonthAdapter = PaymentAdapter(requireContext(), sixMonth.sortedBy { it.name })
+            fullThreeMonthAdapter = PaymentAdapter(requireContext(), threeMonth.sortedBy { it.name })
+            fullLoanAdapter = PaymentAdapter(requireContext(), loan.sortedBy { it.name })
+            fullSubscriptionAdapter = SubscriptionAdapter(requireContext(), activeSubscriptions.sortedBy { it.name })
 
             binding.amountLeft.text = month.left.toString()
             binding.expensesAmount.text = month.expenses.toString()

@@ -9,20 +9,13 @@ import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
 import mk.sekuloski.success.MainActivity
 import mk.sekuloski.success.R
 import mk.sekuloski.success.adapter.workouts.WorkoutAdapter
-import mk.sekuloski.success.data.remote.dto.workouts.Exercise
 import mk.sekuloski.success.data.remote.dto.workouts.Workout
 import mk.sekuloski.success.data.remote.services.workouts.WorkoutsService
 import mk.sekuloski.success.databinding.FragmentWorkoutsBinding
-import java.time.DayOfWeek
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Calendar
-
 
 const val TAG = "Workouts Fragment"
 
@@ -64,7 +57,6 @@ class WorkoutsFragment(private val workoutsService: WorkoutsService) : Fragment(
             otherWorkoutsRecyclerView.setHasFixedSize(true)
 
             binding.workoutName.text = todaysWorkout.name
-            val exercisesForWorkout = ArrayList<Exercise>()
             try {
                 binding.exercise1.text = todaysWorkout.exercises[0].name
                 binding.exercise2.text = todaysWorkout.exercises[1].name
