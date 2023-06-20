@@ -46,4 +46,7 @@
     <string name="select_categories">Select Categories</string>
     <string name="see_less">See less</string>
     <string name="see_more">See more</string>
+    <string name="category">Category</string>
+    <string name="res_true">True</string>
+    <string name="takeaway_food">Takeaway Food</string>
 </resources>

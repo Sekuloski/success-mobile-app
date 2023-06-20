@@ -25,7 +25,7 @@ const val closedRecyclerViewHeight = 40
 class MonthFragment(
     private val month: Month,
     private val client: FinancesService,
-    private val name: String
+    private val current: Boolean
     ) : Fragment(R.layout.fragment_month), CoroutineScope by MainScope() {
 
     private var _binding: FragmentMonthBinding? = null
@@ -51,7 +51,7 @@ class MonthFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.monthName.text = name
+        binding.monthName.text = month.name
     }
 
     override fun onResume() {
@@ -98,6 +98,19 @@ class MonthFragment(
                 {
                     activeSubscriptions.add(subscription)
                     subscriptionSum += subscription.amount
+                    if (!current && subscription.hypothetical)
+                    {
+                        when (subscription.expense_type) {
+                            ExpenseType.GROCERIES.ordinal -> if (subscription.amount > 0) groceries += subscription.amount
+                            ExpenseType.TAKEAWAY_FOOD.ordinal -> if (subscription.amount > 0) takeawayFood += subscription.amount
+                            ExpenseType.FOOTBALL.ordinal -> if (subscription.amount > 0) football += subscription.amount
+                            ExpenseType.HANGING_OUT.ordinal -> if (subscription.amount > 0) hangingOut += subscription.amount
+                            ExpenseType.MUSIC_GEAR.ordinal -> if (subscription.amount > 0) musicGear += subscription.amount
+                            ExpenseType.SPORTS_GEAR.ordinal -> if (subscription.amount > 0) sportsGear += subscription.amount
+                            ExpenseType.GAMING_GEAR.ordinal -> if (subscription.amount > 0) gamingGear += subscription.amount
+                            ExpenseType.FURNITURE.ordinal -> if (subscription.amount > 0) furniture += subscription.amount
+                        }
+                    }
                 }
             }
 

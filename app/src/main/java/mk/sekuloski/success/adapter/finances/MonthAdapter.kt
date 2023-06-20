@@ -33,9 +33,10 @@ class MonthAdapter(
                 binding.monthName.text = this.name
                 binding.amountLeft.text = this.left.toString()
 
+                val currentMonth = position == 0
                 binding.btnDetails.setOnClickListener {
                     (context as MainActivity).supportFragmentManager.beginTransaction().apply {
-                        replace(mk.sekuloski.success.R.id.flFragment, MonthFragment(months[position], client, months[position].name))
+                        replace(mk.sekuloski.success.R.id.flFragment, MonthFragment(months[position], client, currentMonth))
                         addToBackStack(null)
                         commit()
                     }

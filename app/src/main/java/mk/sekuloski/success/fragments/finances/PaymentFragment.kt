@@ -18,6 +18,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import mk.sekuloski.success.MainActivity
 import mk.sekuloski.success.R
 import mk.sekuloski.success.adapter.finances.PaymentAdapter
+import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
 import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.databinding.FragmentPaymentBinding
@@ -48,6 +49,7 @@ class PaymentFragment(
         binding.tvPaymentCost.text = payment.amount.toString()
         binding.tvPaymentDate.text = payment.date.toString()
         binding.tvPaymentPaid.text = payment.paid.toString()
+        binding.tvCategory.text = ExpenseType.getValues()[payment.expense_type]
         binding.tvPaymentMonthly.text = payment.monthly.toString()
         if (payment.monthly)
         {
