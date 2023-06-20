@@ -17,12 +17,15 @@ import mk.sekuloski.success.data.remote.dto.finances.PaymentRequest
 import mk.sekuloski.success.data.remote.dto.finances.Subscription
 import mk.sekuloski.success.data.remote.dto.workouts.Exercise
 import mk.sekuloski.success.data.remote.dto.workouts.Workout
+import mk.sekuloski.success.data.remote.dto.workouts.WorkoutExecution
 
 interface WorkoutsService {
 
     suspend fun getExercises(): List<Exercise>
 
     suspend fun getWorkouts(): List<Workout>
+
+    suspend fun getWorkoutHistory(): List<WorkoutExecution>
 
     companion object {
         fun create(): WorkoutsService {

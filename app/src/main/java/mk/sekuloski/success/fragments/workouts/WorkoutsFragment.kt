@@ -12,7 +12,9 @@ import kotlinx.coroutines.launch
 import mk.sekuloski.success.MainActivity
 import mk.sekuloski.success.R
 import mk.sekuloski.success.adapter.workouts.WorkoutAdapter
+import mk.sekuloski.success.adapter.workouts.WorkoutHistoryAdapter
 import mk.sekuloski.success.data.remote.dto.workouts.Workout
+import mk.sekuloski.success.data.remote.dto.workouts.WorkoutExecution
 import mk.sekuloski.success.data.remote.services.workouts.WorkoutsService
 import mk.sekuloski.success.databinding.FragmentWorkoutsBinding
 import java.time.LocalDateTime
@@ -26,6 +28,7 @@ class WorkoutsFragment(
     private var _binding: FragmentWorkoutsBinding? = null
     private val binding get() = _binding!!
     private lateinit var workouts: List<Workout>
+    private lateinit var workoutHistory: List<WorkoutExecution>
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,9 +43,11 @@ class WorkoutsFragment(
 
         (context as MainActivity).supportActionBar?.title = "Workouts"
         val otherWorkoutsRecyclerView = binding.rvOtherWorkouts
+        val workoutHistoryRecyclerView = binding.rvWorkoutHistory
 
         launch {
             workouts = workoutsService.getWorkouts()
+            workoutHistory = workoutsService.getWorkoutHistory()
 
             val datetime = LocalDateTime.now()
             val dayOfWeekIndex = datetime.dayOfWeek.value - 1
@@ -58,6 +63,9 @@ class WorkoutsFragment(
 
             otherWorkoutsRecyclerView.adapter = WorkoutAdapter(requireContext(), workouts.minus(todaysWorkout))
             otherWorkoutsRecyclerView.setHasFixedSize(true)
+
+            workoutHistoryRecyclerView.adapter = WorkoutHistoryAdapter(requireContext(), workouts, workoutHistory)
+            workoutHistoryRecyclerView.setHasFixedSize(true)
 
             binding.workoutName.text = todaysWorkout.name
             try {

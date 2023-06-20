@@ -9,5 +9,6 @@ object WorkoutsApiRoutes {
     private val BASE_URL = if (isRunningOnEmulator) DEV_BASE_URL else REAL_BASE_URL
 //    private val BASE_URL = if (isRunningOnEmulator) REAL_BASE_URL else DEV_BASE_URL
     val WORKOUTS = "$BASE_URL/workouts"
+    val WORKOUT_HISTORY = "$BASE_URL/workouts/history"
     val EXERCISES = "$BASE_URL/exercises"
 }
