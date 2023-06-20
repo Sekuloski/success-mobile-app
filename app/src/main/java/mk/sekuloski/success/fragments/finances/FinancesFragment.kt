@@ -105,7 +105,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
 
         binding.fabAddPayment.setOnClickListener {
             (context as MainActivity).supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, AddPaymentFragment(locations.associate { it.name to it.id } as HashMap<String, Int>, client))
+                replace(R.id.flFragment, AddPaymentFragment(locations, locations.associate { it.name to it.id } as HashMap<String, Int>, client))
                 addToBackStack(null)
                 commit()
             }
