@@ -23,9 +23,10 @@ fun initPie(
     hanging_out: Int,
     musicGear: Int,
     sportsGear: Int,
-    gamingGear: Int
+    gamingGear: Int,
+    furniture: Int
 ) {
-    val colors = setData(pieChart, groceries, takeawayFood, football, hanging_out, musicGear, sportsGear, gamingGear)
+    val colors = setData(pieChart, groceries, takeawayFood, football, hanging_out, musicGear, sportsGear, gamingGear, furniture)
     pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler, colors)
 
     pieChart.description.isEnabled = false
@@ -68,12 +69,13 @@ fun setData(
     hanging_out: Int,
     music_gear: Int,
     sports_gear: Int,
-    gaming_gear: Int
+    gaming_gear: Int,
+    furniture: Int
 ): MutableMap<String, Int> {
     val entries = ArrayList<PieEntry>()
     val colors = HashMap<String, Int>()
 
-    val allColors = mutableListOf(
+    val allColors = mutableListOf( // 8 Colors for now
         "#4777c0",
         "#4fb3e8",
         "#99cf43",
@@ -127,7 +129,15 @@ fun setData(
     if (takeaway_food > 0)
     {
         val label = "$counter. Takeaway Food"
+        counter++
         entries.add(PieEntry(takeaway_food.toFloat(), label))
+        colors[label] = Color.parseColor(allColors.removeAt(0))
+    }
+    if (furniture > 0)
+    {
+        val label = "$counter. Furniture"
+        counter++
+        entries.add(PieEntry(furniture.toFloat(), label))
         colors[label] = Color.parseColor(allColors.removeAt(0))
     }
     if (gaming_gear > 0)

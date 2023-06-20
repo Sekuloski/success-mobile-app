@@ -35,6 +35,7 @@ class MonthFragment(
     private lateinit var fullThreeMonthAdapter: PaymentAdapter
     private lateinit var fullLoanAdapter: PaymentAdapter
     private lateinit var fullSubscriptionAdapter: SubscriptionAdapter
+    var groceries = 0; var takeawayFood = 0; var football = 0; var hangingOut = 0; var musicGear = 0; var sportsGear = 0; var gamingGear = 0; var furniture = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,8 +60,6 @@ class MonthFragment(
         val threeMonthPaymentsRecyclerView = binding.rvThreeMonthPayments
         val loansRecyclerView = binding.rvLoans
         val subscriptionsRecyclerView = binding.rvSubscriptions
-
-
         val emptyAdapter = PaymentAdapter(requireContext(), ArrayList())
         normalPaymentsRecyclerView.adapter = emptyAdapter
         normalPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
@@ -86,7 +85,7 @@ class MonthFragment(
         launch {
             val payments = client.getMonthPayments(month.id, month.name.split(" ")[1].toInt())
             val allSubscriptions = client.getSubscriptions()
-            var groceries = 0; var takeawayFood = 0; var football = 0; var hangingOut = 0; var musicGear = 0; var sportsGear = 0; var gamingGear = 0
+            groceries = 0; takeawayFood = 0; football = 0; hangingOut = 0; musicGear = 0; sportsGear = 0; gamingGear = 0; furniture = 0
             var normalSum = 0; var threeMonthSum = 0; var sixMonthSum = 0; var loanSum = 0; var subscriptionSum = 0
             val normal = ArrayList<Payment>(); val threeMonth =  ArrayList<Payment>(); val sixMonth = ArrayList<Payment>(); val loan =  ArrayList<Payment>()
             val activeSubscriptions = ArrayList<Subscription>()
@@ -103,13 +102,14 @@ class MonthFragment(
             for (payment: Payment in payments)
             {
                 when (payment.expense_type) {
-                    ExpenseType.GROCERIES.ordinal -> groceries += payment.amount
-                    ExpenseType.TAKEAWAY_FOOD.ordinal -> takeawayFood += payment.amount
-                    ExpenseType.FOOTBALL.ordinal -> football += payment.amount
-                    ExpenseType.HANGING_OUT.ordinal -> hangingOut += payment.amount
-                    ExpenseType.MUSIC_GEAR.ordinal -> musicGear += payment.amount
-                    ExpenseType.SPORTS_GEAR.ordinal -> sportsGear += payment.amount
-                    ExpenseType.GAMING_GEAR.ordinal -> gamingGear += payment.amount
+                    ExpenseType.GROCERIES.ordinal -> if (payment.amount > 0) groceries += payment.amount
+                    ExpenseType.TAKEAWAY_FOOD.ordinal -> if (payment.amount > 0) takeawayFood += payment.amount
+                    ExpenseType.FOOTBALL.ordinal -> if (payment.amount > 0) football += payment.amount
+                    ExpenseType.HANGING_OUT.ordinal -> if (payment.amount > 0) hangingOut += payment.amount
+                    ExpenseType.MUSIC_GEAR.ordinal -> if (payment.amount > 0) musicGear += payment.amount
+                    ExpenseType.SPORTS_GEAR.ordinal -> if (payment.amount > 0) sportsGear += payment.amount
+                    ExpenseType.GAMING_GEAR.ordinal -> if (payment.amount > 0) gamingGear += payment.amount
+                    ExpenseType.FURNITURE.ordinal -> if (payment.amount > 0) furniture += payment.amount
                 }
                 when (payment.payment_type) {
                     PaymentType.SINGLE_PAYMENT.ordinal ->
@@ -157,7 +157,8 @@ class MonthFragment(
                 hangingOut,
                 musicGear,
                 sportsGear,
-                gamingGear
+                gamingGear,
+                furniture
             )
 
             binding.btnShowMoreNormal.setOnClickListener {

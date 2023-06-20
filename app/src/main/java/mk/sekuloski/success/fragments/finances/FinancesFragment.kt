@@ -30,7 +30,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
     private lateinit var locations: ArrayList<Location>
     private lateinit var months: ArrayList<Month>
     private lateinit var payments: List<Payment>
-    var groceries = 0; var takeawayFood = 0; var football = 0; var hangingOut = 0; var musicGear = 0; var sportsGear = 0; var gamingGear = 0
+    var groceries = 0; var takeawayFood = 0; var football = 0; var hangingOut = 0; var musicGear = 0; var sportsGear = 0; var gamingGear = 0; var furniture = 0
 
 
     override fun onCreateView(
@@ -164,22 +164,23 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
 
     private fun configurePie()
     {
-        groceries = 0; takeawayFood = 0; football = 0; hangingOut = 0; musicGear = 0; sportsGear = 0; gamingGear = 0
+        groceries = 0; takeawayFood = 0; football = 0; hangingOut = 0; musicGear = 0; sportsGear = 0; gamingGear = 0; furniture = 0
         for (payment: Payment in payments) {
             when (payment.expense_type) {
-                ExpenseType.GROCERIES.ordinal -> if (ExpenseType.GROCERIES in expenseList) groceries += payment.amount
-                ExpenseType.TAKEAWAY_FOOD.ordinal -> if (ExpenseType.TAKEAWAY_FOOD in expenseList) takeawayFood += payment.amount
-                ExpenseType.FOOTBALL.ordinal -> if (ExpenseType.FOOTBALL in expenseList) football += payment.amount
-                ExpenseType.HANGING_OUT.ordinal -> if (ExpenseType.HANGING_OUT in expenseList) hangingOut += payment.amount
-                ExpenseType.MUSIC_GEAR.ordinal -> if (ExpenseType.MUSIC_GEAR in expenseList) musicGear += payment.amount
-                ExpenseType.SPORTS_GEAR.ordinal -> if (ExpenseType.SPORTS_GEAR in expenseList) sportsGear += payment.amount
-                ExpenseType.GAMING_GEAR.ordinal -> if (ExpenseType.GAMING_GEAR in expenseList) gamingGear += payment.amount
+                ExpenseType.GROCERIES.ordinal -> if (ExpenseType.GROCERIES in expenseList && payment.amount > 0) groceries += payment.amount
+                ExpenseType.TAKEAWAY_FOOD.ordinal -> if (ExpenseType.TAKEAWAY_FOOD in expenseList && payment.amount > 0) takeawayFood += payment.amount
+                ExpenseType.FOOTBALL.ordinal -> if (ExpenseType.FOOTBALL in expenseList && payment.amount > 0) football += payment.amount
+                ExpenseType.HANGING_OUT.ordinal -> if (ExpenseType.HANGING_OUT in expenseList && payment.amount > 0) hangingOut += payment.amount
+                ExpenseType.MUSIC_GEAR.ordinal -> if (ExpenseType.MUSIC_GEAR in expenseList && payment.amount > 0) musicGear += payment.amount
+                ExpenseType.SPORTS_GEAR.ordinal -> if (ExpenseType.SPORTS_GEAR in expenseList && payment.amount > 0) sportsGear += payment.amount
+                ExpenseType.GAMING_GEAR.ordinal -> if (ExpenseType.GAMING_GEAR in expenseList && payment.amount > 0) gamingGear += payment.amount
+                ExpenseType.FURNITURE.ordinal -> if (ExpenseType.FURNITURE in expenseList && payment.amount > 0) furniture += payment.amount
             }
         }
         initPie(
             binding.pieChart,
             requireContext(),
-            groceries, takeawayFood, football, hangingOut, musicGear, sportsGear, gamingGear
+            groceries, takeawayFood, football, hangingOut, musicGear, sportsGear, gamingGear, furniture
         )
     }
 
