@@ -21,6 +21,7 @@ import mk.sekuloski.success.databinding.FragmentFinancesBinding
 import mk.sekuloski.success.data.remote.dto.finances.Month
 import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.utils.initPie
+import mk.sekuloski.success.utils.resetCategories
 
 class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.fragment_finances), CoroutineScope by MainScope() {
     private var _binding: FragmentFinancesBinding? = null
@@ -30,10 +31,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
     private lateinit var locations: ArrayList<Location>
     private lateinit var months: ArrayList<Month>
     private lateinit var payments: List<Payment>
-    private var groceries = 0; private var takeawayFood = 0; private var football = 0
-    private var hangingOut = 0; private var musicGear = 0; private var sportsGear = 0
-    private var gamingGear = 0; private var furniture = 0; private var bills = 0
-
+    private var categories = ArrayList<Int>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,7 +79,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
                     }
                 }
                 builder.setPositiveButton("OK") { _, _ ->
-                    groceries = 0; takeawayFood = 0; football = 0; hangingOut = 0; musicGear = 0; sportsGear = 0; gamingGear = 0
+                    resetCategories()
                     configurePie()
                 }
                 builder.setNegativeButton("Cancel") {_, _ ->
@@ -167,24 +165,15 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
 
     private fun configurePie()
     {
-        groceries = 0; takeawayFood = 0; football = 0; hangingOut = 0; musicGear = 0; sportsGear = 0; gamingGear = 0; furniture = 0; bills = 0
+        categories = resetCategories()
         for (payment: Payment in payments) {
-            when (payment.expense_type) {
-                ExpenseType.BILL.ordinal -> if (ExpenseType.BILL in expenseList && payment.amount > 0) bills += payment.amount
-                ExpenseType.GROCERIES.ordinal -> if (ExpenseType.GROCERIES in expenseList && payment.amount > 0) groceries += payment.amount
-                ExpenseType.TAKEAWAY_FOOD.ordinal -> if (ExpenseType.TAKEAWAY_FOOD in expenseList && payment.amount > 0) takeawayFood += payment.amount
-                ExpenseType.FOOTBALL.ordinal -> if (ExpenseType.FOOTBALL in expenseList && payment.amount > 0) football += payment.amount
-                ExpenseType.HANGING_OUT.ordinal -> if (ExpenseType.HANGING_OUT in expenseList && payment.amount > 0) hangingOut += payment.amount
-                ExpenseType.MUSIC_GEAR.ordinal -> if (ExpenseType.MUSIC_GEAR in expenseList && payment.amount > 0) musicGear += payment.amount
-                ExpenseType.SPORTS_GEAR.ordinal -> if (ExpenseType.SPORTS_GEAR in expenseList && payment.amount > 0) sportsGear += payment.amount
-                ExpenseType.GAMING_GEAR.ordinal -> if (ExpenseType.GAMING_GEAR in expenseList && payment.amount > 0) gamingGear += payment.amount
-                ExpenseType.FURNITURE.ordinal -> if (ExpenseType.FURNITURE in expenseList && payment.amount > 0) furniture += payment.amount
-            }
+            if (ExpenseType.values()[payment.expense_type] in expenseList && payment.amount > 0)
+                categories[payment.expense_type] += payment.amount
         }
         initPie(
             binding.pieChart,
             requireContext(),
-            bills, groceries, takeawayFood, football, hangingOut, musicGear, sportsGear, gamingGear, furniture
+            categories
         )
     }
 

@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import mk.sekuloski.success.*
 import mk.sekuloski.success.adapter.finances.PaymentAdapter
 import mk.sekuloski.success.adapter.finances.SubscriptionAdapter
-import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
 import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.databinding.FragmentMonthBinding
 import mk.sekuloski.success.data.remote.dto.finances.Month
@@ -19,6 +18,7 @@ import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.data.remote.dto.finances.PaymentType
 import mk.sekuloski.success.data.remote.dto.finances.Subscription
 import mk.sekuloski.success.utils.initPie
+import mk.sekuloski.success.utils.resetCategories
 
 const val openedRecyclerViewHeight = 480
 const val closedRecyclerViewHeight = 40
@@ -35,9 +35,7 @@ class MonthFragment(
     private lateinit var fullThreeMonthAdapter: PaymentAdapter
     private lateinit var fullLoanAdapter: PaymentAdapter
     private lateinit var fullSubscriptionAdapter: SubscriptionAdapter
-    private var groceries = 0; private var takeawayFood = 0; private var football = 0
-    private var hangingOut = 0; private var musicGear = 0; private var sportsGear = 0
-    private var gamingGear = 0; private var furniture = 0; private var bills = 0
+    private var categories = ArrayList<Int>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,7 +86,8 @@ class MonthFragment(
         launch {
             val payments = client.getMonthPayments(month.id, month.name.split(" ")[1].toInt())
             val allSubscriptions = client.getSubscriptions()
-            groceries = 0; takeawayFood = 0; football = 0; hangingOut = 0; musicGear = 0; sportsGear = 0; gamingGear = 0; furniture = 0; bills = 0
+            categories = resetCategories()
+
             var normalSum = 0; var threeMonthSum = 0; var sixMonthSum = 0; var loanSum = 0; var subscriptionSum = 0
             val normal = ArrayList<Payment>(); val threeMonth =  ArrayList<Payment>(); val sixMonth = ArrayList<Payment>(); val loan =  ArrayList<Payment>()
             val activeSubscriptions = ArrayList<Subscription>()
@@ -99,36 +98,14 @@ class MonthFragment(
                 {
                     activeSubscriptions.add(subscription)
                     subscriptionSum += subscription.amount
-                    if (!current && subscription.hypothetical)
-                    {
-                        when (subscription.expense_type) {
-                            ExpenseType.BILL.ordinal -> if (subscription.amount > 0) bills += subscription.amount
-                            ExpenseType.GROCERIES.ordinal -> if (subscription.amount > 0) groceries += subscription.amount
-                            ExpenseType.TAKEAWAY_FOOD.ordinal -> if (subscription.amount > 0) takeawayFood += subscription.amount
-                            ExpenseType.FOOTBALL.ordinal -> if (subscription.amount > 0) football += subscription.amount
-                            ExpenseType.HANGING_OUT.ordinal -> if (subscription.amount > 0) hangingOut += subscription.amount
-                            ExpenseType.MUSIC_GEAR.ordinal -> if (subscription.amount > 0) musicGear += subscription.amount
-                            ExpenseType.SPORTS_GEAR.ordinal -> if (subscription.amount > 0) sportsGear += subscription.amount
-                            ExpenseType.GAMING_GEAR.ordinal -> if (subscription.amount > 0) gamingGear += subscription.amount
-                            ExpenseType.FURNITURE.ordinal -> if (subscription.amount > 0) furniture += subscription.amount
-                        }
-                    }
+                    if (!current && subscription.hypothetical && subscription.amount > 0)
+                        categories[subscription.expense_type] += subscription.amount
                 }
             }
 
             for (payment: Payment in payments)
             {
-                when (payment.expense_type) {
-                    ExpenseType.BILL.ordinal -> if (payment.amount > 0) bills += payment.amount
-                    ExpenseType.GROCERIES.ordinal -> if (payment.amount > 0) groceries += payment.amount
-                    ExpenseType.TAKEAWAY_FOOD.ordinal -> if (payment.amount > 0) takeawayFood += payment.amount
-                    ExpenseType.FOOTBALL.ordinal -> if (payment.amount > 0) football += payment.amount
-                    ExpenseType.HANGING_OUT.ordinal -> if (payment.amount > 0) hangingOut += payment.amount
-                    ExpenseType.MUSIC_GEAR.ordinal -> if (payment.amount > 0) musicGear += payment.amount
-                    ExpenseType.SPORTS_GEAR.ordinal -> if (payment.amount > 0) sportsGear += payment.amount
-                    ExpenseType.GAMING_GEAR.ordinal -> if (payment.amount > 0) gamingGear += payment.amount
-                    ExpenseType.FURNITURE.ordinal -> if (payment.amount > 0) furniture += payment.amount
-                }
+                if (payment.amount > 0) categories[payment.expense_type] += payment.amount
                 when (payment.payment_type) {
                     PaymentType.SINGLE_PAYMENT.ordinal ->
                     {
@@ -169,15 +146,7 @@ class MonthFragment(
             initPie(
                 binding.pieChart,
                 requireContext(),
-                bills,
-                groceries,
-                takeawayFood,
-                football,
-                hangingOut,
-                musicGear,
-                sportsGear,
-                gamingGear,
-                furniture
+                categories
             )
 
             binding.btnShowMoreNormal.setOnClickListener {

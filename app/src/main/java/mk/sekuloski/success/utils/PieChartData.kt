@@ -12,21 +12,14 @@ import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.github.mikephil.charting.utils.MPPointF
 import mk.sekuloski.success.R
+import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
 
 fun initPie(
     pieChart: PieChart,
     context: Context,
-    bills: Int,
-    groceries: Int,
-    takeawayFood: Int,
-    football: Int,
-    hanging_out: Int,
-    musicGear: Int,
-    sportsGear: Int,
-    gamingGear: Int,
-    furniture: Int
+    categories: ArrayList<Int>
 ) {
-    val colors = setData(pieChart, bills, groceries, takeawayFood, football, hanging_out, musicGear, sportsGear, gamingGear, furniture)
+    val colors = setData(pieChart, categories)
     pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler, colors)
 
     pieChart.description.isEnabled = false
@@ -63,15 +56,7 @@ fun initPie(
 
 fun setData(
     pieChart: PieChart,
-    bills: Int,
-    groceries: Int,
-    takeaway_food: Int,
-    football: Int,
-    hanging_out: Int,
-    music_gear: Int,
-    sports_gear: Int,
-    gaming_gear: Int,
-    furniture: Int
+    categories: ArrayList<Int>
 ): MutableMap<String, Int> {
     val entries = ArrayList<PieEntry>()
     val colors = HashMap<String, Int>()
@@ -101,67 +86,15 @@ fun setData(
     // The sort order below represents the order of colors.
     var counter = 1
 
-    if (groceries > 0)
+    for (category: ExpenseType in ExpenseType.values())
     {
-        val label = "$counter. Groceries"
-        counter++
-        entries.add(PieEntry(groceries.toFloat(), label))
-        colors[label] = Color.parseColor(allColors.removeAt(0))
-    }
-    if (hanging_out > 0)
-    {
-        val label = "$counter. Hang Outs"
-        counter++
-        entries.add(PieEntry(hanging_out.toFloat(), label))
-        colors[label] = Color.parseColor(allColors.removeAt(0))
-    }
-    if (music_gear > 0)
-    {
-        val label = "$counter. Music Gear"
-        counter++
-        entries.add(PieEntry(music_gear.toFloat(), label))
-        colors[label] = Color.parseColor(allColors.removeAt(0))
-    }
-    if (football > 0)
-    {
-        val label = "$counter. Football"
-        counter++
-        entries.add(PieEntry(football.toFloat(), label))
-        colors[label] = Color.parseColor(allColors.removeAt(0))
-    }
-    if (sports_gear > 0)
-    {
-        val label = "$counter. Sports Gear"
-        counter++
-        entries.add(PieEntry(sports_gear.toFloat(), label))
-        colors[label] = Color.parseColor(allColors.removeAt(0))
-    }
-    if (takeaway_food > 0)
-    {
-        val label = "$counter. Takeaway Food"
-        counter++
-        entries.add(PieEntry(takeaway_food.toFloat(), label))
-        colors[label] = Color.parseColor(allColors.removeAt(0))
-    }
-    if (bills > 0)
-    {
-        val label = "$counter. Bills"
-        counter++
-        entries.add(PieEntry(bills.toFloat(), label))
-        colors[label] = Color.parseColor(allColors.removeAt(0))
-    }
-    if (furniture > 0)
-    {
-        val label = "$counter. Furniture"
-        counter++
-        entries.add(PieEntry(furniture.toFloat(), label))
-        colors[label] = Color.parseColor(allColors.removeAt(0))
-    }
-    if (gaming_gear > 0)
-    {
-        val label = "$counter. Gaming Gear"
-        entries.add(PieEntry(gaming_gear.toFloat(), label))
-        colors[label] = Color.parseColor(allColors.removeAt(0))
+        if (categories[category.ordinal] > 0)
+        {
+            val label = "${counter.toString().padStart(2, '0')}. ${ExpenseType.getValues()[category.ordinal]}"
+            counter++
+            entries.add(PieEntry(categories[category.ordinal].toFloat(), label))
+            colors[label] = Color.parseColor(allColors.removeAt(0))
+        }
     }
 
     if (entries.size == 0)
@@ -194,4 +127,13 @@ fun setData(
 
     pieChart.data = data
     return finalColors
+}
+
+fun resetCategories(): ArrayList<Int> {
+    val categories = ArrayList<Int>()
+    for (category: ExpenseType in ExpenseType.values())
+    {
+        categories.add(0)
+    }
+    return categories
 }
