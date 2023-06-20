@@ -17,14 +17,15 @@ import mk.sekuloski.success.data.remote.services.workouts.WorkoutsService
 import mk.sekuloski.success.databinding.FragmentWorkoutsBinding
 import java.time.LocalDateTime
 
-const val TAG = "Workouts Fragment"
+//const val TAG = "Workouts Fragment"
 
-class WorkoutsFragment(private val workoutsService: WorkoutsService) : Fragment(R.layout.fragment_workouts), CoroutineScope by MainScope() {
+class WorkoutsFragment(
+    private val workoutsService: WorkoutsService
+    ) : Fragment(R.layout.fragment_workouts), CoroutineScope by MainScope() {
+
     private var _binding: FragmentWorkoutsBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var workouts: List<Workout>
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,6 +37,8 @@ class WorkoutsFragment(private val workoutsService: WorkoutsService) : Fragment(
 
     override fun onResume() {
         super.onResume()
+
+        (context as MainActivity).supportActionBar?.title = "Workouts"
         val otherWorkoutsRecyclerView = binding.rvOtherWorkouts
 
         launch {

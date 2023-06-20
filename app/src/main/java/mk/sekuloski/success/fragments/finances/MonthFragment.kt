@@ -57,6 +57,7 @@ class MonthFragment(
     override fun onResume() {
         super.onResume()
 
+        (context as MainActivity).supportActionBar?.title = month.name
         val normalPaymentsRecyclerView = binding.rvPayments
         val sixMonthPaymentsRecyclerView = binding.rvSixMonthPayments
         val threeMonthPaymentsRecyclerView = binding.rvThreeMonthPayments

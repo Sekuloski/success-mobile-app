@@ -45,7 +45,6 @@ class PaymentFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (context as MainActivity).supportActionBar?.title = payment.name
         binding.tvPaymentCost.text = payment.amount.toString()
         binding.tvPaymentDate.text = payment.date.toString()
         binding.tvPaymentPaid.text = payment.paid.toString()
@@ -172,5 +171,11 @@ class PaymentFragment(
             }
             builder.show()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        (context as MainActivity).supportActionBar?.title = payment.name
     }
 }

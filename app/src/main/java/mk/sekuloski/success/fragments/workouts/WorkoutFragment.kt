@@ -11,8 +11,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
+import mk.sekuloski.success.MainActivity
 import mk.sekuloski.success.R
-import mk.sekuloski.success.data.remote.dto.workouts.Exercise
 import mk.sekuloski.success.data.remote.dto.workouts.Workout
 import mk.sekuloski.success.databinding.FragmentWorkoutBinding
 import java.io.InputStream
@@ -36,7 +36,6 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.btnAdd.setOnClickListener {
             val value = binding.etReps.text.toString().toInt() + 1
             binding.etReps.text = value.toString()
@@ -132,6 +131,11 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
                 onPause = false
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (context as MainActivity).supportActionBar?.title = workout.name
     }
 
     override fun onDestroyView() {

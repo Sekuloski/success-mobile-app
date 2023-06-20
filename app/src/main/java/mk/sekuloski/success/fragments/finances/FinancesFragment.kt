@@ -48,6 +48,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
         super.onResume()
         val monthsRecyclerView = binding.rvMonths
 
+        (context as MainActivity).supportActionBar?.title = "Finances"
         launch {
             months = client.getMonths()
             monthsRecyclerView.adapter = MonthAdapter(requireContext(), months, client)

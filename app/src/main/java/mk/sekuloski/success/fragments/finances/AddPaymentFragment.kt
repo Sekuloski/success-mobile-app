@@ -157,22 +157,10 @@ class AddPaymentFragment(_locations: HashMap<String, Int>, _client: FinancesServ
         }
     }
 
-    /*
-    {
-        "amount": 207,
-        "date": "2023-05-18T16:00:00+01:00",
-        "name": "Drinks for Niki and Petar",
-        "necessary": true,
-        "expense_type": 6,
-        "location": 15,
-        "pay": true,
-        "cash": false,
-        "parts": {
-            "Koka Kola x2 1.75l": 138,
-            "Chipsy Chips Domakjinski": 69
-        }
+    override fun onResume() {
+        super.onResume()
+        (context as MainActivity).supportActionBar?.title = "Add Payment"
     }
-    */
 
     override fun onDestroyView() {
         super.onDestroyView()

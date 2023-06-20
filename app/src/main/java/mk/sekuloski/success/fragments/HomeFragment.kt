@@ -11,6 +11,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import mk.sekuloski.success.MainActivity
 import mk.sekuloski.success.R
 import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.data.remote.services.workouts.WorkoutsService
@@ -50,6 +51,7 @@ class HomeFragment(private val financesService: FinancesService, private val wor
     override fun onResume() {
         super.onResume()
 
+        (context as MainActivity).supportActionBar?.title = "Success"
         launch {
             val newData = financesService.getMainInfo()
             if (newData != null) {
