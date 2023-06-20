@@ -35,7 +35,9 @@ class MonthFragment(
     private lateinit var fullThreeMonthAdapter: PaymentAdapter
     private lateinit var fullLoanAdapter: PaymentAdapter
     private lateinit var fullSubscriptionAdapter: SubscriptionAdapter
-    var groceries = 0; var takeawayFood = 0; var football = 0; var hangingOut = 0; var musicGear = 0; var sportsGear = 0; var gamingGear = 0; var furniture = 0
+    private var groceries = 0; private var takeawayFood = 0; private var football = 0
+    private var hangingOut = 0; private var musicGear = 0; private var sportsGear = 0
+    private var gamingGear = 0; private var furniture = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -165,11 +167,11 @@ class MonthFragment(
                 if (binding.btnShowMoreNormal.text.toString() == "See more") {
                     normalPaymentsRecyclerView.swapAdapter(fullNormalAdapter, true)
                     normalPaymentsRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                    binding.btnShowMoreNormal.text = "See less"
+                    binding.btnShowMoreNormal.text = getString(R.string.see_less)
                 } else {
                     normalPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
                     normalPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                    binding.btnShowMoreNormal.text = "See more"
+                    binding.btnShowMoreNormal.text = getString(R.string.see_more)
                 }
             }
 
@@ -177,11 +179,11 @@ class MonthFragment(
                 if (binding.btnShowMoreSixMonth.text.toString() == "See more") {
                     sixMonthPaymentsRecyclerView.swapAdapter(fullSixMonthAdapter, true)
                     sixMonthPaymentsRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                    binding.btnShowMoreSixMonth.text = "See less"
+                    binding.btnShowMoreSixMonth.text = getString(R.string.see_less)
                 } else {
                     sixMonthPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
                     sixMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                    binding.btnShowMoreSixMonth.text = "See more"
+                    binding.btnShowMoreSixMonth.text = getString(R.string.see_more)
                 }
             }
 
@@ -189,11 +191,11 @@ class MonthFragment(
                 if (binding.btnShowMoreThreeMonth.text.toString() == "See more") {
                     threeMonthPaymentsRecyclerView.swapAdapter(fullThreeMonthAdapter, true)
                     threeMonthPaymentsRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                    binding.btnShowMoreThreeMonth.text = "See less"
+                    binding.btnShowMoreThreeMonth.text = getString(R.string.see_less)
                 } else {
                     threeMonthPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
                     threeMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                    binding.btnShowMoreThreeMonth.text = "See more"
+                    binding.btnShowMoreThreeMonth.text = getString(R.string.see_more)
                 }
             }
 
@@ -201,11 +203,11 @@ class MonthFragment(
                 if (binding.btnShowMoreLoans.text.toString() == "See more") {
                     loansRecyclerView.swapAdapter(fullLoanAdapter, true)
                     loansRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                    binding.btnShowMoreLoans.text = "See less"
+                    binding.btnShowMoreLoans.text = getString(R.string.see_less)
                 } else {
                     loansRecyclerView.swapAdapter(emptyAdapter, true)
                     loansRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                    binding.btnShowMoreLoans.text = "See more"
+                    binding.btnShowMoreLoans.text = getString(R.string.see_more)
                 }
             }
 
@@ -213,11 +215,11 @@ class MonthFragment(
                 if (binding.btnShowMoreSubscriptions.text.toString() == "See more") {
                     subscriptionsRecyclerView.swapAdapter(fullSubscriptionAdapter, true)
                     subscriptionsRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                    binding.btnShowMoreSubscriptions.text = "See less"
+                    binding.btnShowMoreSubscriptions.text = getString(R.string.see_less)
                 } else {
                     subscriptionsRecyclerView.swapAdapter(emptyAdapter, true)
                     subscriptionsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                    binding.btnShowMoreSubscriptions.text = "See more"
+                    binding.btnShowMoreSubscriptions.text = getString(R.string.see_more)
                 }
             }
         }

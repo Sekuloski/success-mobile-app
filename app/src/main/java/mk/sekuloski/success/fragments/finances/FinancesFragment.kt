@@ -30,7 +30,9 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
     private lateinit var locations: ArrayList<Location>
     private lateinit var months: ArrayList<Month>
     private lateinit var payments: List<Payment>
-    var groceries = 0; var takeawayFood = 0; var football = 0; var hangingOut = 0; var musicGear = 0; var sportsGear = 0; var gamingGear = 0; var furniture = 0
+    private var groceries = 0; private var takeawayFood = 0; private var football = 0
+    private var hangingOut = 0; private var musicGear = 0; private var sportsGear = 0
+    private var gamingGear = 0; private var furniture = 0
 
 
     override fun onCreateView(
