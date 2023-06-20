@@ -16,6 +16,7 @@ import mk.sekuloski.success.R
 fun initPie(
     pieChart: PieChart,
     context: Context,
+    bills: Int,
     groceries: Int,
     takeawayFood: Int,
     football: Int,
@@ -25,7 +26,7 @@ fun initPie(
     gamingGear: Int,
     furniture: Int
 ) {
-    val colors = setData(pieChart, groceries, takeawayFood, football, hanging_out, musicGear, sportsGear, gamingGear, furniture)
+    val colors = setData(pieChart, bills, groceries, takeawayFood, football, hanging_out, musicGear, sportsGear, gamingGear, furniture)
     pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler, colors)
 
     pieChart.description.isEnabled = false
@@ -62,6 +63,7 @@ fun initPie(
 
 fun setData(
     pieChart: PieChart,
+    bills: Int,
     groceries: Int,
     takeaway_food: Int,
     football: Int,
@@ -75,14 +77,22 @@ fun setData(
     val colors = HashMap<String, Int>()
 
     val allColors = mutableListOf( // 8 Colors for now
-        "#4777c0",
-        "#4fb3e8",
-        "#99cf43",
-        "#a374c6",
-        "#fd9a47",
-        "#fdc135",
-        "#eb6e7a",
-        "#6785c2"
+        "#4777c0", // Blue
+        "#4fb3e8", // Light Blue
+        "#99cf43", // Lime Green
+        "#a374c6", // Purple
+        "#fd9a47", // Orange
+        "#fdc135", // Yellow
+        "#eb6e7a", // Pink
+        "#6785c2", // Dark Blue
+        "#ff6384", // Coral Pink
+        "#36a2eb", // Sky Blue
+        "#ffce56", // Golden Yellow
+        "#7bc043", // Lime Green
+        "#cc65fe", // Lavender
+        "#4bc0c0", // Turquoise
+        "#ff9f40", // Tangerine
+        "#6c757d"  // Steel Gray
         )
         .sorted()
         .toMutableList()
@@ -90,6 +100,7 @@ fun setData(
     // Colors are always sorted, as well as the HashMap of Labels.
     // The sort order below represents the order of colors.
     var counter = 1
+
     if (groceries > 0)
     {
         val label = "$counter. Groceries"
@@ -130,6 +141,13 @@ fun setData(
         val label = "$counter. Takeaway Food"
         counter++
         entries.add(PieEntry(takeaway_food.toFloat(), label))
+        colors[label] = Color.parseColor(allColors.removeAt(0))
+    }
+    if (bills > 0)
+    {
+        val label = "$counter. Bills"
+        counter++
+        entries.add(PieEntry(bills.toFloat(), label))
         colors[label] = Color.parseColor(allColors.removeAt(0))
     }
     if (furniture > 0)

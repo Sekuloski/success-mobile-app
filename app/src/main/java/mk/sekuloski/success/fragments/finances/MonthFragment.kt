@@ -37,7 +37,7 @@ class MonthFragment(
     private lateinit var fullSubscriptionAdapter: SubscriptionAdapter
     private var groceries = 0; private var takeawayFood = 0; private var football = 0
     private var hangingOut = 0; private var musicGear = 0; private var sportsGear = 0
-    private var gamingGear = 0; private var furniture = 0
+    private var gamingGear = 0; private var furniture = 0; private var bills = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,7 +88,7 @@ class MonthFragment(
         launch {
             val payments = client.getMonthPayments(month.id, month.name.split(" ")[1].toInt())
             val allSubscriptions = client.getSubscriptions()
-            groceries = 0; takeawayFood = 0; football = 0; hangingOut = 0; musicGear = 0; sportsGear = 0; gamingGear = 0; furniture = 0
+            groceries = 0; takeawayFood = 0; football = 0; hangingOut = 0; musicGear = 0; sportsGear = 0; gamingGear = 0; furniture = 0; bills = 0
             var normalSum = 0; var threeMonthSum = 0; var sixMonthSum = 0; var loanSum = 0; var subscriptionSum = 0
             val normal = ArrayList<Payment>(); val threeMonth =  ArrayList<Payment>(); val sixMonth = ArrayList<Payment>(); val loan =  ArrayList<Payment>()
             val activeSubscriptions = ArrayList<Subscription>()
@@ -102,6 +102,7 @@ class MonthFragment(
                     if (!current && subscription.hypothetical)
                     {
                         when (subscription.expense_type) {
+                            ExpenseType.BILL.ordinal -> if (subscription.amount > 0) bills += subscription.amount
                             ExpenseType.GROCERIES.ordinal -> if (subscription.amount > 0) groceries += subscription.amount
                             ExpenseType.TAKEAWAY_FOOD.ordinal -> if (subscription.amount > 0) takeawayFood += subscription.amount
                             ExpenseType.FOOTBALL.ordinal -> if (subscription.amount > 0) football += subscription.amount
@@ -118,6 +119,7 @@ class MonthFragment(
             for (payment: Payment in payments)
             {
                 when (payment.expense_type) {
+                    ExpenseType.BILL.ordinal -> if (payment.amount > 0) bills += payment.amount
                     ExpenseType.GROCERIES.ordinal -> if (payment.amount > 0) groceries += payment.amount
                     ExpenseType.TAKEAWAY_FOOD.ordinal -> if (payment.amount > 0) takeawayFood += payment.amount
                     ExpenseType.FOOTBALL.ordinal -> if (payment.amount > 0) football += payment.amount
@@ -167,6 +169,7 @@ class MonthFragment(
             initPie(
                 binding.pieChart,
                 requireContext(),
+                bills,
                 groceries,
                 takeawayFood,
                 football,

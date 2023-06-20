@@ -32,7 +32,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
     private lateinit var payments: List<Payment>
     private var groceries = 0; private var takeawayFood = 0; private var football = 0
     private var hangingOut = 0; private var musicGear = 0; private var sportsGear = 0
-    private var gamingGear = 0; private var furniture = 0
+    private var gamingGear = 0; private var furniture = 0; private var bills = 0
 
 
     override fun onCreateView(
@@ -167,9 +167,10 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
 
     private fun configurePie()
     {
-        groceries = 0; takeawayFood = 0; football = 0; hangingOut = 0; musicGear = 0; sportsGear = 0; gamingGear = 0; furniture = 0
+        groceries = 0; takeawayFood = 0; football = 0; hangingOut = 0; musicGear = 0; sportsGear = 0; gamingGear = 0; furniture = 0; bills = 0
         for (payment: Payment in payments) {
             when (payment.expense_type) {
+                ExpenseType.BILL.ordinal -> if (ExpenseType.BILL in expenseList && payment.amount > 0) bills += payment.amount
                 ExpenseType.GROCERIES.ordinal -> if (ExpenseType.GROCERIES in expenseList && payment.amount > 0) groceries += payment.amount
                 ExpenseType.TAKEAWAY_FOOD.ordinal -> if (ExpenseType.TAKEAWAY_FOOD in expenseList && payment.amount > 0) takeawayFood += payment.amount
                 ExpenseType.FOOTBALL.ordinal -> if (ExpenseType.FOOTBALL in expenseList && payment.amount > 0) football += payment.amount
@@ -183,7 +184,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
         initPie(
             binding.pieChart,
             requireContext(),
-            groceries, takeawayFood, football, hangingOut, musicGear, sportsGear, gamingGear, furniture
+            bills, groceries, takeawayFood, football, hangingOut, musicGear, sportsGear, gamingGear, furniture
         )
     }
 
