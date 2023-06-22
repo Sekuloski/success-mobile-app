@@ -9,8 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import mk.sekuloski.success.MainActivity
 import mk.sekuloski.success.R
 import mk.sekuloski.success.data.remote.dto.workouts.Workout
@@ -58,13 +61,7 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
         val currentReps = mutableListOf(0, 0, 0, 0, 0)
         val exercisesFromWorkout = workout.exercises
 
-        try {
-            val inputStream = URL("https://upload.wikimedia.org/wikipedia/commons/5/59/Dipexercise.svg").content as InputStream
-
-            binding.ivExercise.setImageDrawable(Drawable.createFromStream(inputStream, "Dips"))
-        } catch (e: Exception) {
-            Log.e("Workout", "Can't download image!")
-        }
+        setImage(currentExercise)
 
         binding.tvExerciseName.text = workout.exercises[currentExercise].name
         binding.tvReps.text = currentReps.toString()
@@ -101,6 +98,7 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
                         binding.tvReps.text = currentReps.toString()
 
                         currentExercise++
+                        setImage(currentExercise)
                         currentSet = 0
                         binding.tvExerciseName.text = workout.exercises[currentExercise].name
                         updateTimer(workout.exercises[currentExercise].rest.toLong())
@@ -109,6 +107,24 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
                 binding.btnNext.text = getString(R.string.skip)
                 true
             }
+        }
+    }
+
+    private fun setImage(currentExercise: Int) {
+        binding.loadingPanel.visibility = View.VISIBLE
+        if (workout.exercises[currentExercise].image_url == null)
+        {
+            Log.e("Workout", "Can't download image for ${workout.exercises[currentExercise].name}! URL is empty.")
+            return
+        }
+        try {
+            launch {
+                Picasso.get().load(workout.exercises[currentExercise].image_url)
+                    .into(binding.ivExercise)
+                binding.loadingPanel.visibility = View.GONE
+            }
+        } catch (e: IllegalArgumentException) {
+            Log.e("Workout", "Can't download image for ${workout.exercises[currentExercise].name}! URL is empty.")
         }
     }
 
