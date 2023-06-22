@@ -123,7 +123,7 @@ class WorkoutsServiceImpl(
         return try {
             val body = HashMap<String, String>()
             body["id"] = id.toString()
-            client.get {
+            client.post {
                 url(WorkoutsApiRoutes.UPDATE_WORKOUT)
                 contentType(ContentType.Application.Json)
                 setBody(body)

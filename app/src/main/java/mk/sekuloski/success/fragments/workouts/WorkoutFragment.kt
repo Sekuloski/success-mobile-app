@@ -76,8 +76,13 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
                 currentReps[currentSet] = binding.etReps.text.toString().toInt()
                 binding.tvReps.text = currentReps.toString()
                 launch {
-                    val response = client.updateExercise(workout.exercises[currentExercise].id, currentReps.joinToString(separator = ","))
-                    val toast = Toast(requireContext())
+                    var response = client.updateExercise(workout.exercises[currentExercise].id, currentReps.joinToString(separator = ","))
+                    var toast = Toast(requireContext())
+                    toast.setText(response)
+                    toast.show()
+
+                    response = client.updateWorkout(workout.id)
+                    toast = Toast(requireContext())
                     toast.setText(response)
                     toast.show()
                 }
@@ -89,14 +94,13 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
 
             onPause = if (onPause) {
                 // Exercise
-                binding.btnNext.text = getString(R.string.done)
                 timer.cancel()
+                binding.btnNext.text = getString(R.string.done)
                 binding.tvTimer.visibility = View.INVISIBLE
                 binding.llRepCount.visibility = View.VISIBLE
                 false
             } else {
                 // On rest
-                timer.start()
                 binding.tvTimer.visibility = View.VISIBLE
                 binding.llRepCount.visibility = View.INVISIBLE
 
@@ -128,6 +132,7 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
                     binding.tvLastSet.text = workout.exercises[currentExercise].last_set
                     updateTimer(workout.exercises[currentExercise].rest.toLong())
                 }
+                timer.start()
                 binding.btnNext.text = getString(R.string.skip)
                 true
             }
