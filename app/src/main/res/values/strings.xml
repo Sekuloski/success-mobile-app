@@ -49,4 +49,6 @@
     <string name="category">Category</string>
     <string name="res_true">True</string>
     <string name="takeaway_food">Takeaway Food</string>
+    <string name="best_set">Best Set</string>
+    <string name="last_set">Last Set</string>
 </resources>

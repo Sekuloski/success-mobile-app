@@ -6,6 +6,7 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.get
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.ContentType
@@ -95,7 +96,7 @@ class WorkoutsServiceImpl(
             val body = HashMap<String, String>()
             body["id"] = id.toString()
             body["set"] = set
-            client.get {
+            client.post {
                 url(WorkoutsApiRoutes.UPDATE_EXERCISE)
                 contentType(ContentType.Application.Json)
                 setBody(body)
