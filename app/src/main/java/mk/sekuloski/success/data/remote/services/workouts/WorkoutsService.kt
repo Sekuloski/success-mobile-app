@@ -27,6 +27,10 @@ interface WorkoutsService {
 
     suspend fun getWorkoutHistory(): List<WorkoutExecution>
 
+    suspend fun updateExercise(id: Int, set: String): String
+
+    suspend fun updateWorkout(id: Int): String
+
     companion object {
         fun create(): WorkoutsService {
             return WorkoutsServiceImpl(

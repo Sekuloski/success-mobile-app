@@ -6,6 +6,7 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.get
+import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -86,6 +87,61 @@ class WorkoutsServiceImpl(
         } catch(e: Exception) {
             println("Error: ${e.message}")
             emptyList()
+        }
+    }
+
+    override suspend fun updateExercise(id: Int, set: String): String {
+        return try {
+            val body = HashMap<String, String>()
+            body["id"] = id.toString()
+            body["set"] = set
+            client.get {
+                url(WorkoutsApiRoutes.UPDATE_EXERCISE)
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }.body()
+        } catch(e: RedirectResponseException) {
+            // 3xx - responses
+            println("Error: ${e.response.status.description}")
+            e.message
+        } catch(e: ClientRequestException) {
+            // 4xx - responses
+            println("Error: ${e.response.status.description}")
+            e.message
+        } catch(e: ServerResponseException) {
+            // 5xx - responses
+            println("Error: ${e.response.status.description}")
+            e.message
+        } catch(e: Exception) {
+            println("Error: ${e.message}")
+            e.message.toString()
+        }
+    }
+
+    override suspend fun updateWorkout(id: Int): String {
+        return try {
+            val body = HashMap<String, String>()
+            body["id"] = id.toString()
+            client.get {
+                url(WorkoutsApiRoutes.UPDATE_WORKOUT)
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }.body()
+        } catch(e: RedirectResponseException) {
+            // 3xx - responses
+            println("Error: ${e.response.status.description}")
+            e.message
+        } catch(e: ClientRequestException) {
+            // 4xx - responses
+            println("Error: ${e.response.status.description}")
+            e.message
+        } catch(e: ServerResponseException) {
+            // 5xx - responses
+            println("Error: ${e.response.status.description}")
+            e.message
+        } catch(e: Exception) {
+            println("Error: ${e.message}")
+            e.message.toString()
         }
     }
 }
