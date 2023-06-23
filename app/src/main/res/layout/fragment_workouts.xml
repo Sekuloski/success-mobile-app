@@ -21,7 +21,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4"
+            android:layout_weight="2"
             android:background="@drawable/layout_bg"
             android:backgroundTint="@color/md_theme_dark_primaryContainer"
             android:padding="10dp"
@@ -33,7 +33,7 @@
                 android:id="@+id/workoutName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/md_theme_dark_onSecondaryContainer"
+                android:textColor="@color/md_theme_dark_onPrimaryContainer"
                 android:textSize="25sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -47,7 +47,7 @@
                 android:id="@+id/exercise1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/md_theme_dark_onSecondaryContainer"
+                android:textColor="@color/md_theme_dark_onPrimaryContainer"
                 android:textSize="25sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -59,7 +59,7 @@
                 android:id="@+id/exercise2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/md_theme_dark_onSecondaryContainer"
+                android:textColor="@color/md_theme_dark_onPrimaryContainer"
                 android:textSize="25sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -71,7 +71,7 @@
                 android:id="@+id/exercise3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/md_theme_dark_onSecondaryContainer"
+                android:textColor="@color/md_theme_dark_onPrimaryContainer"
                 android:textSize="25sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -83,7 +83,7 @@
                 android:id="@+id/exercise4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/md_theme_dark_onSecondaryContainer"
+                android:textColor="@color/md_theme_dark_onPrimaryContainer"
                 android:textSize="25sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -99,6 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="4"
+            android:padding="16dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/list_workout_history"
             />
@@ -107,6 +108,10 @@
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:textSize="28sp"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:textColor="@color/md_theme_dark_onBackground"
             tools:text="Other Workouts:"
             />
 
@@ -122,11 +127,12 @@
 
         <Button
             android:id="@+id/btnStartNextWorkout"
-            android:layout_weight="1"
+            android:layout_weight="0.25"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/start_workout"
             android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
             />
 
 

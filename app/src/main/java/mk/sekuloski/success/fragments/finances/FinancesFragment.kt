@@ -52,6 +52,7 @@ import mk.sekuloski.success.databinding.FragmentFinancesBinding
 import mk.sekuloski.success.data.remote.dto.finances.Month
 import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.data.remote.dto.finances.Subscription
+import mk.sekuloski.success.ui.theme.AppTheme
 import mk.sekuloski.success.utils.initPie
 import mk.sekuloski.success.utils.resetCategories
 import java.time.LocalDate
@@ -83,37 +84,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
 
     @Composable
     fun Main() {
-        val LightColorScheme = lightColorScheme(
-            primary = colorResource(R.color.md_theme_light_primary),
-            onPrimary = colorResource(R.color.md_theme_light_onPrimary),
-            primaryContainer = colorResource(R.color.md_theme_light_primaryContainer),
-            onPrimaryContainer = colorResource(R.color.md_theme_light_onPrimaryContainer),
-            background = colorResource(R.color.md_theme_light_background)
-        )
-        val DarkColorScheme = darkColorScheme(
-            primary = colorResource(R.color.md_theme_dark_primary),
-            onPrimary = colorResource(R.color.md_theme_dark_onPrimary),
-            primaryContainer = colorResource(R.color.md_theme_dark_primaryContainer),
-            onPrimaryContainer = colorResource(R.color.md_theme_dark_onPrimaryContainer),
-            background = colorResource(R.color.md_theme_dark_background)
-        )
-        val darkTheme = isSystemInDarkTheme()
-        val colorScheme =
-            if (!darkTheme) {
-                LightColorScheme
-            } else {
-                DarkColorScheme
-            }
-        val colors = when {
-//                    darkTheme -> dynamicDarkColorScheme(LocalContext.current)
-//                    !darkTheme -> dynamicLightColorScheme(LocalContext.current)
-            darkTheme -> colorScheme
-            else -> colorScheme
-        }
-        // You're in Compose world!
-        MaterialTheme(
-            colorScheme = colors,
-        ) {
+        AppTheme {
             Finances(Modifier.fillMaxSize())
         }
     }
@@ -206,13 +177,13 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
                 ) {
                     Text(
                         text = month.name,
-                        color = colorResource(R.color.md_theme_dark_onBackground),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold,
                         fontSize = 28.sp
                     )
                     Text(
                         text = amount.toString(),
-                        color = Color(android.graphics.Color.parseColor("#4CAF50")),
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold,
                         fontSize = 28.sp
                     )

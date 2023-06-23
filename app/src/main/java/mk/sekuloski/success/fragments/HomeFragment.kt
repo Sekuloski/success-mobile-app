@@ -1,10 +1,12 @@
 package mk.sekuloski.success.fragments
 
+import android.app.ActivityManager.AppTask
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,6 +42,10 @@ import mk.sekuloski.success.data.remote.dto.workouts.Workout
 import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.data.remote.services.workouts.WorkoutsService
 import mk.sekuloski.success.databinding.FragmentHomeBinding
+import mk.sekuloski.success.ui.theme.AppTheme
+import mk.sekuloski.success.ui.theme.md_theme_dark_onBackground
+import mk.sekuloski.success.ui.theme.md_theme_dark_onPrimaryContainer
+import mk.sekuloski.success.ui.theme.md_theme_dark_primaryContainer
 
 class HomeFragment(
     private val financesService: FinancesService,
@@ -55,7 +62,9 @@ class HomeFragment(
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
             .apply {
                 composeView.setContent {
-                    Home(Modifier.fillMaxSize())
+                    AppTheme {
+                        Home(Modifier.fillMaxSize())
+                    }
                 }
             }
         return binding.root
@@ -90,7 +99,7 @@ class HomeFragment(
                     .padding(16.dp)
                     .padding(start = 48.dp, top = 36.dp),
                 fontSize = 28.sp,
-                color = colorResource(R.color.md_theme_dark_onBackground),
+                color = MaterialTheme.colorScheme.onBackground,
             )
             Box(
                 modifier = Modifier
@@ -99,9 +108,10 @@ class HomeFragment(
                 contentAlignment = Alignment.Center
             )
             {
-                FinancesCard(Modifier
-                    .fillMaxHeight()
-                    .align(Alignment.Center), financesMain)
+                FinancesCard(
+                    Modifier
+                        .fillMaxHeight()
+                        .align(Alignment.Center), financesMain)
             }
             Spacer(
                 modifier = Modifier
@@ -130,7 +140,7 @@ class HomeFragment(
             Box(
                 modifier = modifier
                     .fillMaxSize()
-                    .background(colorResource(R.color.md_theme_dark_primaryContainer))
+                    .background(MaterialTheme.colorScheme.primaryContainer)
             ) {
                 Column(modifier = modifier) {
                     TextRow("Amount Left", financesMain.amount_left)
@@ -161,7 +171,7 @@ class HomeFragment(
                     .padding(start = 40.dp, top = 22.dp)
                     .weight(2f),
                 fontSize = 28.sp,
-                color = colorResource(R.color.md_theme_dark_onBackground),
+                color = MaterialTheme.colorScheme.onBackground,
             )
             Box(
                 modifier = Modifier
@@ -202,7 +212,7 @@ class HomeFragment(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(colorResource(R.color.md_theme_dark_primaryContainer))
+                    .background(MaterialTheme.colorScheme.tertiaryContainer)
             ) {
                 Column(
                     modifier = modifier,
@@ -211,14 +221,14 @@ class HomeFragment(
                     Text(
                         text = workout.name,
                         fontSize = 24.sp,
-                        color = colorResource(R.color.md_theme_dark_onPrimaryContainer),
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
                         modifier = Modifier.padding(bottom = 10.dp, top = 10.dp)
                     )
                     for (exercise: Exercise in workout.exercises) {
                         Text(
                             text = exercise.name,
                             fontSize = 22.sp,
-                            color = colorResource(R.color.md_theme_dark_onPrimaryContainer)
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                     }
                 }
@@ -232,6 +242,7 @@ class HomeFragment(
         sum: Int,
         modifier: Modifier = Modifier
     ) {
+        val amount by animateIntAsState(targetValue = sum)
         Row(
             modifier = modifier
                 .fillMaxWidth()
@@ -240,12 +251,12 @@ class HomeFragment(
         ) {
             Text(
                 text = text,
-                color = colorResource(R.color.md_theme_dark_onPrimaryContainer),
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 28.sp
             )
             Text(
-                text = sum.toString(),
-                color = colorResource(R.color.md_theme_dark_onPrimaryContainer),
+                text = amount.toString(),
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 28.sp
             )
         }

@@ -11,19 +11,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,6 +57,11 @@ import mk.sekuloski.success.data.remote.dto.finances.Month
 import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.data.remote.dto.finances.PaymentType
 import mk.sekuloski.success.data.remote.dto.finances.Subscription
+import mk.sekuloski.success.ui.theme.AppTheme
+import mk.sekuloski.success.ui.theme.md_theme_dark_onBackground
+import mk.sekuloski.success.ui.theme.md_theme_dark_onPrimaryContainer
+import mk.sekuloski.success.ui.theme.md_theme_dark_onSecondaryContainer
+import mk.sekuloski.success.ui.theme.md_theme_dark_primaryContainer
 import mk.sekuloski.success.utils.initPie
 import mk.sekuloski.success.utils.resetCategories
 
@@ -77,7 +87,9 @@ class MonthFragment(
             inflater, container, false
         ).apply {
             composeView.setContent {
-                Months(Modifier.fillMaxSize())
+                AppTheme {
+                    Months(Modifier.fillMaxSize())
+                }
             }
         }
         return binding.root
@@ -194,20 +206,22 @@ class MonthFragment(
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = modifier.weight(1f)
+                    modifier = modifier
+                        .weight(1f)
+                        .padding(start = 16.dp)
                 ) {
                     Text(
                         text = title,
-                        color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontSize = 28.sp
                     )
 
                     Text(
                         text = sum.toString(),
-                        color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontSize = 28.sp
                     )
                 }
                 Spacer(modifier = modifier.width(16.dp))
@@ -215,14 +229,13 @@ class MonthFragment(
                     Button(
                         onClick = onClick,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(R.color.md_theme_dark_primaryContainer),
-                            contentColor = colorResource(R.color.md_theme_dark_onPrimaryContainer)
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
                             contentDescription = "Open Dropdown",
-                            tint = Color.White,
                             modifier = modifier.scale(1f, if (isSelected) -1f else 1f)
                         )
 
@@ -237,32 +250,46 @@ class MonthFragment(
 
     @Composable
     fun SubscriptionList(subscriptions: List<Subscription>, modifier: Modifier = Modifier) {
-        LazyColumn {
-            itemsIndexed(subscriptions.sortedBy { it.name }) { _, subscription ->
-                val amount by animateIntAsState(targetValue = subscription.amount)
-                Row(
-                    modifier
-                        .padding(26.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = subscription.name,
-                        overflow = TextOverflow.Ellipsis,
-                        color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
-                    Text(
-                        text = amount.toString(),
-                        color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
+        Card(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            ),
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 10.dp
+            )
+        ) {
+            LazyColumn {
+                itemsIndexed(subscriptions.sortedBy { it.name }) { _, subscription ->
+                    val amount by animateIntAsState(targetValue = subscription.amount)
+                    Row(
+                        modifier
+                            .padding(12.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(
+                            text = subscription.name,
+                            overflow = TextOverflow.Ellipsis,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                        Text(
+                            text = amount.toString(),
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                    }
                 }
             }
         }
+
     }
 
     @Composable
@@ -282,20 +309,22 @@ class MonthFragment(
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = modifier.weight(1f)
+                    modifier = modifier
+                        .weight(1f)
+                        .padding(start = 16.dp)
                 ) {
                     Text(
                         text = title,
-                        color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontSize = 28.sp
                     )
 
                     Text(
                         text = sum.toString(),
-                        color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontSize = 28.sp
                     )
                 }
                 Spacer(modifier = modifier.width(16.dp))
@@ -303,14 +332,13 @@ class MonthFragment(
                     Button(
                         onClick = onClick,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(R.color.md_theme_dark_primaryContainer),
-                            contentColor = colorResource(R.color.md_theme_dark_onPrimaryContainer)
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
                             contentDescription = "Open Dropdown",
-                            tint = Color.White,
                             modifier = modifier.scale(1f, if (isSelected) -1f else 1f)
                         )
 
@@ -328,47 +356,62 @@ class MonthFragment(
         payments: List<Payment>,
         modifier: Modifier = Modifier
     ) {
-        LazyColumn {
-            itemsIndexed(payments.sortedBy { it.name }) { _, payment ->
-                val amount by animateIntAsState(targetValue = payment.amount)
-                Row(
-                    modifier
-                        .padding(26.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            (context as MainActivity).supportFragmentManager.beginTransaction().apply {
-                                replace(R.id.flFragment, PaymentFragment(payment))
-                                addToBackStack(null)
-                                commit()
-                            }
-                        },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+        Card(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            ),
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 10.dp
+            )
+        ) {
+            LazyColumn {
+                itemsIndexed(payments.sortedBy { it.name }) { _, payment ->
+                    val amount by animateIntAsState(targetValue = payment.amount)
                     Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = modifier.weight(1f),
+                        modifier
+                            .padding(12.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                (context as MainActivity).supportFragmentManager
+                                    .beginTransaction()
+                                    .apply {
+                                        replace(R.id.flFragment, PaymentFragment(payment))
+                                        addToBackStack(null)
+                                        commit()
+                                    }
+                            },
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = payment.name,
-                            overflow = TextOverflow.Ellipsis,
-                            color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
-                        )
-                        Text(
-                            text = amount.toString(),
-                            color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = modifier.weight(1f),
+                        ) {
+                            Text(
+                                text = payment.name,
+                                overflow = TextOverflow.Ellipsis,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
+                            Text(
+                                text = amount.toString(),
+                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
+                        }
+
+                        Icon(
+                            if (payment.paid) Icons.Outlined.Check else Icons.Outlined.Close,
+                            "Payment Status",
+                            tint = if (payment.paid) Color.Green else Color.Red,
+                            modifier = Modifier.padding(start = 10.dp)
+                            )
                     }
-
-                    Icon(
-                        if (payment.paid) Icons.Outlined.Check else Icons.Outlined.Close,
-                        "Payment Status",
-                        tint = if (payment.paid) Color.Green else Color.Red,
-
-                        )
                 }
             }
         }
@@ -376,45 +419,51 @@ class MonthFragment(
 
     @Composable
     fun TopView(modifier: Modifier = Modifier) {
+        val amountLeft by animateIntAsState(targetValue = month.left)
+        val expenses by animateIntAsState(targetValue = month.expenses)
         Column(
-            modifier = modifier.fillMaxWidth(0.7f),
+            modifier = modifier
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = month.name,
-                color = colorResource(R.color.md_theme_dark_onBackground),
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
                 fontSize = 28.sp,
+                modifier = Modifier.padding(bottom = 20.dp)
             )
             Row(
-                modifier = modifier,
-                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier
+                    .fillMaxWidth(0.7f),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
                     text = "Amount Left",
-                    color = colorResource(R.color.md_theme_dark_onPrimaryContainer),
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold,
                     fontSize = 28.sp,
                 )
                 Text(
-                    text = month.left.toString(),
-                    color = Color.Green,
+                    text = amountLeft.toString(),
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 28.sp,
                 )
             }
             Row(
-                modifier = modifier,
-                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier
+                    .fillMaxWidth(0.7f),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
                     text = "Expenses",
-                    color = colorResource(R.color.md_theme_dark_onPrimaryContainer),
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold,
                     fontSize = 28.sp
                 )
                 Text(
-                    text = month.expenses.toString(),
-                    color = Color.Red,
+                    text = expenses.toString(),
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 28.sp
                 )
             }
@@ -484,7 +533,12 @@ class MonthFragment(
         return sum
     }
 
-    private fun configurePie(chart: PieChart, payments: List<List<Payment>>, subscriptions: List<Subscription>, current: Boolean) {
+    private fun configurePie(
+        chart: PieChart,
+        payments: List<List<Payment>>,
+        subscriptions: List<Subscription>,
+        current: Boolean
+    ) {
         categories = resetCategories()
         for (list: List<Payment> in payments) {
             for (payment: Payment in list) {
@@ -493,8 +547,7 @@ class MonthFragment(
             }
         }
 
-        if (!current)
-        {
+        if (!current) {
             for (subscription: Subscription in subscriptions) {
                 if (subscription.amount > 0)
                     categories[subscription.expense_type] += subscription.amount
