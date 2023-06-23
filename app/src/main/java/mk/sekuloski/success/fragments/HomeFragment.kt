@@ -110,8 +110,10 @@ class HomeFragment(
             {
                 FinancesCard(
                     Modifier
-                        .fillMaxHeight()
-                        .align(Alignment.Center), financesMain)
+                        .fillMaxSize()
+                        .align(Alignment.Center),
+                    financesMain
+                )
             }
             Spacer(
                 modifier = Modifier
@@ -127,7 +129,7 @@ class HomeFragment(
         financesMain: FinancesMain
     ) {
         Card(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .clickable {
 
@@ -166,22 +168,22 @@ class HomeFragment(
             Text(
                 "Today's Workout:",
                 modifier = modifier
+                    .weight(1f)
                     .fillMaxSize()
                     .padding(16.dp)
-                    .padding(start = 40.dp, top = 22.dp)
-                    .weight(2f),
+                    .padding(start = 48.dp, top = 36.dp),
                 fontSize = 28.sp,
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
-                    .weight(3f)
+                    .weight(1.7f),
+                contentAlignment = Alignment.Center
             ) {
                 WorkoutCard(
                     workout, Modifier
-                        .fillMaxWidth(0.85f)
+                        .fillMaxSize()
                         .align(Alignment.Center)
                 )
             }
@@ -199,8 +201,8 @@ class HomeFragment(
         modifier: Modifier = Modifier
     ) {
         Card(
-            modifier = modifier
-                .fillMaxSize()
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
                 .clickable {
 
                 },
@@ -210,12 +212,13 @@ class HomeFragment(
             )
         ) {
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.tertiaryContainer)
             ) {
                 Column(
-                    modifier = modifier,
+                    modifier = Modifier.fillMaxSize()
+                        .padding(16.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(

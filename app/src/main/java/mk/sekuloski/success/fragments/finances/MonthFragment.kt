@@ -304,7 +304,7 @@ class MonthFragment(
         Column {
             Row(
                 modifier = modifier
-                    .padding(10.dp),
+                    .padding(start = 10.dp, end = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
@@ -317,14 +317,14 @@ class MonthFragment(
                         text = title,
                         color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 28.sp
+                        fontSize = 24.sp
                     )
 
                     Text(
                         text = sum.toString(),
                         color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 28.sp
+                        fontSize = 24.sp
                     )
                 }
                 Spacer(modifier = modifier.width(16.dp))
@@ -431,7 +431,7 @@ class MonthFragment(
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
                 fontSize = 28.sp,
-                modifier = Modifier.padding(bottom = 20.dp)
+                modifier = Modifier.padding(bottom = 20.dp, top = 20.dp)
             )
             Row(
                 modifier = Modifier
