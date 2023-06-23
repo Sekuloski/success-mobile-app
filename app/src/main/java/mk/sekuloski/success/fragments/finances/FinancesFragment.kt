@@ -296,23 +296,6 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
             }
         }
     }
-//    private fun onRefresh(monthsRecyclerView: RecyclerView) {
-//        launch {
-//            months = client.getMonths()
-//            monthsRecyclerView.adapter = MonthAdapter(requireContext(), months, client)
-//            monthsRecyclerView.swapAdapter(MonthAdapter(requireContext(), months, client), true)
-//            val salaryReceived = client.getSalaryInfo()
-//            if (!salaryReceived) {
-//                binding.addSalary.visibility = View.VISIBLE
-//            }
-//
-//            payments = client.getMonthPayments()
-//            binding.fabAddPayment.visibility = View.VISIBLE
-//            configurePie()
-//
-//            binding.swipeRefresh.isRefreshing = false
-//        }
-//    }
 
     private fun configurePie(chart: PieChart, payments: List<Payment>)
     {

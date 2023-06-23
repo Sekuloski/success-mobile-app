@@ -166,7 +166,7 @@ class MonthFragment(
                                 PieChart(it)
                             },
                             update = {
-                                configurePie(it, allPayments)
+                                configurePie(it, allPayments, subscriptions, current)
                             }
                         )
                     }
@@ -484,12 +484,20 @@ class MonthFragment(
         return sum
     }
 
-    private fun configurePie(chart: PieChart, payments: List<List<Payment>>) {
+    private fun configurePie(chart: PieChart, payments: List<List<Payment>>, subscriptions: List<Subscription>, current: Boolean) {
         categories = resetCategories()
         for (list: List<Payment> in payments) {
             for (payment: Payment in list) {
                 if (payment.amount > 0)
                     categories[payment.expense_type] += payment.amount
+            }
+        }
+
+        if (!current)
+        {
+            for (subscription: Subscription in subscriptions) {
+                if (subscription.amount > 0)
+                    categories[subscription.expense_type] += subscription.amount
             }
         }
         initPie(
