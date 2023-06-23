@@ -238,7 +238,7 @@ class MonthFragment(
     @Composable
     fun SubscriptionList(subscriptions: List<Subscription>, modifier: Modifier = Modifier) {
         LazyColumn {
-            itemsIndexed(subscriptions) { _, subscription ->
+            itemsIndexed(subscriptions.sortedBy { it.name }) { _, subscription ->
                 val amount by animateIntAsState(targetValue = subscription.amount)
                 Row(
                     modifier
@@ -329,7 +329,7 @@ class MonthFragment(
         modifier: Modifier = Modifier
     ) {
         LazyColumn {
-            itemsIndexed(payments) { _, payment ->
+            itemsIndexed(payments.sortedBy { it.name }) { _, payment ->
                 val amount by animateIntAsState(targetValue = payment.amount)
                 Row(
                     modifier

@@ -64,7 +64,6 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
     private val binding get() = _binding!!
 //    private val selectedCategories: BooleanArray = BooleanArray(ExpenseType.values().size)
     private var expenseList = ExpenseType.values().toMutableList()
-    private lateinit var locations: ArrayList<Location>
     private var categories = ArrayList<Int>()
 
     override fun onCreateView(
@@ -225,6 +224,12 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
 
     @Composable
     fun FloatingButton(modifier: Modifier = Modifier) {
+        var locations by remember {
+            mutableStateOf(emptyList<Location>())
+        }
+        LaunchedEffect(key1 = true) {
+            locations = client.getLocations()
+        }
         FloatingActionButton(
             onClick = {
                 (context as MainActivity).supportFragmentManager.beginTransaction().apply {
