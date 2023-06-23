@@ -7,13 +7,44 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.colorResource
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.github.mikephil.charting.charts.PieChart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mk.sekuloski.success.*
-import mk.sekuloski.success.adapter.finances.MonthAdapter
+import mk.sekuloski.success.R
 import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
 import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.data.remote.dto.finances.Location
@@ -22,15 +53,17 @@ import mk.sekuloski.success.data.remote.dto.finances.Month
 import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.utils.initPie
 import mk.sekuloski.success.utils.resetCategories
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.fragment_finances), CoroutineScope by MainScope() {
+
+class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.fragment_finances),
+    CoroutineScope by MainScope() {
     private var _binding: FragmentFinancesBinding? = null
     private val binding get() = _binding!!
-    private val selectedCategories: BooleanArray = BooleanArray(ExpenseType.values().size)
+//    private val selectedCategories: BooleanArray = BooleanArray(ExpenseType.values().size)
     private var expenseList = ExpenseType.values().toMutableList()
     private lateinit var locations: ArrayList<Location>
-    private lateinit var months: ArrayList<Month>
-    private lateinit var payments: List<Payment>
     private var categories = ArrayList<Int>()
 
     override fun onCreateView(
@@ -38,132 +71,278 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFinancesBinding.inflate(inflater, container, false)
+        _binding = FragmentFinancesBinding.inflate(
+            inflater, container, false
+        ).apply {
+            composeView.setContent {
+                Main()
+            }
+        }
         return binding.root
+    }
+
+    @Composable
+    fun Main() {
+        val LightColorScheme = lightColorScheme(
+            primary = colorResource(R.color.md_theme_light_primary),
+            onPrimary = colorResource(R.color.md_theme_light_onPrimary),
+            primaryContainer = colorResource(R.color.md_theme_light_primaryContainer),
+            onPrimaryContainer = colorResource(R.color.md_theme_light_onPrimaryContainer),
+            background = colorResource(R.color.md_theme_light_background)
+        )
+        val DarkColorScheme = darkColorScheme(
+            primary = colorResource(R.color.md_theme_dark_primary),
+            onPrimary = colorResource(R.color.md_theme_dark_onPrimary),
+            primaryContainer = colorResource(R.color.md_theme_dark_primaryContainer),
+            onPrimaryContainer = colorResource(R.color.md_theme_dark_onPrimaryContainer),
+            background = colorResource(R.color.md_theme_dark_background)
+        )
+        val darkTheme = isSystemInDarkTheme()
+        val colorScheme =
+            if (!darkTheme) {
+                LightColorScheme
+            } else {
+                DarkColorScheme
+            }
+        val colors = when {
+//                    darkTheme -> dynamicDarkColorScheme(LocalContext.current)
+//                    !darkTheme -> dynamicLightColorScheme(LocalContext.current)
+            darkTheme -> colorScheme
+            else -> colorScheme
+        }
+        // You're in Compose world!
+        MaterialTheme(
+            colorScheme = colors,
+        ) {
+            Finances(Modifier.fillMaxSize())
+        }
+    }
+
+    @Composable
+    fun Finances(modifier: Modifier = Modifier) {
+        var salaryReceived by remember {
+            mutableStateOf(true)
+        }
+        var payments by remember {
+            mutableStateOf(emptyList<Payment>())
+        }
+        LaunchedEffect(key1 = true) {
+            salaryReceived = client.getSalaryInfo()
+            payments = client.getMonthPayments()
+        }
+        Column {
+            Box(modifier = modifier.weight(1f)) {
+                MonthsList()
+            }
+            Box(modifier = modifier.weight(1f)) {
+                if (payments.isNotEmpty())
+                {
+                    AndroidView(
+                        modifier = modifier,
+                        factory = {
+                            PieChart(it)
+                        },
+                        update = {
+                            configurePie(it, payments)
+                        }
+                    )
+                }
+                if (!salaryReceived) {
+                    Box(
+                        contentAlignment = Alignment.BottomCenter,
+                        modifier = modifier
+                            .fillMaxSize()
+                            .padding(bottom = 16.dp)
+                    ) {
+                        Button(
+                            onClick = { onAddSalary() },
+                        ) {
+                            Text(text = "Add Salary")
+                        }
+                    }
+                }
+            }
+        }
+        Box(modifier = modifier, contentAlignment = Alignment.BottomEnd) {
+            FloatingButton(
+                modifier = Modifier
+                    .padding(16.dp),
+            )
+        }
+    }
+
+    @Composable
+    fun MonthsList(modifier: Modifier = Modifier) {
+        var months by remember {
+            mutableStateOf(getNext12Months())
+        }
+        LaunchedEffect(key1 = true) {
+            months = client.getMonths()
+        }
+        LazyColumn {
+            itemsIndexed(months) { index, month ->
+                val amount by animateIntAsState(targetValue = month.left)
+                Row(
+                    modifier
+                        .padding(26.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            (context as MainActivity).supportFragmentManager
+                                .beginTransaction()
+                                .apply {
+                                    replace(
+                                        R.id.flFragment,
+                                        MonthFragment(months[index], client, index == 0)
+                                    )
+                                    addToBackStack(null)
+                                    commit()
+                                }
+                        },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = month.name,
+                        color = colorResource(R.color.md_theme_dark_onBackground),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp
+                    )
+                    Text(
+                        text = amount.toString(),
+                        color = Color(android.graphics.Color.parseColor("#4CAF50")),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp
+                    )
+                }
+            }
+        }
+
+    }
+
+    @Composable
+    fun FloatingButton(modifier: Modifier = Modifier) {
+        FloatingActionButton(
+            onClick = {
+                (context as MainActivity).supportFragmentManager.beginTransaction().apply {
+                    replace(
+                        R.id.flFragment,
+                        AddPaymentFragment(
+                            locations,
+                            locations.associate { it.name to it.id } as HashMap<String, Int>,
+                            client))
+                    addToBackStack(null)
+                    commit()
+                }
+            },
+            modifier = modifier
+        ) {
+            Icon(Icons.Filled.Add, "Add Button")
+        }
+    }
+
+    private fun getNext12Months(): List<Month> {
+        val formatter = DateTimeFormatter.ofPattern("MMMM yyyy")
+        val currentDate = LocalDate.now()
+        val months = mutableListOf<Month>()
+
+        for (i in 0 until 12) {
+            val futureDate = currentDate.plusMonths(i.toLong())
+            val formattedDate = futureDate.format(formatter)
+            months.add(Month(i, formattedDate, 0, 0))
+        }
+
+        return months
+    }
+
+    private fun onAddSalary() {
+        val dialogLayout = layoutInflater.inflate(R.layout.add_salary, null)
+        val waterBillAmount = dialogLayout.findViewById<EditText>(R.id.etWaterBill)
+        val powerBillAmount = dialogLayout.findViewById<EditText>(R.id.etPowerBill)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle("Enter Bills:")
+            .setPositiveButton("OK") { _, _ ->
+                println("OK")
+            }
+            .setNegativeButton("Cancel") {_, _ ->
+                println("Cancelled")
+            }
+            .setView(dialogLayout)
+            .show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            if (waterBillAmount.text.toString() == "") {
+                waterBillAmount.error = "Amount is required!"
+            }
+            else if (powerBillAmount.text.toString() == "") {
+                powerBillAmount.error = "Amount is required!"
+            } else {
+                launch {
+                    val response = client.addSalary(waterBillAmount.text.toString().toInt(), powerBillAmount.text.toString().toInt())
+                    val toast = Toast(it.context)
+                    toast.setText(response)
+                    toast.show()
+                    dialog.dismiss()
+                }
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        val monthsRecyclerView = binding.rvMonths
-
-        (context as MainActivity).supportActionBar?.title = "Finances"
-        launch {
-            months = client.getMonths()
-            monthsRecyclerView.adapter = MonthAdapter(requireContext(), months, client)
-
-            locations = client.getLocations()
-
-            val salaryReceived = client.getSalaryInfo()
-            if (!salaryReceived)
-            {
-                binding.addSalary.visibility = View.VISIBLE
-            }
-
-            payments = client.getMonthPayments()
-
-            binding.fabAddPayment.visibility = View.VISIBLE
-
-            configurePie()
-
-            selectedCategories.fill(true)
-            binding.tvCategories.setOnClickListener {
-                val builder = AlertDialog.Builder(
-                    it.context
-                )
-                builder.setTitle("Categories")
-                builder.setMultiChoiceItems(ExpenseType.getValues(), selectedCategories) { _, which, isChecked ->
-                    if (isChecked) {
-                        expenseList.add(ExpenseType.values()[which])
-                    } else {
-                        expenseList.remove(ExpenseType.values()[which])
-                    }
-                }
-                builder.setPositiveButton("OK") { _, _ ->
-                    resetCategories()
-                    configurePie()
-                }
-                builder.setNegativeButton("Cancel") {_, _ ->
-                    selectedCategories.fill(true)
-                    expenseList = ExpenseType.values().toMutableList()
-                }
-                builder.setNeutralButton("Select All") {_, _ ->
-                    selectedCategories.fill(true)
-                    expenseList = ExpenseType.values().toMutableList()
-                    configurePie()
-                }
-                builder.show()
-            }
-        }
-
-        monthsRecyclerView.setHasFixedSize(true)
-
-        binding.swipeRefresh.setOnRefreshListener {
-            onRefresh(monthsRecyclerView)
-        }
-
-        binding.fabAddPayment.setOnClickListener {
-            (context as MainActivity).supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, AddPaymentFragment(locations, locations.associate { it.name to it.id } as HashMap<String, Int>, client))
-                addToBackStack(null)
-                commit()
-            }
-        }
-
-        binding.addSalary.setOnClickListener { it ->
-            val dialogLayout = layoutInflater.inflate(R.layout.add_salary, null)
-            val waterBillAmount = dialogLayout.findViewById<EditText>(R.id.etWaterBill)
-            val powerBillAmount = dialogLayout.findViewById<EditText>(R.id.etPowerBill)
-
-            val dialog = AlertDialog.Builder(it.context)
-                .setTitle("Enter Bills:")
-                .setPositiveButton("OK") { _, _ ->
-                    println("OK")
-                }
-                .setNegativeButton("Cancel") {_, _ ->
-                    println("Cancelled")
-                }
-                .setView(dialogLayout)
-                .show()
-
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                if (waterBillAmount.text.toString() == "") {
-                    waterBillAmount.error = "Amount is required!"
-                }
-                else if (powerBillAmount.text.toString() == "") {
-                    powerBillAmount.error = "Amount is required!"
-                } else {
-                    launch {
-                        val response = client.addSalary(waterBillAmount.text.toString().toInt(), powerBillAmount.text.toString().toInt())
-                        val toast = Toast(it.context)
-                        toast.setText(response)
-                        toast.show()
-                        dialog.dismiss()
-                    }
-                }
-            }
-
-        }
+//        launch {
+//            locations = client.getLocations()
+//
+//            selectedCategories.fill(true)
+//            binding.tvCategories.setOnClickListener {
+//                val builder = AlertDialog.Builder(
+//                    it.context
+//                )
+//                builder.setTitle("Categories")
+//                builder.setMultiChoiceItems(ExpenseType.getValues(), selectedCategories) { _, which, isChecked ->
+//                    if (isChecked) {
+//                        expenseList.add(ExpenseType.values()[which])
+//                    } else {
+//                        expenseList.remove(ExpenseType.values()[which])
+//                    }
+//                }
+//                builder.setPositiveButton("OK") { _, _ ->
+//                    resetCategories()
+//                    configurePie()
+//                }
+//                builder.setNegativeButton("Cancel") {_, _ ->
+//                    selectedCategories.fill(true)
+//                    expenseList = ExpenseType.values().toMutableList()
+//                }
+//                builder.setNeutralButton("Select All") {_, _ ->
+//                    selectedCategories.fill(true)
+//                    expenseList = ExpenseType.values().toMutableList()
+//                    configurePie()
+//                }
+//                builder.show()
+//            }
+//        }
+//
     }
 
-    private fun onRefresh(monthsRecyclerView: RecyclerView) {
-        launch {
-            months = client.getMonths()
-            monthsRecyclerView.adapter = MonthAdapter(requireContext(), months, client)
-            monthsRecyclerView.swapAdapter(MonthAdapter(requireContext(), months, client), true)
-            val salaryReceived = client.getSalaryInfo()
-            if (!salaryReceived) {
-                binding.addSalary.visibility = View.VISIBLE
-            }
+//    private fun onRefresh(monthsRecyclerView: RecyclerView) {
+//        launch {
+//            months = client.getMonths()
+//            monthsRecyclerView.adapter = MonthAdapter(requireContext(), months, client)
+//            monthsRecyclerView.swapAdapter(MonthAdapter(requireContext(), months, client), true)
+//            val salaryReceived = client.getSalaryInfo()
+//            if (!salaryReceived) {
+//                binding.addSalary.visibility = View.VISIBLE
+//            }
+//
+//            payments = client.getMonthPayments()
+//            binding.fabAddPayment.visibility = View.VISIBLE
+//            configurePie()
+//
+//            binding.swipeRefresh.isRefreshing = false
+//        }
+//    }
 
-            payments = client.getMonthPayments()
-            binding.fabAddPayment.visibility = View.VISIBLE
-            configurePie()
-
-            binding.swipeRefresh.isRefreshing = false
-        }
-    }
-
-    private fun configurePie()
+    private fun configurePie(chart: PieChart, payments: List<Payment>)
     {
         categories = resetCategories()
         for (payment: Payment in payments) {
@@ -171,7 +350,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
                 categories[payment.expense_type] += payment.amount
         }
         initPie(
-            binding.pieChart,
+            chart,
             requireContext(),
             categories
         )
