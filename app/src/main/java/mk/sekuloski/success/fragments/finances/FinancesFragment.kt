@@ -51,6 +51,7 @@ import mk.sekuloski.success.data.remote.dto.finances.Location
 import mk.sekuloski.success.databinding.FragmentFinancesBinding
 import mk.sekuloski.success.data.remote.dto.finances.Month
 import mk.sekuloski.success.data.remote.dto.finances.Payment
+import mk.sekuloski.success.data.remote.dto.finances.Subscription
 import mk.sekuloski.success.utils.initPie
 import mk.sekuloski.success.utils.resetCategories
 import java.time.LocalDate
@@ -126,9 +127,13 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
         var payments by remember {
             mutableStateOf(emptyList<Payment>())
         }
+        var subscriptions by remember {
+            mutableStateOf(emptyList<Subscription>())
+        }
         LaunchedEffect(key1 = true) {
             salaryReceived = client.getSalaryInfo()
             payments = client.getMonthPayments()
+            subscriptions = client.getSubscriptions()
         }
         Column {
             Box(modifier = modifier.weight(1f)) {
@@ -286,44 +291,6 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
             }
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-//        launch {
-//            locations = client.getLocations()
-//
-//            selectedCategories.fill(true)
-//            binding.tvCategories.setOnClickListener {
-//                val builder = AlertDialog.Builder(
-//                    it.context
-//                )
-//                builder.setTitle("Categories")
-//                builder.setMultiChoiceItems(ExpenseType.getValues(), selectedCategories) { _, which, isChecked ->
-//                    if (isChecked) {
-//                        expenseList.add(ExpenseType.values()[which])
-//                    } else {
-//                        expenseList.remove(ExpenseType.values()[which])
-//                    }
-//                }
-//                builder.setPositiveButton("OK") { _, _ ->
-//                    resetCategories()
-//                    configurePie()
-//                }
-//                builder.setNegativeButton("Cancel") {_, _ ->
-//                    selectedCategories.fill(true)
-//                    expenseList = ExpenseType.values().toMutableList()
-//                }
-//                builder.setNeutralButton("Select All") {_, _ ->
-//                    selectedCategories.fill(true)
-//                    expenseList = ExpenseType.values().toMutableList()
-//                    configurePie()
-//                }
-//                builder.show()
-//            }
-//        }
-//
-    }
-
 //    private fun onRefresh(monthsRecyclerView: RecyclerView) {
 //        launch {
 //            months = client.getMonths()

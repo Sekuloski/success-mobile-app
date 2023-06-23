@@ -4,13 +4,47 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.Fragment
+import com.github.mikephil.charting.charts.PieChart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import mk.sekuloski.success.*
-import mk.sekuloski.success.adapter.finances.PaymentAdapter
-import mk.sekuloski.success.adapter.finances.SubscriptionAdapter
 import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.databinding.FragmentMonthBinding
 import mk.sekuloski.success.data.remote.dto.finances.Month
@@ -20,21 +54,17 @@ import mk.sekuloski.success.data.remote.dto.finances.Subscription
 import mk.sekuloski.success.utils.initPie
 import mk.sekuloski.success.utils.resetCategories
 
-const val openedRecyclerViewHeight = 480
-const val closedRecyclerViewHeight = 40
+val titles =
+    listOf("Normal Payments", "Six Month Payments", "Three Month Payments", "Loans")
+
 class MonthFragment(
     private val month: Month,
     private val client: FinancesService,
-    private val current: Boolean
-    ) : Fragment(R.layout.fragment_month), CoroutineScope by MainScope() {
+    private val current: Boolean,
+) : Fragment(R.layout.fragment_month), CoroutineScope by MainScope() {
 
     private var _binding: FragmentMonthBinding? = null
     private val binding get() = _binding!!
-    private lateinit var fullNormalAdapter: PaymentAdapter
-    private lateinit var fullSixMonthAdapter: PaymentAdapter
-    private lateinit var fullThreeMonthAdapter: PaymentAdapter
-    private lateinit var fullLoanAdapter: PaymentAdapter
-    private lateinit var fullSubscriptionAdapter: SubscriptionAdapter
     private var categories = ArrayList<Int>()
 
     override fun onCreateView(
@@ -42,173 +72,423 @@ class MonthFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMonthBinding.inflate(inflater, container, false)
+        _binding = FragmentMonthBinding.inflate(
+            inflater, container, false
+        ).apply {
+            composeView.setContent {
+                Months(Modifier.fillMaxSize())
+            }
+        }
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    @Composable
+    fun Months(modifier: Modifier = Modifier) {
+        var allPayments by remember {
+            mutableStateOf(
+                listOf<List<Payment>>(
+                    emptyList(),
+                    emptyList(),
+                    emptyList(),
+                    emptyList(),
+                    emptyList(),
+                )
+            )
+        }
+        var subscriptions by remember {
+            mutableStateOf(emptyList<Subscription>())
+        }
+        val selectedButtonIndex = remember { mutableStateOf(-1) }
+        LaunchedEffect(key1 = true) {
+            allPayments =
+                sortPayments(client.getMonthPayments(month.id, month.name.split(" ")[1].toInt()))
+            subscriptions = sortSubscriptions(client.getSubscriptions())
+        }
+        Column {
+            TopView(modifier.weight(1f))
+            for (i in titles.indices) {
+                Box(
+                    modifier =
+                    if (selectedButtonIndex.value == -1)
+                        modifier.weight(1f)
+                    else if (selectedButtonIndex.value != i)
+                        modifier.weight(1f)
+                    else
+                        modifier.weight(3f)
+                ) {
 
-        binding.monthName.text = month.name
+                    PaymentsRow(
+                        titles[i],
+                        allPayments[i],
+                        sumPayments(allPayments[i]),
+                        onClick = {
+                            if (selectedButtonIndex.value == i) {
+                                selectedButtonIndex.value = -1
+                            } else {
+                                selectedButtonIndex.value = i
+                            }
+                        },
+                        isSelected = selectedButtonIndex.value == i,
+                    )
+                }
+            }
+            Box(
+                modifier =
+                if (selectedButtonIndex.value == -1)
+                    modifier.weight(1f)
+                else if (selectedButtonIndex.value != titles.size)
+                    modifier.weight(1f)
+                else
+                    modifier.weight(3f)
+            ) {
+
+                SubscriptionsRow(
+                    "Subscriptions",
+                    subscriptions,
+                    sumSubscriptions(subscriptions),
+                    onClick = {
+                        if (selectedButtonIndex.value == titles.size) {
+                            selectedButtonIndex.value = -1
+                        } else {
+                            selectedButtonIndex.value = titles.size
+                        }
+                    },
+                    isSelected = selectedButtonIndex.value == titles.size,
+                )
+            }
+            if (selectedButtonIndex.value == -1) {
+                Box(modifier = modifier.weight(4f)) {
+                    if (allPayments.isNotEmpty()) {
+                        AndroidView(
+                            modifier = modifier,
+                            factory = {
+                                PieChart(it)
+                            },
+                            update = {
+                                configurePie(it, allPayments)
+                            }
+                        )
+                    }
+                }
+            } else {
+                Spacer(modifier = Modifier.weight(2f))
+            }
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
+    @Composable
+    fun SubscriptionsRow(
+        title: String,
+        subscriptions: List<Subscription>,
+        sum: Int,
+        onClick: () -> Unit,
+        isSelected: Boolean,
+        modifier: Modifier = Modifier
+    ) {
+        Column {
+            Row(
+                modifier = modifier
+                    .padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = modifier.weight(1f)
+                ) {
+                    Text(
+                        text = title,
+                        color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
 
-        (context as MainActivity).supportActionBar?.title = month.name
-        val normalPaymentsRecyclerView = binding.rvPayments
-        val sixMonthPaymentsRecyclerView = binding.rvSixMonthPayments
-        val threeMonthPaymentsRecyclerView = binding.rvThreeMonthPayments
-        val loansRecyclerView = binding.rvLoans
-        val subscriptionsRecyclerView = binding.rvSubscriptions
-        val emptyAdapter = PaymentAdapter(requireContext(), ArrayList())
-        normalPaymentsRecyclerView.adapter = emptyAdapter
-        normalPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-        normalPaymentsRecyclerView.setHasFixedSize(true)
-
-        sixMonthPaymentsRecyclerView.adapter = emptyAdapter
-        sixMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-        sixMonthPaymentsRecyclerView.setHasFixedSize(true)
-
-        threeMonthPaymentsRecyclerView.adapter = emptyAdapter
-        threeMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-        threeMonthPaymentsRecyclerView.setHasFixedSize(true)
-
-        loansRecyclerView.adapter = emptyAdapter
-        loansRecyclerView.layoutParams.height = closedRecyclerViewHeight
-        loansRecyclerView.setHasFixedSize(true)
-
-        subscriptionsRecyclerView.adapter = emptyAdapter
-        subscriptionsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-        subscriptionsRecyclerView.setHasFixedSize(true)
-
-
-        launch {
-            val payments = client.getMonthPayments(month.id, month.name.split(" ")[1].toInt())
-            val allSubscriptions = client.getSubscriptions()
-            categories = resetCategories()
-
-            var normalSum = 0; var threeMonthSum = 0; var sixMonthSum = 0; var loanSum = 0; var subscriptionSum = 0
-            val normal = ArrayList<Payment>(); val threeMonth =  ArrayList<Payment>(); val sixMonth = ArrayList<Payment>(); val loan =  ArrayList<Payment>()
-            val activeSubscriptions = ArrayList<Subscription>()
-
-            for (subscription: Subscription in allSubscriptions)
-            {
-                if (subscription.active)
-                {
-                    activeSubscriptions.add(subscription)
-                    subscriptionSum += subscription.amount
-                    if (!current && subscription.hypothetical && subscription.amount > 0)
-                        categories[subscription.expense_type] += subscription.amount
+                    Text(
+                        text = sum.toString(),
+                        color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
                 }
-            }
+                Spacer(modifier = modifier.width(16.dp))
+                Row {
+                    Button(
+                        onClick = onClick,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorResource(R.color.md_theme_dark_primaryContainer),
+                            contentColor = colorResource(R.color.md_theme_dark_onPrimaryContainer)
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Open Dropdown",
+                            tint = Color.White,
+                            modifier = modifier.scale(1f, if (isSelected) -1f else 1f)
+                        )
 
-            for (payment: Payment in payments)
-            {
-                if (payment.amount > 0) categories[payment.expense_type] += payment.amount
-                when (payment.payment_type) {
-                    PaymentType.SINGLE_PAYMENT.ordinal ->
-                    {
-                        normal.add(payment)
-                        if (payment.amount > 0) normalSum += payment.amount
-                    }
-                    PaymentType.THREE_MONTHS.ordinal ->
-                    {
-                        threeMonth.add(payment)
-                        if (payment.amount > 0) threeMonthSum += payment.amount
-                    }
-                    PaymentType.SIX_MONTHS.ordinal ->
-                    {
-                        sixMonth.add(payment)
-                        if (payment.amount > 0) sixMonthSum += payment.amount
-                    }
-                    PaymentType.LOAN.ordinal ->
-                    {
-                        loan.add(payment)
-                        if (payment.amount > 0) loanSum += payment.amount
                     }
                 }
             }
-            fullNormalAdapter = PaymentAdapter(requireContext(), normal.sortedBy { it.name })
-            fullSixMonthAdapter = PaymentAdapter(requireContext(), sixMonth.sortedBy { it.name })
-            fullThreeMonthAdapter = PaymentAdapter(requireContext(), threeMonth.sortedBy { it.name })
-            fullLoanAdapter = PaymentAdapter(requireContext(), loan.sortedBy { it.name })
-            fullSubscriptionAdapter = SubscriptionAdapter(requireContext(), activeSubscriptions.sortedBy { it.name })
-
-            binding.amountLeft.text = month.left.toString()
-            binding.expensesAmount.text = month.expenses.toString()
-            binding.tvNormalSum.text = normalSum.toString()
-            binding.tvSixMonthSum.text = sixMonthSum.toString()
-            binding.tvThreeMonthSum.text = threeMonthSum.toString()
-            binding.tvLoansSum.text = loanSum.toString()
-            binding.tvSubscriptionsSum.text = subscriptionSum.toString()
-
-            initPie(
-                binding.pieChart,
-                requireContext(),
-                categories
-            )
-
-            binding.btnShowMoreNormal.setOnClickListener {
-                if (binding.btnShowMoreNormal.text.toString() == "See more") {
-                    normalPaymentsRecyclerView.swapAdapter(fullNormalAdapter, true)
-                    normalPaymentsRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                    binding.btnShowMoreNormal.text = getString(R.string.see_less)
-                } else {
-                    normalPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
-                    normalPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                    binding.btnShowMoreNormal.text = getString(R.string.see_more)
-                }
+            if (isSelected) {
+                SubscriptionList(subscriptions)
             }
+        }
+    }
 
-            binding.btnShowMoreSixMonth.setOnClickListener {
-                if (binding.btnShowMoreSixMonth.text.toString() == "See more") {
-                    sixMonthPaymentsRecyclerView.swapAdapter(fullSixMonthAdapter, true)
-                    sixMonthPaymentsRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                    binding.btnShowMoreSixMonth.text = getString(R.string.see_less)
-                } else {
-                    sixMonthPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
-                    sixMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                    binding.btnShowMoreSixMonth.text = getString(R.string.see_more)
-                }
-            }
-
-            binding.btnShowMoreThreeMonth.setOnClickListener {
-                if (binding.btnShowMoreThreeMonth.text.toString() == "See more") {
-                    threeMonthPaymentsRecyclerView.swapAdapter(fullThreeMonthAdapter, true)
-                    threeMonthPaymentsRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                    binding.btnShowMoreThreeMonth.text = getString(R.string.see_less)
-                } else {
-                    threeMonthPaymentsRecyclerView.swapAdapter(emptyAdapter, true)
-                    threeMonthPaymentsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                    binding.btnShowMoreThreeMonth.text = getString(R.string.see_more)
-                }
-            }
-
-            binding.btnShowMoreLoans.setOnClickListener {
-                if (binding.btnShowMoreLoans.text.toString() == "See more") {
-                    loansRecyclerView.swapAdapter(fullLoanAdapter, true)
-                    loansRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                    binding.btnShowMoreLoans.text = getString(R.string.see_less)
-                } else {
-                    loansRecyclerView.swapAdapter(emptyAdapter, true)
-                    loansRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                    binding.btnShowMoreLoans.text = getString(R.string.see_more)
-                }
-            }
-
-            binding.btnShowMoreSubscriptions.setOnClickListener {
-                if (binding.btnShowMoreSubscriptions.text.toString() == "See more") {
-                    subscriptionsRecyclerView.swapAdapter(fullSubscriptionAdapter, true)
-                    subscriptionsRecyclerView.layoutParams.height = openedRecyclerViewHeight
-                    binding.btnShowMoreSubscriptions.text = getString(R.string.see_less)
-                } else {
-                    subscriptionsRecyclerView.swapAdapter(emptyAdapter, true)
-                    subscriptionsRecyclerView.layoutParams.height = closedRecyclerViewHeight
-                    binding.btnShowMoreSubscriptions.text = getString(R.string.see_more)
+    @Composable
+    fun SubscriptionList(subscriptions: List<Subscription>, modifier: Modifier = Modifier) {
+        LazyColumn {
+            itemsIndexed(subscriptions) { _, subscription ->
+                val amount by animateIntAsState(targetValue = subscription.amount)
+                Row(
+                    modifier
+                        .padding(26.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = subscription.name,
+                        color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                    Text(
+                        text = amount.toString(),
+                        color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
                 }
             }
         }
+    }
+
+    @Composable
+    fun PaymentsRow(
+        title: String,
+        payments: List<Payment>,
+        sum: Int,
+        onClick: () -> Unit,
+        isSelected: Boolean,
+        modifier: Modifier = Modifier
+    ) {
+        Column {
+            Row(
+                modifier = modifier
+                    .padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = modifier.weight(1f)
+                ) {
+                    Text(
+                        text = title,
+                        color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+
+                    Text(
+                        text = sum.toString(),
+                        color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                }
+                Spacer(modifier = modifier.width(16.dp))
+                Row {
+                    Button(
+                        onClick = onClick,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorResource(R.color.md_theme_dark_primaryContainer),
+                            contentColor = colorResource(R.color.md_theme_dark_onPrimaryContainer)
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Open Dropdown",
+                            tint = Color.White,
+                            modifier = modifier.scale(1f, if (isSelected) -1f else 1f)
+                        )
+
+                    }
+                }
+            }
+            if (isSelected) {
+                PaymentList(payments = payments)
+            }
+        }
+    }
+
+    @Composable
+    fun PaymentList(
+        payments: List<Payment>,
+        modifier: Modifier = Modifier
+    ) {
+        LazyColumn {
+            itemsIndexed(payments) { _, payment ->
+                val amount by animateIntAsState(targetValue = payment.amount)
+                Row(
+                    modifier
+                        .padding(26.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            // Payment View
+                        },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = modifier.weight(1f),
+                    ) {
+                        Text(
+                            text = payment.name,
+                            color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                        Text(
+                            text = amount.toString(),
+                            color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                    }
+
+                    Icon(
+                        if (payment.paid) Icons.Outlined.Check else Icons.Outlined.Close,
+                        "Payment Status",
+                        tint = if (payment.paid) Color.Green else Color.Red,
+
+                        )
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun TopView(modifier: Modifier = Modifier) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth(0.7f),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = month.name,
+                color = colorResource(R.color.md_theme_dark_onBackground),
+                fontWeight = FontWeight.Bold,
+                fontSize = 28.sp,
+            )
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Amount Left",
+                    color = colorResource(R.color.md_theme_dark_onPrimaryContainer),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp,
+                )
+                Text(
+                    text = month.left.toString(),
+                    color = Color.Green,
+                    fontSize = 28.sp,
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Expenses",
+                    color = colorResource(R.color.md_theme_dark_onPrimaryContainer),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp
+                )
+                Text(
+                    text = month.expenses.toString(),
+                    color = Color.Red,
+                    fontSize = 28.sp
+                )
+            }
+        }
+    }
+
+    private fun sortPayments(payments: List<Payment>): List<List<Payment>> {
+        val normal = ArrayList<Payment>()
+        val threeMonth = ArrayList<Payment>()
+        val sixMonth = ArrayList<Payment>()
+        val loan = ArrayList<Payment>()
+        for (payment: Payment in payments) {
+            if (payment.amount > 0) categories[payment.expense_type] += payment.amount
+            when (payment.payment_type) {
+                PaymentType.SINGLE_PAYMENT.ordinal -> {
+                    normal.add(payment)
+                }
+
+                PaymentType.THREE_MONTHS.ordinal -> {
+                    threeMonth.add(payment)
+                }
+
+                PaymentType.SIX_MONTHS.ordinal -> {
+                    sixMonth.add(payment)
+                }
+
+                PaymentType.LOAN.ordinal -> {
+                    loan.add(payment)
+                }
+            }
+        }
+
+        return listOf(normal, sixMonth, threeMonth, loan)
+    }
+
+    private fun sumPayments(payments: List<Payment>): Int {
+        var sum = 0
+        for (payment: Payment in payments) {
+            if (payment.amount > 0) sum += payment.amount
+        }
+
+        return sum
+    }
+
+    private fun sortSubscriptions(subscriptions: List<Subscription>): List<Subscription> {
+        val activeSubscriptions = ArrayList<Subscription>()
+        var subscriptionSum = 0
+
+        for (subscription: Subscription in subscriptions) {
+            if (subscription.active) {
+                activeSubscriptions.add(subscription)
+                subscriptionSum += subscription.amount
+                if (!current && subscription.hypothetical && subscription.amount > 0)
+                    categories[subscription.expense_type] += subscription.amount
+            }
+        }
+
+        return activeSubscriptions
+    }
+
+    private fun sumSubscriptions(subscriptions: List<Subscription>): Int {
+        var sum = 0
+        for (subscription: Subscription in subscriptions) {
+            if (subscription.amount > 0) sum += subscription.amount
+        }
+
+        return sum
+    }
+
+    private fun configurePie(chart: PieChart, payments: List<List<Payment>>) {
+        categories = resetCategories()
+        for (list: List<Payment> in payments) {
+            for (payment: Payment in list) {
+                if (payment.amount > 0)
+                    categories[payment.expense_type] += payment.amount
+            }
+        }
+        initPie(
+            chart,
+            requireContext(),
+            categories
+        )
     }
 
     override fun onDestroyView() {
