@@ -130,10 +130,8 @@ fun setData(
 }
 
 fun resetCategories(): ArrayList<Int> {
-    val categories = ArrayList<Int>()
-    for (category: ExpenseType in ExpenseType.values())
-    {
-        categories.add(0)
-    }
+    val categories = ArrayList<Int>(ExpenseType.values().size)
+    categories.fill(0)
+
     return categories
 }
