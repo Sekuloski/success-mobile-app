@@ -113,7 +113,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
                 if (payments.isNotEmpty())
                 {
                     AndroidView(
-                        modifier = modifier,
+                        modifier = Modifier.fillMaxSize(0.9f).align(Alignment.Center),
                         factory = {
                             PieChart(it)
                         },
@@ -154,12 +154,14 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
         LaunchedEffect(key1 = true) {
             months = client.getMonths()
         }
-        LazyColumn {
+        LazyColumn (
+            modifier = Modifier.padding(top = 40.dp)
+                ) {
             itemsIndexed(months) { index, month ->
                 val amount by animateIntAsState(targetValue = month.left)
                 Row(
                     modifier
-                        .padding(26.dp)
+                        .padding(20.dp)
                         .fillMaxWidth()
                         .clickable {
                             (context as MainActivity).supportFragmentManager
