@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -105,7 +106,7 @@ class MonthFragment(
             subscriptions = sortSubscriptions(client.getSubscriptions())
         }
         Column {
-            TopView(modifier.weight(1f))
+            TopView(modifier.weight(2f))
             for (i in titles.indices) {
                 Box(
                     modifier =
@@ -248,6 +249,7 @@ class MonthFragment(
                 ) {
                     Text(
                         text = subscription.name,
+                        overflow = TextOverflow.Ellipsis,
                         color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp
@@ -334,7 +336,11 @@ class MonthFragment(
                         .padding(26.dp)
                         .fillMaxWidth()
                         .clickable {
-                            // Payment View
+                            (context as MainActivity).supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flFragment, PaymentFragment(payment))
+                                addToBackStack(null)
+                                commit()
+                            }
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -344,6 +350,7 @@ class MonthFragment(
                     ) {
                         Text(
                             text = payment.name,
+                            overflow = TextOverflow.Ellipsis,
                             color = colorResource(R.color.md_theme_dark_onSecondaryContainer),
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
@@ -370,8 +377,7 @@ class MonthFragment(
     @Composable
     fun TopView(modifier: Modifier = Modifier) {
         Column(
-            modifier = modifier
-                .fillMaxWidth(0.7f),
+            modifier = modifier.fillMaxWidth(0.7f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -381,7 +387,8 @@ class MonthFragment(
                 fontSize = 28.sp,
             )
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = modifier,
+                horizontalArrangement = Arrangement.SpaceAround,
             ) {
                 Text(
                     text = "Amount Left",
@@ -396,7 +403,8 @@ class MonthFragment(
                 )
             }
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = modifier,
+                horizontalArrangement = Arrangement.SpaceAround,
             ) {
                 Text(
                     text = "Expenses",
