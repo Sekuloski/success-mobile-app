@@ -25,6 +25,8 @@ interface WorkoutsService {
 
     suspend fun getWorkouts(): List<Workout>
 
+    suspend fun getWorkoutStatus(): Boolean
+
     suspend fun getWorkoutHistory(): List<WorkoutExecution>
 
     suspend fun updateExercise(id: Int, set: String): String

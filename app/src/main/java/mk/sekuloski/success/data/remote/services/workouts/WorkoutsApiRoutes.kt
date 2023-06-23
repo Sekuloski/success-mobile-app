@@ -11,6 +11,7 @@ object WorkoutsApiRoutes {
     val WORKOUTS = "$BASE_URL/workouts"
     val UPDATE_WORKOUT = "$BASE_URL/workouts/update"
     val WORKOUT_HISTORY = "$BASE_URL/workouts/history"
+    val WORKOUT_STATUS = "$BASE_URL/workouts/today"
     val EXERCISES = "$BASE_URL/exercises"
     val UPDATE_EXERCISE = "$BASE_URL/exercises/update"
 }

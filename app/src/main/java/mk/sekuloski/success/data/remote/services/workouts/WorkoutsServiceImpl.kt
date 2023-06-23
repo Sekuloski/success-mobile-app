@@ -23,7 +23,6 @@ class WorkoutsServiceImpl(
         return try {
             client.get {
                 url(WorkoutsApiRoutes.EXERCISES)
-                contentType(ContentType.Application.Json)
             }.body()
         } catch(e: RedirectResponseException) {
             // 3xx - responses
@@ -47,7 +46,6 @@ class WorkoutsServiceImpl(
         return try {
             client.get {
                 url(WorkoutsApiRoutes.WORKOUTS)
-                contentType(ContentType.Application.Json)
             }.body()
         } catch(e: RedirectResponseException) {
             // 3xx - responses
@@ -67,11 +65,35 @@ class WorkoutsServiceImpl(
         }
     }
 
+    override suspend fun getWorkoutStatus(): Boolean {
+        return try {
+            val results = client.get {
+                url(WorkoutsApiRoutes.WORKOUT_STATUS)
+            }.body() as HashMap<String, Any>
+
+            results["message"] as Boolean
+        } catch(e: RedirectResponseException) {
+            // 3xx - responses
+            println("Error: ${e.response.status.description}")
+            false
+        } catch(e: ClientRequestException) {
+            // 4xx - responses
+            println("Error: ${e.response.status.description}")
+            false
+        } catch(e: ServerResponseException) {
+            // 5xx - responses
+            println("Error: ${e.response.status.description}")
+            false
+        } catch(e: Exception) {
+            println("Error: ${e.message}")
+            false
+        }
+    }
+
     override suspend fun getWorkoutHistory(): List<WorkoutExecution> {
         return try {
             client.get {
                 url(WorkoutsApiRoutes.WORKOUT_HISTORY)
-                contentType(ContentType.Application.Json)
             }.body()
         } catch(e: RedirectResponseException) {
             // 3xx - responses
