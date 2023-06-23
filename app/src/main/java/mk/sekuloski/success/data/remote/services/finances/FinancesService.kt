@@ -28,7 +28,7 @@ interface FinancesService {
 
     suspend fun getLocations(): ArrayList<Location>
 
-    suspend fun getMainInfo(): FinancesMain?
+    suspend fun getMainInfo(): FinancesMain
 
     suspend fun getSalaryInfo(): Boolean
 

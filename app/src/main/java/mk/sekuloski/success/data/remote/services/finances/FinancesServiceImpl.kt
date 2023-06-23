@@ -153,7 +153,7 @@ class FinancesServiceImpl(
         }
     }
 
-    override suspend fun getMainInfo(): FinancesMain? {
+    override suspend fun getMainInfo(): FinancesMain {
         return try {
             client.get {
                 url(FinanceApiRoutes.MAIN)
@@ -162,20 +162,20 @@ class FinancesServiceImpl(
             // 3xx - responses
             println("Error: ${e.response.status.description}")
             println("Error Message: ${e.message}")
-            null
+            FinancesMain(0, 0, 0, 0, 0, 0)
         } catch(e: ClientRequestException) {
             // 4xx - responses
             println("Error: ${e.response.status.description}")
             println("Error Message: ${e.message}")
-            null
+            FinancesMain(0, 0, 0, 0, 0, 0)
         } catch(e: ServerResponseException) {
             // 5xx - responses
             println("Error: ${e.response.status.description}")
             println("Error Message: ${e.message}")
-            null
+            FinancesMain(0, 0, 0, 0, 0, 0)
         } catch(e: Exception) {
             Log.e("Finances Service", "Error: ${e.message}")
-            null
+            FinancesMain(0, 0, 0, 0, 0, 0)
         }
     }
 
