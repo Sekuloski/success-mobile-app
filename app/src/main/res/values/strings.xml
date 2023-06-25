@@ -54,4 +54,5 @@
     <string name="today_s_workout">Today\'s Workout:</string>
     <string name="other_workouts">Other Workouts:</string>
     <string name="skip_exercise">Skip Exercise</string>
+    <string name="next_exercise">Next Exercise: %1$s</string>
 </resources>

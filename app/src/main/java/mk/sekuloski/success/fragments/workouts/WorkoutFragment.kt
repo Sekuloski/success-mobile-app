@@ -69,6 +69,7 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
         binding.tvReps.text = currentReps.toString().replace("[", "").replace("]", "")
         binding.tvBestSet.text = exercise.best_set.replace(",", ", ")
         binding.tvLastSet.text = exercise.last_set.replace(",", ", ")
+        binding.tvNextExerciseName.text = getString(R.string.next_exercise, exercisesFromWorkout[currentExercise+1].name)
         updateTimer(exercise.rest.toLong())
 
         binding.btnSkip.setOnClickListener {
@@ -115,6 +116,14 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
             binding.tvBestSet.text = exercise.best_set.replace(",", ", ")
             binding.tvLastSet.text = exercise.last_set.replace(",", ", ")
             binding.tvReps.text = currentReps.toString().replace("[", "").replace("]", "")
+            if (currentExercise != exercisesFromWorkout.size - 1)
+            {
+                binding.tvNextExerciseName.text = getString(R.string.next_exercise, exercisesFromWorkout[currentExercise+1].name)
+            }
+            else
+            {
+                binding.tvNextExerciseName.text = ""
+            }
         }
 
         binding.btnNext.setOnClickListener {
@@ -178,6 +187,10 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
                     currentReps = mutableListOf(0, 0, 0, 0, 0)
                     binding.tvReps.text = currentReps.toString().replace("[", "").replace("]", "")
                     currentExercise++
+                    if (currentExercise != exercisesFromWorkout.size - 1)
+                    {
+                        binding.tvNextExerciseName.text = getString(R.string.next_exercise, exercisesFromWorkout[currentExercise+1].name)
+                    }
                     exercise = workout.exercises[currentExercise]
                     setImage(exercise)
                     currentSet = 0
