@@ -1,7 +1,6 @@
 package mk.sekuloski.success.adapter.workouts
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -10,7 +9,6 @@ import mk.sekuloski.success.databinding.ListWorkoutHistoryBinding
 
 
 class WorkoutHistoryAdapter(
-    private val context: Context,
     private val workoutHistory: List<WorkoutExecution>,
 ) : RecyclerView.Adapter<WorkoutHistoryAdapter.WorkoutHistoryViewHolder>() {
 
