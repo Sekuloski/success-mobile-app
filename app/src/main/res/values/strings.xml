@@ -51,4 +51,7 @@
     <string name="takeaway_food">Takeaway Food</string>
     <string name="best_set">Best Set</string>
     <string name="last_set">Last Set</string>
+    <string name="today_s_workout">Today\'s Workout:</string>
+    <string name="other_workouts">Other Workouts:</string>
+    <string name="skip_exercise">Skip Exercise</string>
 </resources>
