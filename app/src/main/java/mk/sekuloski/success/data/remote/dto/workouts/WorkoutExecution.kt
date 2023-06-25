@@ -7,7 +7,7 @@ import java.time.ZonedDateTime
 @Serializable
 data class WorkoutExecution (
     val id: Int,
-    val workout_id: Int,
+    val workout_id: String,
     @Serializable(with = DateSerializer::class)
     val date: ZonedDateTime,
 )
