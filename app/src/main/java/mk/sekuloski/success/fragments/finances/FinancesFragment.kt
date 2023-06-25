@@ -109,7 +109,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
             Box(modifier = modifier.weight(1f)) {
                 MonthsList()
             }
-            Box(modifier = modifier.weight(1f)) {
+            Box(modifier = modifier.weight(1.2f)) {
                 if (payments.isNotEmpty())
                 {
                     AndroidView(

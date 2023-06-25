@@ -97,7 +97,7 @@ class AddPaymentFragment(
             val timePickerDialog = TimePickerDialog(
                 view.context,
                 { _, hourOfDay, minuteOfDay ->
-                    binding.tvTime.text = "$hourOfDay:${minuteOfDay.toString().padStart(2, '0')}:00"
+                    binding.tvTime.text = "${hourOfDay.toString().padStart(2, '0')}:${minuteOfDay.toString().padStart(2, '0')}:00"
                 },
                 hour,
                 minute,
