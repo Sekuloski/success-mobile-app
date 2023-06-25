@@ -1,6 +1,5 @@
 package mk.sekuloski.success.fragments
 
-import android.app.ActivityManager.AppTask
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -42,10 +41,11 @@ import mk.sekuloski.success.data.remote.dto.workouts.Workout
 import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.data.remote.services.workouts.WorkoutsService
 import mk.sekuloski.success.databinding.FragmentHomeBinding
+import mk.sekuloski.success.fragments.finances.FinancesFragment
+import mk.sekuloski.success.fragments.workouts.WorkoutFragment
 import mk.sekuloski.success.ui.theme.AppTheme
-import mk.sekuloski.success.ui.theme.md_theme_dark_onBackground
-import mk.sekuloski.success.ui.theme.md_theme_dark_onPrimaryContainer
-import mk.sekuloski.success.ui.theme.md_theme_dark_primaryContainer
+import mk.sekuloski.success.utils.normalizeWorkouts
+import java.time.LocalTime
 
 class HomeFragment(
     private val financesService: FinancesService,
@@ -160,7 +160,9 @@ class HomeFragment(
             mutableStateOf(Workout(0, "", emptyList(), "0,1,2,3,4,5,6"))
         }
         LaunchedEffect(key1 = true) {
+            // Get only today's workout. This is inefficient.
             workout = workoutService.getWorkouts()[0]
+            normalizeWorkouts(listOf(workout))
         }
         Column(
             modifier = modifier

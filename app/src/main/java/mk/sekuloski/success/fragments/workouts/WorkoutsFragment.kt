@@ -17,6 +17,7 @@ import mk.sekuloski.success.data.remote.dto.workouts.Workout
 import mk.sekuloski.success.data.remote.dto.workouts.WorkoutExecution
 import mk.sekuloski.success.data.remote.services.workouts.WorkoutsService
 import mk.sekuloski.success.databinding.FragmentWorkoutsBinding
+import mk.sekuloski.success.utils.normalizeWorkouts
 import java.time.LocalDateTime
 
 //const val TAG = "Workouts Fragment"
@@ -48,6 +49,8 @@ class WorkoutsFragment(
         launch {
             workouts = workoutsService.getWorkouts()
             workoutHistory = workoutsService.getWorkoutHistory()
+
+            normalizeWorkouts(workouts)
 
             val datetime = LocalDateTime.now()
             val dayOfWeekIndex = datetime.dayOfWeek.value - 1
