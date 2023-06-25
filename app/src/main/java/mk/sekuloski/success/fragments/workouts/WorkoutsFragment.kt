@@ -67,7 +67,7 @@ class WorkoutsFragment(
             otherWorkoutsRecyclerView.adapter = WorkoutAdapter(requireContext(), workouts.minus(todaysWorkout))
             otherWorkoutsRecyclerView.setHasFixedSize(true)
 
-            workoutHistoryRecyclerView.adapter = WorkoutHistoryAdapter(requireContext(), workoutHistory)
+            workoutHistoryRecyclerView.adapter = WorkoutHistoryAdapter(workoutHistory)
             workoutHistoryRecyclerView.setHasFixedSize(true)
 
             binding.workoutName.text = todaysWorkout.name
