@@ -15,6 +15,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import mk.sekuloski.success.MainActivity
 import mk.sekuloski.success.R
+import mk.sekuloski.success.data.remote.dto.workouts.Exercise
 import mk.sekuloski.success.data.remote.dto.workouts.Workout
 import mk.sekuloski.success.data.remote.services.workouts.WorkoutsService
 import mk.sekuloski.success.databinding.FragmentWorkoutBinding
@@ -59,15 +60,62 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
         var currentSet = 0
         var currentReps = mutableListOf(0, 0, 0, 0, 0)
         val exercisesFromWorkout = workout.exercises
-        val firstExercise = exercisesFromWorkout[0]
+        var exercise = exercisesFromWorkout[0]
+        var exercisesSkipped = 0
 
-        setImage(currentExercise)
+        setImage(exercise)
 
-        binding.tvExerciseName.text = firstExercise.name
-        binding.tvReps.text = currentReps.toString()
-        binding.tvBestSet.text = firstExercise.best_set
-        binding.tvLastSet.text = firstExercise.last_set
-        updateTimer(firstExercise.rest.toLong())
+        binding.tvExerciseName.text = exercise.name
+        binding.tvReps.text = currentReps.toString().replace("[", "").replace("]", "")
+        binding.tvBestSet.text = exercise.best_set.replace(",", ", ")
+        binding.tvLastSet.text = exercise.last_set.replace(",", ", ")
+        updateTimer(exercise.rest.toLong())
+
+        binding.btnSkip.setOnClickListener {
+            exercisesSkipped++
+            if (currentExercise == exercisesFromWorkout.size - 1)
+            {
+                currentReps[currentSet] = binding.etReps.text.toString().toInt()
+                binding.tvReps.text = currentReps.toString()
+                if (exercisesSkipped != exercisesFromWorkout.size)
+                {
+                    launch {
+                        val response = client.updateWorkout(workout.id)
+                        val toast = Toast(requireContext())
+                        toast.setText(response)
+                        toast.show()
+                    }
+                }
+                binding.llRepCount.visibility = View.INVISIBLE
+                timer.cancel()
+                Log.v("Workout", "Workout Finished!")
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, WorkoutsFragment(client))
+                    addToBackStack(null)
+                    commit()
+                }
+                return@setOnClickListener
+            }
+            if (onPause)
+            {
+                timer.cancel()
+                binding.btnNext.text = getString(R.string.done)
+                binding.tvTimer.visibility = View.INVISIBLE
+                binding.llRepCount.visibility = View.VISIBLE
+            }
+
+            onPause = false
+            currentExercise++
+            currentSet = 0
+            currentReps = mutableListOf(0, 0, 0, 0, 0)
+            exercise = exercisesFromWorkout[currentExercise]
+            setImage(exercise)
+            updateTimer(exercise.rest.toLong())
+            binding.tvExerciseName.text = exercise.name
+            binding.tvBestSet.text = exercise.best_set.replace(",", ", ")
+            binding.tvLastSet.text = exercise.last_set.replace(",", ", ")
+            binding.tvReps.text = currentReps.toString().replace("[", "").replace("]", "")
+        }
 
         binding.btnNext.setOnClickListener {
             // On final exercise and set
@@ -76,7 +124,7 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
                 currentReps[currentSet] = binding.etReps.text.toString().toInt()
                 binding.tvReps.text = currentReps.toString()
                 launch {
-                    var response = client.updateExercise(workout.exercises[currentExercise].id, currentReps.joinToString(separator = ","))
+                    var response = client.updateExercise(exercise.id, currentReps.joinToString(separator = ","))
                     var toast = Toast(requireContext())
                     toast.setText(response)
                     toast.show()
@@ -89,31 +137,36 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
                 binding.llRepCount.visibility = View.INVISIBLE
                 timer.cancel()
                 Log.v("Workout", "Workout Finished!")
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, WorkoutsFragment(client))
+                    addToBackStack(null)
+                    commit()
+                }
                 return@setOnClickListener
             }
 
             onPause = if (onPause) {
-                // Exercise
+                // During Pause, switch to exercise mode
                 timer.cancel()
                 binding.btnNext.text = getString(R.string.done)
                 binding.tvTimer.visibility = View.INVISIBLE
                 binding.llRepCount.visibility = View.VISIBLE
                 false
             } else {
-                // On rest
+                // During exercise, switch to rest
                 binding.tvTimer.visibility = View.VISIBLE
                 binding.llRepCount.visibility = View.INVISIBLE
 
                 if (currentSet != 4) {
                     // Not on final set
                     currentReps[currentSet] = binding.etReps.text.toString().toInt()
-                    binding.tvReps.text = currentReps.toString()
+                    binding.tvReps.text = currentReps.toString().replace("[", "").replace("]", "")
                     currentSet++
                 }
                 else {
                     // Final set not on final exercise
                     currentReps[currentSet] = binding.etReps.text.toString().toInt()
-                    val exerciseId = workout.exercises[currentExercise].id
+                    val exerciseId = exercise.id
                     val newSet = currentReps.joinToString(separator = ",")
                     launch {
                         val response = client.updateExercise(exerciseId, newSet)
@@ -123,14 +176,15 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
                     }
 
                     currentReps = mutableListOf(0, 0, 0, 0, 0)
-                    binding.tvReps.text = currentReps.toString()
+                    binding.tvReps.text = currentReps.toString().replace("[", "").replace("]", "")
                     currentExercise++
-                    setImage(currentExercise)
+                    exercise = workout.exercises[currentExercise]
+                    setImage(exercise)
                     currentSet = 0
-                    binding.tvExerciseName.text = workout.exercises[currentExercise].name
-                    binding.tvBestSet.text = workout.exercises[currentExercise].best_set
-                    binding.tvLastSet.text = workout.exercises[currentExercise].last_set
-                    updateTimer(workout.exercises[currentExercise].rest.toLong())
+                    binding.tvExerciseName.text = exercise.name
+                    binding.tvBestSet.text = exercise.best_set.replace(",", ", ")
+                    binding.tvLastSet.text = exercise.last_set.replace(",", ", ")
+                    updateTimer(exercise.rest.toLong())
                 }
                 timer.start()
                 binding.btnNext.text = getString(R.string.skip)
@@ -139,21 +193,28 @@ class WorkoutFragment(private val workout: Workout) : Fragment(R.layout.fragment
         }
     }
 
-    private fun setImage(currentExercise: Int) {
+    private fun setImage(exercise: Exercise) {
         binding.loadingPanel.visibility = View.VISIBLE
-        if (workout.exercises[currentExercise].image_url == null)
+        binding.ivExercise.visibility = View.INVISIBLE
+        if (exercise.image_url == null)
         {
-            Log.e("Workout", "Can't download image for ${workout.exercises[currentExercise].name}! URL is empty.")
+            Log.e("Workout", "Can't download image for ${exercise.name}! URL is empty.")
+            launch {
+                val toast = Toast(requireContext())
+                toast.setText("URL is empty!")
+                toast.show()
+            }
             return
         }
         try {
             launch {
-                Picasso.get().load(workout.exercises[currentExercise].image_url)
+                Picasso.get().load(exercise.image_url)
                     .into(binding.ivExercise)
                 binding.loadingPanel.visibility = View.GONE
+                binding.ivExercise.visibility = View.VISIBLE
             }
         } catch (e: IllegalArgumentException) {
-            Log.e("Workout", "Can't download image for ${workout.exercises[currentExercise].name}! URL is empty.")
+            Log.e("Workout", "Can't download image for ${exercise.name}! URL is empty.")
         }
     }
 
