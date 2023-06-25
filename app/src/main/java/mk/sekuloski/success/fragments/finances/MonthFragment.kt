@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -58,10 +56,6 @@ import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.data.remote.dto.finances.PaymentType
 import mk.sekuloski.success.data.remote.dto.finances.Subscription
 import mk.sekuloski.success.ui.theme.AppTheme
-import mk.sekuloski.success.ui.theme.md_theme_dark_onBackground
-import mk.sekuloski.success.ui.theme.md_theme_dark_onPrimaryContainer
-import mk.sekuloski.success.ui.theme.md_theme_dark_onSecondaryContainer
-import mk.sekuloski.success.ui.theme.md_theme_dark_primaryContainer
 import mk.sekuloski.success.utils.initPie
 import mk.sekuloski.success.utils.resetCategories
 
@@ -388,17 +382,21 @@ class MonthFragment(
                     ) {
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = modifier.weight(1f),
+                            modifier = modifier
+                                .fillMaxWidth().weight(1f),
                         ) {
                             Text(
                                 text = payment.name,
+                                maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp
+                                fontSize = 20.sp,
+                                modifier = modifier.weight(1f)
                             )
                             Text(
                                 text = amount.toString(),
+                                maxLines = 1,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp

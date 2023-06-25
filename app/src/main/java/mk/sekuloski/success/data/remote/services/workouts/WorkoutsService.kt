@@ -8,13 +8,6 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import mk.sekuloski.success.data.remote.dto.finances.FinancesMain
-import mk.sekuloski.success.data.remote.dto.finances.Location
-import mk.sekuloski.success.data.remote.dto.finances.Month
-import mk.sekuloski.success.data.remote.dto.finances.Payment
-import mk.sekuloski.success.data.remote.dto.finances.PaymentRequest
-import mk.sekuloski.success.data.remote.dto.finances.Subscription
 import mk.sekuloski.success.data.remote.dto.workouts.Exercise
 import mk.sekuloski.success.data.remote.dto.workouts.Workout
 import mk.sekuloski.success.data.remote.dto.workouts.WorkoutExecution
