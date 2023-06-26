@@ -23,12 +23,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Alignment.Companion.Start
-import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
@@ -287,11 +284,11 @@ class HomeFragment(
     ) {
         Text(
             modifier = Modifier
-                .alpha(alpha = 0.5f)
-                .offset(x = 0.dp, y = 2.dp)
-                .blur(radius = 1.dp),
+                .alpha(alpha = 0.8f)
+                .offset(x = 4.dp, y = 3.dp)
+                .blur(radius = 2.dp),
             color = Color.Black,
-            fontSize = fontSize.times(1.03f),
+            fontSize = fontSize,
             text = text
         )
     }
