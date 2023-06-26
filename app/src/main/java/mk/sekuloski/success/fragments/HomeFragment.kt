@@ -26,6 +26,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterStart
+import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -80,14 +82,20 @@ class HomeFragment(
         Column(
             modifier = modifier
         ) {
-            Greeting(modifier.weight(1f))
-            FinancesHome(modifier.weight(4f))
-            WorkoutHome(modifier.weight(4f))
+            Box(modifier.weight(1.5f)) {
+                Greeting()
+            }
+            Box(modifier.weight(4f)) {
+                FinancesHome()
+            }
+            Box(modifier.weight(4f)) {
+                WorkoutHome()
+            }
         }
     }
 
     @Composable
-    private fun FinancesHome(modifier: Modifier) {
+    private fun FinancesHome() {
         var financesMain by remember {
             mutableStateOf(FinancesMain(0, 0, 0, 0, 0, 0))
         }
@@ -95,19 +103,16 @@ class HomeFragment(
             financesMain = financesService.getMainInfo()
         }
         Column(
-            modifier = modifier.fillMaxSize(),
-            horizontalAlignment = CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
         ) {
             Text(
                 "Your Financial Situation:",
-                modifier = modifier
-                    .padding(16.dp)
-                    .padding(start = 48.dp, top = 36.dp),
+                modifier = Modifier.padding(start = 62.dp),
                 fontSize = 28.sp,
                 color = MaterialTheme.colorScheme.onBackground,
             )
             FinancesCard(
-                Modifier,
+                Modifier.align(CenterHorizontally),
                 financesMain,
             )
         }
@@ -119,7 +124,7 @@ class HomeFragment(
         financesMain: FinancesMain
     ) {
         Box(
-            modifier = modifier.fillMaxSize(0.8f).offset(y = (-50).dp),
+            modifier = modifier.fillMaxSize(0.8f),
             contentAlignment = Center,
         ) {
             Card(
@@ -154,7 +159,7 @@ class HomeFragment(
     }
 
     @Composable
-    fun WorkoutHome(modifier: Modifier = Modifier) {
+    fun WorkoutHome() {
         var workout by remember {
             mutableStateOf(Workout(0, "", emptyList(), "0,1,2,3,4,5,6"))
         }
@@ -163,42 +168,40 @@ class HomeFragment(
             workout = workoutService.getWorkouts()[0]
             normalizeWorkouts(listOf(workout))
         }
-        Column (
-            modifier = modifier.fillMaxSize()
-                ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
             Text(
                 "Today's Workout:",
-                modifier = Modifier
-                    .padding(16.dp)
-                    .padding(start = 48.dp, top = 36.dp),
+                modifier = Modifier.padding(start = 62.dp),
                 fontSize = 28.sp,
                 color = MaterialTheme.colorScheme.onBackground,
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
-                contentAlignment = TopCenter
-            ) {
-                WorkoutCard(workout)
-            }
+            WorkoutCard(
+                Modifier.align(CenterHorizontally),
+                workout
+            )
+
         }
     }
 
     @Composable
     fun WorkoutCard(
-        workout: Workout,
+        modifier: Modifier,
+        workout: Workout
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth(0.8f).fillMaxHeight(0.65f),
+            modifier = modifier
+                .fillMaxWidth(0.8f)
+                .fillMaxHeight(0.65f),
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 10.dp
             )
         ) {
             Box(
-                modifier = Modifier.fillMaxSize()
+                modifier = modifier
+                    .fillMaxSize()
                     .background(MaterialTheme.colorScheme.tertiaryContainer)
                     .clickable {
                         requireActivity().supportFragmentManager
@@ -213,13 +216,13 @@ class HomeFragment(
                 Column(
                     modifier = Modifier
                         .padding(16.dp),
-                    horizontalAlignment = Alignment.Start
+                    horizontalAlignment = Start
                 ) {
-                    Box (
+                    Box(
                         modifier = Modifier
                             .padding(bottom = 10.dp, top = 10.dp)
                             .align(CenterHorizontally)
-                            ){
+                    ) {
                         val fontSize = 28.sp
                         ShadowText(fontSize, workout.name)
                         Text(
@@ -285,7 +288,7 @@ class HomeFragment(
         Text(
             modifier = Modifier
                 .alpha(alpha = 0.5f)
-                .offset(x = 2.dp, y = 1.dp)
+                .offset(x = 0.dp, y = 2.dp)
                 .blur(radius = 1.dp),
             color = Color.Black,
             fontSize = fontSize.times(1.03f),
@@ -294,12 +297,12 @@ class HomeFragment(
     }
 
     @Composable
-    fun Greeting(modifier: Modifier) {
+    fun Greeting() {
         Text(
             text = "Good ${getTimeOfDay()}!",
             fontSize = 45.sp,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = modifier
+            modifier = Modifier
                 .padding(16.dp)
                 .padding(start = 48.dp, top = 36.dp),
         )
