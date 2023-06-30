@@ -12,6 +12,7 @@ data class PaymentRequest (
     val necessary: Boolean,
     val expense_type: Int,
     val cash: Boolean,
+    val euros: Boolean,
     val monthly: Boolean,
     val payments: Int,
     val credit: Boolean,

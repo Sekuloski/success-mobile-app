@@ -8,6 +8,7 @@ data class FinancesMain (
     val salary: Int,
     val bank: Int,
     val cash: Int,
+    val euros: Float,
     val expenses: Int,
     val reserved: Int
     )

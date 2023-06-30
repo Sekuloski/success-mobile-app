@@ -94,7 +94,7 @@ class HomeFragment(
     @Composable
     private fun FinancesHome() {
         var financesMain by remember {
-            mutableStateOf(FinancesMain(0, 0, 0, 0, 0, 0))
+            mutableStateOf(FinancesMain(0, 0, 0, 0, 0.0f, 0, 0))
         }
         LaunchedEffect(key1 = true) {
             financesMain = financesService.getMainInfo()
@@ -121,7 +121,9 @@ class HomeFragment(
         financesMain: FinancesMain
     ) {
         Box(
-            modifier = modifier.fillMaxSize(0.8f),
+            modifier = modifier
+                .fillMaxHeight()
+                .fillMaxWidth(0.8f),
             contentAlignment = Center,
         ) {
             Card(
@@ -148,6 +150,7 @@ class HomeFragment(
                         TextRow("Amount Left", financesMain.amount_left)
                         TextRow("Bank Amount", financesMain.bank)
                         TextRow("Cash Amount", financesMain.cash)
+                        TextRow("Euros Amount", financesMain.euros.toInt())
                         TextRow("Expenses", financesMain.expenses)
                     }
                 }
@@ -220,7 +223,7 @@ class HomeFragment(
                             .padding(bottom = 10.dp, top = 10.dp)
                             .align(CenterHorizontally)
                     ) {
-                        val fontSize = 28.sp
+                        val fontSize = 26.sp
                         ShadowText(fontSize, workout.name)
                         Text(
                             text = workout.name,
@@ -229,7 +232,7 @@ class HomeFragment(
                         )
                     }
                     for (exercise: Exercise in workout.exercises) {
-                        val fontSize = 28.sp
+                        val fontSize = 24.sp
                         Box {
                             ShadowText(fontSize, exercise.name)
                             Text(
@@ -257,7 +260,7 @@ class HomeFragment(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            val fontSize = 28.sp
+            val fontSize = 26.sp
             Box {
                 ShadowText(fontSize, text)
                 Text(

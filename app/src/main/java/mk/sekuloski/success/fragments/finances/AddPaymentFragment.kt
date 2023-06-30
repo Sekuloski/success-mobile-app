@@ -163,7 +163,7 @@ class AddPaymentFragment(
             val credit = false
             val interest = 0.0
 
-            val paymentRequest = PaymentRequest(amount, name, date, necessary, expenseType, cash, monthly, payments, credit, interest, location, pay)
+            val paymentRequest = PaymentRequest(amount, name, date, necessary, expenseType, cash, false, monthly, payments, credit, interest, location, pay)
 
             launch {
                 val toast = Toast(context)

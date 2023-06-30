@@ -162,20 +162,20 @@ class FinancesServiceImpl(
             // 3xx - responses
             println("Error: ${e.response.status.description}")
             println("Error Message: ${e.message}")
-            FinancesMain(0, 0, 0, 0, 0, 0)
+            FinancesMain(0, 0, 0, 0, 0.0f, 0, 0)
         } catch(e: ClientRequestException) {
             // 4xx - responses
             println("Error: ${e.response.status.description}")
             println("Error Message: ${e.message}")
-            FinancesMain(0, 0, 0, 0, 0, 0)
+            FinancesMain(0, 0, 0, 0, 0.0f, 0, 0)
         } catch(e: ServerResponseException) {
             // 5xx - responses
             println("Error: ${e.response.status.description}")
             println("Error Message: ${e.message}")
-            FinancesMain(0, 0, 0, 0, 0, 0)
+            FinancesMain(0, 0, 0, 0, 0.0f, 0, 0)
         } catch(e: Exception) {
             Log.e("Finances Service", "Error: ${e.message}")
-            FinancesMain(0, 0, 0, 0, 0, 0)
+            FinancesMain(0, 0, 0, 0, 0.0f, 0, 0)
         }
     }
 
