@@ -63,7 +63,8 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
     CoroutineScope by MainScope() {
     private var _binding: FragmentFinancesBinding? = null
     private val binding get() = _binding!!
-//    private val selectedCategories: BooleanArray = BooleanArray(ExpenseType.values().size)
+
+    //    private val selectedCategories: BooleanArray = BooleanArray(ExpenseType.values().size)
     private var expenseList = ExpenseType.values().toMutableList()
     private var categories = ArrayList<Int>()
 
@@ -110,10 +111,11 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
                 MonthsList()
             }
             Box(modifier = modifier.weight(1.2f)) {
-                if (payments.isNotEmpty())
-                {
+                if (payments.isNotEmpty()) {
                     AndroidView(
-                        modifier = Modifier.fillMaxSize(0.9f).align(Alignment.Center),
+                        modifier = Modifier
+                            .fillMaxSize(0.9f)
+                            .align(Alignment.Center),
                         factory = {
                             PieChart(it)
                         },
@@ -154,9 +156,9 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
         LaunchedEffect(key1 = true) {
             months = client.getMonths()
         }
-        LazyColumn (
+        LazyColumn(
             modifier = Modifier.padding(top = 40.dp)
-                ) {
+        ) {
             itemsIndexed(months) { index, month ->
                 val amount by animateIntAsState(targetValue = month.left)
                 Row(
@@ -209,9 +211,9 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
                     replace(
                         R.id.flFragment,
                         AddPaymentFragment(
-                            locations,
-                            locations.associate { it.name to it.id } as HashMap<String, Int>,
-                            client))
+                            locations, client
+                        )
+                    )
                     addToBackStack(null)
                     commit()
                 }
@@ -246,7 +248,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
             .setPositiveButton("OK") { _, _ ->
                 println("OK")
             }
-            .setNegativeButton("Cancel") {_, _ ->
+            .setNegativeButton("Cancel") { _, _ ->
                 println("Cancelled")
             }
             .setView(dialogLayout)
@@ -255,12 +257,14 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             if (waterBillAmount.text.toString() == "") {
                 waterBillAmount.error = "Amount is required!"
-            }
-            else if (powerBillAmount.text.toString() == "") {
+            } else if (powerBillAmount.text.toString() == "") {
                 powerBillAmount.error = "Amount is required!"
             } else {
                 launch {
-                    val response = client.addSalary(waterBillAmount.text.toString().toInt(), powerBillAmount.text.toString().toInt())
+                    val response = client.addSalary(
+                        waterBillAmount.text.toString().toInt(),
+                        powerBillAmount.text.toString().toInt()
+                    )
                     val toast = Toast(it.context)
                     toast.setText(response)
                     toast.show()
@@ -270,8 +274,7 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
         }
     }
 
-    private fun configurePie(chart: PieChart, payments: List<Payment>)
-    {
+    private fun configurePie(chart: PieChart, payments: List<Payment>) {
         categories = resetCategories()
         for (payment: Payment in payments) {
             if (ExpenseType.values()[payment.expense_type] in expenseList && payment.amount > 0)

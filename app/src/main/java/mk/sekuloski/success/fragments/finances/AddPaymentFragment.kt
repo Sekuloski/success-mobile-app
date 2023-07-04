@@ -1,51 +1,69 @@
 package mk.sekuloski.success.fragments.finances
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
+import android.widget.DatePicker
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import mk.sekuloski.success.*
-import mk.sekuloski.success.data.remote.services.finances.FinancesService
+import mk.sekuloski.success.R
 import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
+import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.data.remote.dto.finances.Location
 import mk.sekuloski.success.data.remote.dto.finances.PaymentRequest
 import mk.sekuloski.success.databinding.FragmentAddPaymentBinding
-import mk.sekuloski.success.utils.findClosestLocation
-import java.text.SimpleDateFormat
+import mk.sekuloski.success.ui.theme.AppTheme
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-
-
-const val KOZLE = 8
 
 
 class AddPaymentFragment(
     private val locations: List<Location>,
-    private val locationsMap: HashMap<String, Int>,
     private val client: FinancesService
-    ) : Fragment(R.layout.fragment_add_payment), CoroutineScope by MainScope() {
+) : Fragment(R.layout.fragment_add_payment), CoroutineScope by MainScope() {
 
     private var _binding: FragmentAddPaymentBinding? = null
     private val binding get() = _binding!!
@@ -59,193 +77,502 @@ class AddPaymentFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAddPaymentBinding.inflate(inflater, container, false)
+        _binding = FragmentAddPaymentBinding.inflate(
+            inflater, container, false
+        ).apply {
+            composeView.setContent {
+                Main()
+            }
+        }
         return binding.root
     }
 
-    @SuppressLint("SetTextI18n")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    @Composable
+    fun Main() {
+        AppTheme {
+            val currencies = listOf("Bank", "Cash", "Euros", "Bank Euros")
+            val context = LocalContext.current
+            val year = calendar[Calendar.YEAR]
+            val month = calendar[Calendar.MONTH]
+            val dayOfMonth = calendar[Calendar.DAY_OF_MONTH]
+            val hour = calendar[Calendar.HOUR_OF_DAY]
+            val minute = calendar[Calendar.MINUTE]
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        val dateFormat = "yyyy-MM-dd"
-        val sdf = SimpleDateFormat(dateFormat, Locale.UK)
-        getLocation()
-        val date =
-            OnDateSetListener { _, year, month, day ->
-                calendar.set(Calendar.YEAR, year)
-                calendar.set(Calendar.MONTH, month)
-                calendar.set(Calendar.DAY_OF_MONTH, day)
+            var amount by remember { mutableStateOf("") }
+            var name by remember { mutableStateOf("") }
+            var dateText by remember { mutableStateOf(getDate(dayOfMonth, month, year)) }
+            var timeText by remember { mutableStateOf(getTime(hour, minute)) }
+            var currency by remember { mutableStateOf("Bank") }
+            var location by remember { mutableStateOf(locations[0]) }
+            var expenseType by remember { mutableStateOf(ExpenseType.BILL) }
+            var numberOfPayments by remember { mutableStateOf(1) }
+            var necessary by remember { mutableStateOf(false) }
+            val scope = rememberCoroutineScope()
 
-                binding.tvDate.text = sdf.format(calendar.time)
-            }
-
-        binding.tvDate.setOnClickListener {
-            DatePickerDialog(
-                view.context,
-                date,
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }
-
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
-        binding.tvTime.setOnClickListener {
-
-            val timePickerDialog = TimePickerDialog(
-                view.context,
-                { _, hourOfDay, minuteOfDay ->
-                    binding.tvTime.text = "${hourOfDay.toString().padStart(2, '0')}:${minuteOfDay.toString().padStart(2, '0')}:00"
-                },
-                hour,
-                minute,
-                true
+            val datePicker = DatePickerDialog(
+                context,
+                { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+                    dateText =
+                        getDate(selectedDayOfMonth, selectedMonth, selectedYear)
+                }, year, month, dayOfMonth
             )
-            timePickerDialog.show()
-        }
+            val timePicker = TimePickerDialog(
+                context,
+                { _, selectedHour: Int, selectedMinute: Int ->
+                    timeText = getTime(selectedHour, selectedMinute)
+                }, hour, minute, false
+            )
 
-        binding.tvDate.text = sdf.format(calendar.time)
-        binding.tvTime.text = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00"
-        binding.etPayments.setText("1")
+            Box(Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = amount,
+                        onValueChange = { amount = it },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        label = { Text("Amount") },
+                        maxLines = 1,
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Name") },
+                        maxLines = 1,
+                    )
 
-        locationSpinner = binding.spLocation
-        val paymentTypeSpinner: Spinner = binding.spPaymentType
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Text(
+                            text = dateText.ifEmpty {
+                                "Please pick a date"
+                            },
+                            modifier = Modifier
+                                .clickable {
+                                    datePicker.show()
+                                },
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = 28.sp
+                        )
+                        Text(
+                            text = timeText.ifEmpty {
+                                "Please pick a time"
+                            },
+                            modifier = Modifier
+                                .clickable {
+                                    timePicker.show()
+                                },
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = 28.sp
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            Currency(currencies, currency) { currency = it }
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Box(modifier = Modifier.weight(1f)) {
+                            Locations(locations, location) { location = it }
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Box(modifier = Modifier.weight(1f)) {
+                            ExpenseTypes(ExpenseType.values().toList(), expenseType) {
+                                expenseType = it
+                            }
+                        }
+                    }
 
-        val locationAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
-            view.context,
-            R.layout.spinner_item,
-            locationsMap.keys.toList()
-        )
-        locationAdapter.setDropDownViewResource(R.layout.spinner_item)
+                    Row {
+                        Row(modifier = Modifier.weight(1f)) {
+                            Button(
+                                onClick = {
+                                    if (numberOfPayments != 1) numberOfPayments--
+                                },
+                                modifier = Modifier.padding(end = 8.dp)
+                            ) {
+                                Text(text = "-")
+                            }
 
-        locationSpinner.adapter = locationAdapter
+                            Text(
+                                text = numberOfPayments.toString(),
+                                modifier = Modifier.padding(4.dp),
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontSize = 28.sp
+                            )
 
-        val paymentTypeAdapter: ArrayAdapter<ExpenseType> = ArrayAdapter<ExpenseType>(
-            view.context,
-            R.layout.spinner_item,
-            ExpenseType.values()
-        )
-        paymentTypeAdapter.setDropDownViewResource(R.layout.spinner_item)
+                            Button(
+                                onClick = { numberOfPayments++ },
+                                modifier = Modifier.padding(start = 8.dp)
+                            ) {
+                                Text(text = "+")
+                            }
+                        }
 
-        paymentTypeSpinner.adapter = paymentTypeAdapter
-        paymentTypeSpinner.setSelection(0)
+                        Spacer(modifier = Modifier.width(16.dp))
 
-        binding.btnAdd.setOnClickListener {
-            addPayment(false)
-        }
+                        Checkbox(
+                            checked = necessary,
+                            onCheckedChange = { necessary = it },
+                        )
 
-        binding.btnPay.setOnClickListener {
-            addPayment(true)
-        }
-    }
-
-    private fun addPayment(pay: Boolean) {
-        if (binding.etAmount.text.toString() == "") {
-            binding.etAmount.error = "Amount is required!"
-        } else if (binding.etPaymentName.text.toString() == "") {
-            binding.etPaymentName.error = "Payment name is required!"
-        } else {
-            val amount = binding.etAmount.text.toString().toInt()
-            val name = binding.etPaymentName.text.toString()
-            val dateString = "${binding.tvDate.text}T${binding.tvTime.text}+02:00"
-            val necessary = binding.cbNecessary.isChecked
-            val expenseType = binding.spPaymentType.selectedItemId.toInt()
-            val location = locationsMap[binding.spLocation.selectedItem] ?: 9
-
-            val date = ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_DATE_TIME)
-
-            val payments = binding.etPayments.text.toString().toInt()
-            val monthly = payments != 1
-            val cash = binding.cbCash.isChecked
-
-            val credit = false
-            val interest = 0.0
-
-            val paymentRequest = PaymentRequest(amount, name, date, necessary, expenseType, cash, false, monthly, payments, credit, interest, location, pay)
-
-            launch {
-                val toast = Toast(context)
-                toast.setText(client.addPayment(paymentRequest))
-                toast.show()
-                parentFragmentManager.popBackStack()
-            }
-        }
-    }
-
-    private fun isLocationEnabled(): Boolean {
-        val locationManager: LocationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
-    }
-
-    private fun checkPermissions(): Boolean {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            return true
-        }
-        return false
-    }
-    private fun requestPermissions() {
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(
-                android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ),
-            permissionId
-        )
-    }
-    @Deprecated("Deprecated in Java")
-    @SuppressLint("MissingSuperCall")
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == permissionId) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                getLocation()
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission", "SetTextI18n")
-    private fun getLocation() {
-        if (checkPermissions()) {
-            if (isLocationEnabled()) {
-                mFusedLocationClient.lastLocation.addOnCompleteListener(requireActivity()) { task ->
-                    val location: android.location.Location? = task.result
-                    if (location != null) {
-                        locationSpinner.setSelection(locationsMap[findClosestLocation(location.latitude, location.longitude, locations)?.name.toString()]?.minus(
-                            1
-                        ) ?: 9)
+                        Text(
+                            text = "Necessary",
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .clickable { necessary = !necessary },
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = 28.sp
+                        )
                     }
                 }
-            } else {
-                Toast.makeText(requireContext(), "Please turn on location", Toast.LENGTH_LONG).show()
-                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivity(intent)
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            val dateString = "${dateText}T${timeText}+02:00"
+                            val date =
+                                ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_DATE_TIME)
+                            val request = PaymentRequest(
+                                amount = amount.toInt(),
+                                name = name,
+                                date = date,
+                                necessary = necessary,
+                                expense_type = expenseType.ordinal,
+                                cash = currency == "Cash",
+                                euros = false,
+                                monthly = numberOfPayments > 1,
+                                payments = numberOfPayments,
+                                credit = false,
+                                interest = 0.0,
+                                location = location.id,
+                                pay = false
+                            )
+
+                            scope.launch {
+                                val toast = Toast(context)
+                                toast.setText(client.addPayment(request))
+                                toast.show()
+                                parentFragmentManager.popBackStack()
+                            }
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(16.dp)
+                    ) {
+                        Text(text = "Add", fontSize = 22.sp)
+                    }
+                    Button(
+                        onClick = {
+                            val dateString = "${dateText}T${timeText}+02:00"
+                            val date =
+                                ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_DATE_TIME)
+                            val request = PaymentRequest(
+                                amount = amount.toInt(),
+                                name = name,
+                                date = date,
+                                necessary = necessary,
+                                expense_type = expenseType.ordinal,
+                                cash = currency == "Cash",
+                                euros = currency == "Euros",
+                                monthly = numberOfPayments > 1,
+                                payments = numberOfPayments,
+                                credit = false,
+                                interest = 0.0,
+                                location = location.id,
+                                pay = true
+                            )
+                            scope.launch {
+                                val toast = Toast(context)
+                                toast.setText(client.addPayment(request))
+                                toast.show()
+                                parentFragmentManager.popBackStack()
+                            }
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(16.dp)
+                    ) {
+                        Text(text = "Pay", fontSize = 22.sp)
+                    }
+                }
             }
-        } else {
-            requestPermissions()
-            getLocation()
+
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        (context as MainActivity).supportActionBar?.title = "Add Payment"
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun Currency(
+        currencies: List<String>,
+        selectedCurrency: String,
+        onItemSelected: (String) -> Unit
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+
+        Box(
+            modifier = Modifier
+                .wrapContentSize(Alignment.TopStart)
+        ) {
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = {
+                    expanded = !expanded
+                }
+            ) {
+                TextField(
+                    value = selectedCurrency,
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier.menuAnchor()
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    currencies.forEach { currency ->
+                        DropdownMenuItem(
+                            text = { Text(text = currency) },
+                            onClick = {
+                                onItemSelected(currency)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
     }
+
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun Locations(
+        locations: List<Location>,
+        selectedLocation: Location,
+        onItemSelected: (Location) -> Unit
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+
+        Box(
+            modifier = Modifier
+                .wrapContentSize(Alignment.TopStart)
+        ) {
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = {
+                    expanded = !expanded
+                }
+            ) {
+                TextField(
+                    value = selectedLocation.name,
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier.menuAnchor()
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    locations.forEach { location ->
+                        DropdownMenuItem(
+                            text = { Text(text = location.name) },
+                            onClick = {
+                                onItemSelected(location)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun ExpenseTypes(
+        expenseTypes: List<ExpenseType>,
+        selectedType: ExpenseType,
+        onItemSelected: (ExpenseType) -> Unit
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+
+        Box(
+            modifier = Modifier
+                .wrapContentSize(Alignment.TopStart)
+        ) {
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = {
+                    expanded = !expanded
+                }
+            ) {
+                TextField(
+                    value = selectedType.name,
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier.menuAnchor()
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    expenseTypes.forEach { expenseType ->
+                        DropdownMenuItem(
+                            text = { Text(text = expenseType.name) },
+                            onClick = {
+                                onItemSelected(expenseType)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun getDate(dayOfMonth: Int, month: Int, year: Int) =
+        year.toString() + "-" +
+                (month + 1).toString().padStart(2, '0') + "-" +
+                dayOfMonth.toString().padStart(2, '0')
+
+    private fun getTime(hour: Int, minute: Int) =
+        "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
+
+//    @SuppressLint("SetTextI18n")
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//
+//        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+//        getLocation()
+//
+//        locationSpinner = binding.spLocation
+//        val paymentTypeSpinner: Spinner = binding.spPaymentType
+//        locationAdapter.setDropDownViewResource(R.layout.spinner_item)
+//
+//        locationSpinner.adapter = locationAdapter
+//
+//        val paymentTypeAdapter: ArrayAdapter<ExpenseType> = ArrayAdapter<ExpenseType>(
+//            view.context,
+//            R.layout.spinner_item,
+//            ExpenseType.values()
+//        )
+//        paymentTypeAdapter.setDropDownViewResource(R.layout.spinner_item)
+//
+//        paymentTypeSpinner.adapter = paymentTypeAdapter
+//        paymentTypeSpinner.setSelection(0)
+//
+//    }
+//
+//    private fun addPayment(pay: Boolean) {
+//        if (binding.etAmount.text.toString() == "") {
+//            binding.etAmount.error = "Amount is required!"
+//        } else if (binding.etPaymentName.text.toString() == "") {
+//            binding.etPaymentName.error = "Payment name is required!"
+//        } else {
+//            val expenseType = binding.spPaymentType.selectedItemId.toInt()
+//            val location = locationsMap[binding.spLocation.selectedItem] ?: 9
+//
+//            val credit = false
+//            val interest = 0.0
+//
+//            val paymentRequest = PaymentRequest(amount, name, date, necessary, expenseType, cash, false, monthly, payments, credit, interest, location, pay)
+//
+//        }
+//    }
+//
+//    private fun isLocationEnabled(): Boolean {
+//        val locationManager: LocationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+//        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+//            LocationManager.NETWORK_PROVIDER
+//        )
+//    }
+//
+//    private fun checkPermissions(): Boolean {
+//        if (ActivityCompat.checkSelfPermission(
+//                requireContext(),
+//                android.Manifest.permission.ACCESS_COARSE_LOCATION
+//            ) == PackageManager.PERMISSION_GRANTED &&
+//            ActivityCompat.checkSelfPermission(
+//                requireContext(),
+//                android.Manifest.permission.ACCESS_FINE_LOCATION
+//            ) == PackageManager.PERMISSION_GRANTED
+//        ) {
+//            return true
+//        }
+//        return false
+//    }
+//    private fun requestPermissions() {
+//        ActivityCompat.requestPermissions(
+//            requireActivity(),
+//            arrayOf(
+//                android.Manifest.permission.ACCESS_COARSE_LOCATION,
+//                android.Manifest.permission.ACCESS_FINE_LOCATION
+//            ),
+//            permissionId
+//        )
+//    }
+//    @Deprecated("Deprecated in Java")
+//    @SuppressLint("MissingSuperCall")
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<String>,
+//        grantResults: IntArray
+//    ) {
+//        if (requestCode == permissionId) {
+//            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+//                getLocation()
+//            }
+//        }
+//    }
+//
+//    @SuppressLint("MissingPermission", "SetTextI18n")
+//    private fun getLocation() {
+//        if (checkPermissions()) {
+//            if (isLocationEnabled()) {
+//                mFusedLocationClient.lastLocation.addOnCompleteListener(requireActivity()) { task ->
+//                    val location: android.location.Location? = task.result
+//                    if (location != null) {
+//                        locationSpinner.setSelection(locationsMap[findClosestLocation(location.latitude, location.longitude, locations)?.name.toString()]?.minus(
+//                            1
+//                        ) ?: 9)
+//                    }
+//                }
+//            } else {
+//                Toast.makeText(requireContext(), "Please turn on location", Toast.LENGTH_LONG).show()
+//                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+//                startActivity(intent)
+//            }
+//        } else {
+//            requestPermissions()
+//            getLocation()
+//        }
+//    }
+//
+
 
     override fun onDestroyView() {
         super.onDestroyView()
