@@ -1,6 +1,7 @@
 package mk.sekuloski.success.fragments.finances
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,11 +36,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.PieChart
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -58,40 +62,14 @@ import mk.sekuloski.success.utils.resetCategories
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-
-class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.fragment_finances),
-    CoroutineScope by MainScope() {
-    private var _binding: FragmentFinancesBinding? = null
-    private val binding get() = _binding!!
-
-    //    private val selectedCategories: BooleanArray = BooleanArray(ExpenseType.values().size)
-    private var expenseList = ExpenseType.values().toMutableList()
-    private var categories = ArrayList<Int>()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentFinancesBinding.inflate(
-            inflater, container, false
-        ).apply {
-            composeView.setContent {
-                Main()
-            }
-        }
-        return binding.root
-    }
-
-    @Composable
-    fun Main() {
-        AppTheme {
-            Finances(Modifier.fillMaxSize())
-        }
-    }
-
-    @Composable
-    fun Finances(modifier: Modifier = Modifier) {
+@Destination
+@Composable
+fun FinancesMainScreen(
+    navigator: DestinationsNavigator,
+) {
+    AppTheme {
+        val client = FinancesService.create()
+        val context = LocalContext.current
         var salaryReceived by remember {
             mutableStateOf(true)
         }
@@ -106,21 +84,22 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
             payments = client.getMonthPayments()
             subscriptions = client.getSubscriptions()
         }
-        Column {
+        val modifier = Modifier.fillMaxSize()
+        Column (modifier) {
             Box(modifier = modifier.weight(1f)) {
-                MonthsList()
+                MonthsList(modifier, client)
             }
             Box(modifier = modifier.weight(1.2f)) {
                 if (payments.isNotEmpty()) {
                     AndroidView(
-                        modifier = Modifier
+                        modifier = modifier
                             .fillMaxSize(0.9f)
                             .align(Alignment.Center),
                         factory = {
                             PieChart(it)
                         },
                         update = {
-                            configurePie(it, payments)
+                            configurePie(it, payments, context)
                         }
                     )
                 }
@@ -132,7 +111,9 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
                             .padding(bottom = 16.dp)
                     ) {
                         Button(
-                            onClick = { onAddSalary() },
+                            onClick = {
+//                            onAddSalary()
+                            },
                         ) {
                             Text(text = "Add Salary")
                         }
@@ -144,152 +125,166 @@ class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.
             FloatingButton(
                 modifier = Modifier
                     .padding(16.dp),
+                client
             )
         }
     }
+}
+//class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.fragment_finances),
+//    CoroutineScope by MainScope() {
+//    private var _binding: FragmentFinancesBinding? = null
+//    private val binding get() = _binding!!
+//
+//    //    private val selectedCategories: BooleanArray = BooleanArray(ExpenseType.values().size)
+//    private var expenseList = ExpenseType.values().toMutableList()
+//    private var categories = ArrayList<Int>()
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View {
+//        _binding = FragmentFinancesBinding.inflate(
+//            inflater, container, false
+//        ).apply {
+//            composeView.setContent {
+//                Main()
+//            }
+//        }
+//        return binding.root
+//    }
+//
+@Composable
+fun Finances(
+    modifier: Modifier = Modifier,
+) {
 
-    @Composable
-    fun MonthsList(modifier: Modifier = Modifier) {
-        var months by remember {
-            mutableStateOf(getNext12Months())
-        }
-        LaunchedEffect(key1 = true) {
-            months = client.getMonths()
-        }
-        LazyColumn(
-            modifier = Modifier.padding(top = 40.dp)
-        ) {
-            itemsIndexed(months) { index, month ->
-                val amount by animateIntAsState(targetValue = month.left)
-                Row(
-                    modifier
-                        .padding(20.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            (context as MainActivity).supportFragmentManager
-                                .beginTransaction()
-                                .apply {
-                                    replace(
-                                        R.id.flFragment,
-                                        MonthFragment(months[index], client, index == 0)
-                                    )
-                                    addToBackStack(null)
-                                    commit()
-                                }
-                        },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = month.name,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 28.sp
-                    )
-                    Text(
-                        text = amount.toString(),
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 28.sp
-                    )
-                }
-            }
-        }
-
+}
+//
+@Composable
+fun MonthsList(
+    modifier: Modifier = Modifier,
+    client: FinancesService
+) {
+    var months by remember {
+        mutableStateOf(getNext12Months())
     }
-
-    @Composable
-    fun FloatingButton(modifier: Modifier = Modifier) {
-        var locations by remember {
-            mutableStateOf(emptyList<Location>())
-        }
-        LaunchedEffect(key1 = true) {
-            locations = client.getLocations()
-        }
-        FloatingActionButton(
-            onClick = {
-                (context as MainActivity).supportFragmentManager.beginTransaction().apply {
-                    replace(
-                        R.id.flFragment,
-                        AddPaymentFragment(
-                            locations, client
-                        )
-                    )
-                    addToBackStack(null)
-                    commit()
-                }
-            },
-            modifier = modifier
-        ) {
-            Icon(Icons.Filled.Add, "Add Button")
-        }
+    LaunchedEffect(key1 = true) {
+        months = client.getMonths()
     }
-
-    private fun getNext12Months(): List<Month> {
-        val formatter = DateTimeFormatter.ofPattern("MMMM yyyy")
-        val currentDate = LocalDate.now()
-        val months = mutableListOf<Month>()
-
-        for (i in 0 until 12) {
-            val futureDate = currentDate.plusMonths(i.toLong())
-            val formattedDate = futureDate.format(formatter)
-            months.add(Month(i, formattedDate, 0, 0))
-        }
-
-        return months
-    }
-
-    private fun onAddSalary() {
-        val dialogLayout = layoutInflater.inflate(R.layout.add_salary, null)
-        val waterBillAmount = dialogLayout.findViewById<EditText>(R.id.etWaterBill)
-        val powerBillAmount = dialogLayout.findViewById<EditText>(R.id.etPowerBill)
-
-        val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("Enter Bills:")
-            .setPositiveButton("OK") { _, _ ->
-                println("OK")
-            }
-            .setNegativeButton("Cancel") { _, _ ->
-                println("Cancelled")
-            }
-            .setView(dialogLayout)
-            .show()
-
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            if (waterBillAmount.text.toString() == "") {
-                waterBillAmount.error = "Amount is required!"
-            } else if (powerBillAmount.text.toString() == "") {
-                powerBillAmount.error = "Amount is required!"
-            } else {
-                launch {
-                    val response = client.addSalary(
-                        waterBillAmount.text.toString().toInt(),
-                        powerBillAmount.text.toString().toInt()
-                    )
-                    val toast = Toast(it.context)
-                    toast.setText(response)
-                    toast.show()
-                    dialog.dismiss()
-                }
+    LazyColumn(
+        modifier = Modifier.padding(top = 40.dp)
+    ) {
+        itemsIndexed(months) { index, month ->
+            val amount by animateIntAsState(targetValue = month.left)
+            Row(
+                modifier
+                    .padding(20.dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        // MonthFragment(months[index], client, index == 0)
+                    },
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = month.name,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp
+                )
+                Text(
+                    text = amount.toString(),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 28.sp
+                )
             }
         }
     }
 
-    private fun configurePie(chart: PieChart, payments: List<Payment>) {
-        categories = resetCategories()
-        for (payment: Payment in payments) {
-            if (ExpenseType.values()[payment.expense_type] in expenseList && payment.amount > 0)
-                categories[payment.expense_type] += payment.amount
-        }
-        initPie(
-            chart,
-            requireContext(),
-            categories
-        )
+}
+
+@Composable
+fun FloatingButton(
+    modifier: Modifier = Modifier,
+    client: FinancesService
+) {
+    var locations by remember {
+        mutableStateOf(emptyList<Location>())
+    }
+    LaunchedEffect(key1 = true) {
+        locations = client.getLocations()
+    }
+    FloatingActionButton(
+        onClick = {
+            // AddPayment
+        },
+        modifier = modifier
+    ) {
+        Icon(Icons.Filled.Add, "Add Button")
+    }
+}
+
+private fun getNext12Months(): List<Month> {
+    val formatter = DateTimeFormatter.ofPattern("MMMM yyyy")
+    val currentDate = LocalDate.now()
+    val months = mutableListOf<Month>()
+
+    for (i in 0 until 12) {
+        val futureDate = currentDate.plusMonths(i.toLong())
+        val formattedDate = futureDate.format(formatter)
+        months.add(Month(i, formattedDate, 0, 0))
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+    return months
+}
 
+//private fun onAddSalary() {
+//    val dialogLayout = layoutInflater.inflate(R.layout.add_salary, null)
+//    val waterBillAmount = dialogLayout.findViewById<EditText>(R.id.etWaterBill)
+//    val powerBillAmount = dialogLayout.findViewById<EditText>(R.id.etPowerBill)
+//
+//    val dialog = AlertDialog.Builder(requireContext())
+//        .setTitle("Enter Bills:")
+//        .setPositiveButton("OK") { _, _ ->
+//            println("OK")
+//        }
+//        .setNegativeButton("Cancel") { _, _ ->
+//            println("Cancelled")
+//        }
+//        .setView(dialogLayout)
+//        .show()
+//
+//    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+//        if (waterBillAmount.text.toString() == "") {
+//            waterBillAmount.error = "Amount is required!"
+//        } else if (powerBillAmount.text.toString() == "") {
+//            powerBillAmount.error = "Amount is required!"
+//        } else {
+//            launch {
+//                val response = client.addSalary(
+//                    waterBillAmount.text.toString().toInt(),
+//                    powerBillAmount.text.toString().toInt()
+//                )
+//                val toast = Toast(it.context)
+//                toast.setText(response)
+//                toast.show()
+//                dialog.dismiss()
+//            }
+//        }
+//    }
+//}
+
+private fun configurePie(chart: PieChart, payments: List<Payment>, context: Context) {
+    val expenseList = ExpenseType.values().toMutableList()
+    val categories = resetCategories()
+    for (payment: Payment in payments) {
+        if (ExpenseType.values()[payment.expense_type] in expenseList && payment.amount > 0)
+            categories[payment.expense_type] += payment.amount
+    }
+    initPie(
+        chart,
+        context,
+        categories
+    )
 }

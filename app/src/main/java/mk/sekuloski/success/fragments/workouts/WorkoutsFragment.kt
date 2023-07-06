@@ -171,13 +171,13 @@ class WorkoutsFragment(
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.primaryContainer)
                     .clickable {
-                        requireActivity().supportFragmentManager
-                            .beginTransaction()
-                            .apply {
-                                replace(R.id.flFragment, WorkoutFragment(workout, workoutsService))
-                                addToBackStack(null)
-                                commit()
-                            }
+//                        requireActivity().supportFragmentManager
+//                            .beginTransaction()
+//                            .apply {
+//                                replace(R.id.flFragment, WorkoutFragment(workout, workoutsService))
+//                                addToBackStack(null)
+//                                commit()
+//                            }
                     }
             ) {
                 Column(

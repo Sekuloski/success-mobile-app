@@ -190,12 +190,12 @@ class WorkoutFragment(
                                     toast.show()
                                     Log.v("Workout", "Workout Finished!")
                                 }
-                                requireActivity().supportFragmentManager.beginTransaction()
-                                    .apply {
-                                        replace(R.id.flFragment, WorkoutsFragment(client))
-                                        addToBackStack(null)
-                                        commit()
-                                    }
+//                                requireActivity().supportFragmentManager.beginTransaction()
+//                                    .apply {
+//                                        replace(R.id.flFragment, WorkoutsFragment(client))
+//                                        addToBackStack(null)
+//                                        commit()
+//                                    }
                             }
                         }
                         else {
@@ -236,11 +236,11 @@ class WorkoutFragment(
                             }
 
                             Log.v("Workout", "Workout Finished!")
-                            requireActivity().supportFragmentManager.beginTransaction().apply {
-                                replace(R.id.flFragment, WorkoutsFragment(client))
-                                addToBackStack(null)
-                                commit()
-                            }
+//                            requireActivity().supportFragmentManager.beginTransaction().apply {
+//                                replace(R.id.flFragment, WorkoutsFragment(client))
+//                                addToBackStack(null)
+//                                commit()
+//                            }
                             return@Timer
                         }
                         currentExerciseIndex++

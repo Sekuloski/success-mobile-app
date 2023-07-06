@@ -370,13 +370,13 @@ class MonthFragment(
                             .padding(12.dp)
                             .fillMaxWidth()
                             .clickable {
-                                (context as MainActivity).supportFragmentManager
-                                    .beginTransaction()
-                                    .apply {
-                                        replace(R.id.flFragment, PaymentFragment(payment))
-                                        addToBackStack(null)
-                                        commit()
-                                    }
+//                                (context as MainActivity).supportFragmentManager
+//                                    .beginTransaction()
+//                                    .apply {
+//                                        replace(R.id.flFragment, PaymentFragment(payment))
+//                                        addToBackStack(null)
+//                                        commit()
+//                                    }
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
