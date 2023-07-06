@@ -56,11 +56,9 @@ import mk.sekuloski.success.ui.theme.AppTheme
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
-class AddPaymentFragment(
+class AddPaymentView(
     private val locations: List<Location>,
     private val client: FinancesService
 ) : Fragment(R.layout.fragment_add_payment), CoroutineScope by MainScope() {
