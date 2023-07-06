@@ -165,7 +165,7 @@ class HomeFragment(
         }
         LaunchedEffect(key1 = true) {
             // Get only today's workout. This is inefficient.
-            workout = workoutService.getWorkouts()[0]
+            workout = workoutService.getWorkouts().elementAtOrElse(0) { Workout(0, "", emptyList(), "0,1,2,3,4,5,6") }
             normalizeWorkouts(listOf(workout))
         }
         Column(
@@ -207,7 +207,7 @@ class HomeFragment(
                         requireActivity().supportFragmentManager
                             .beginTransaction()
                             .apply {
-                                replace(R.id.flFragment, WorkoutFragment(workout))
+                                replace(R.id.flFragment, WorkoutFragment(workout, workoutService))
                                 addToBackStack(null)
                                 commit()
                             }

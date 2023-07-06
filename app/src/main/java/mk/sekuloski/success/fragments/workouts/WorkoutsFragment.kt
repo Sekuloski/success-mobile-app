@@ -174,7 +174,7 @@ class WorkoutsFragment(
                         requireActivity().supportFragmentManager
                             .beginTransaction()
                             .apply {
-                                replace(R.id.flFragment, WorkoutFragment(workout))
+                                replace(R.id.flFragment, WorkoutFragment(workout, workoutsService))
                                 addToBackStack(null)
                                 commit()
                             }
