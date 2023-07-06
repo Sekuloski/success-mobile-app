@@ -37,6 +37,7 @@ import mk.sekuloski.success.data.remote.dto.finances.Location
 import mk.sekuloski.success.data.remote.dto.finances.Month
 import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.data.remote.dto.finances.Subscription
+import mk.sekuloski.success.fragments.destinations.AddPaymentScreenDestination
 import mk.sekuloski.success.fragments.destinations.MonthsScreenDestination
 import mk.sekuloski.success.ui.theme.AppTheme
 import mk.sekuloski.success.utils.initPie
@@ -107,7 +108,8 @@ fun FinancesMainScreen(
             FloatingButton(
                 modifier = Modifier
                     .padding(16.dp),
-                client
+                client,
+                navigator
             )
         }
     }
@@ -162,17 +164,20 @@ fun MonthsList(
 @Composable
 fun FloatingButton(
     modifier: Modifier = Modifier,
-    client: FinancesService
+    client: FinancesService,
+    navigator: DestinationsNavigator
 ) {
-    var locations by remember {
-        mutableStateOf(emptyList<Location>())
-    }
-    LaunchedEffect(key1 = true) {
-        locations = client.getLocations()
-    }
+//    var locations by remember {
+//        mutableStateOf(emptyList<Location>())
+//    }
+//    LaunchedEffect(key1 = true) {
+//        locations = client.getLocations()
+//    }
     FloatingActionButton(
         onClick = {
-            // AddPayment
+            navigator.navigate(
+                AddPaymentScreenDestination()
+            )
         },
         modifier = modifier
     ) {

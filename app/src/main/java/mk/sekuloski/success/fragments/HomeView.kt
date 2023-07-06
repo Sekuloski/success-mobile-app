@@ -37,6 +37,7 @@ import mk.sekuloski.success.data.remote.dto.workouts.Workout
 import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.data.remote.services.workouts.WorkoutsService
 import mk.sekuloski.success.fragments.destinations.FinancesMainScreenDestination
+import mk.sekuloski.success.fragments.destinations.FitnessScreenDestination
 import mk.sekuloski.success.ui.theme.AppTheme
 import mk.sekuloski.success.utils.normalizeWorkouts
 import java.time.LocalTime
@@ -156,7 +157,8 @@ fun WorkoutHome(
         )
         WorkoutCard(
             Modifier.align(CenterHorizontally),
-            workout
+            workout,
+            navigator
         )
 
     }
@@ -165,7 +167,8 @@ fun WorkoutHome(
 @Composable
 fun WorkoutCard(
     modifier: Modifier,
-    workout: Workout
+    workout: Workout,
+    navigator: DestinationsNavigator
 ) {
     Card(
         modifier = modifier
@@ -181,7 +184,9 @@ fun WorkoutCard(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.tertiaryContainer)
                     .clickable {
-                        // WorkoutFragment(workout, workoutService)
+                        navigator.navigate(
+                            FitnessScreenDestination()
+                        )
                     }
         ) {
             Column(
