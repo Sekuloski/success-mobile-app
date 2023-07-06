@@ -44,18 +44,13 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.PieChart
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import mk.sekuloski.success.*
-import mk.sekuloski.success.R
 import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
 import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.data.remote.dto.finances.Location
-import mk.sekuloski.success.databinding.FragmentFinancesBinding
 import mk.sekuloski.success.data.remote.dto.finances.Month
 import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.data.remote.dto.finances.Subscription
+import mk.sekuloski.success.fragments.destinations.MonthsScreenDestination
 import mk.sekuloski.success.ui.theme.AppTheme
 import mk.sekuloski.success.utils.initPie
 import mk.sekuloski.success.utils.resetCategories
@@ -85,9 +80,9 @@ fun FinancesMainScreen(
             subscriptions = client.getSubscriptions()
         }
         val modifier = Modifier.fillMaxSize()
-        Column (modifier) {
+        Column(modifier) {
             Box(modifier = modifier.weight(1f)) {
-                MonthsList(modifier, client)
+                MonthsList(modifier, client, navigator)
             }
             Box(modifier = modifier.weight(1.2f)) {
                 if (payments.isNotEmpty()) {
@@ -130,41 +125,12 @@ fun FinancesMainScreen(
         }
     }
 }
-//class FinancesFragment(private val client: FinancesService) : Fragment(R.layout.fragment_finances),
-//    CoroutineScope by MainScope() {
-//    private var _binding: FragmentFinancesBinding? = null
-//    private val binding get() = _binding!!
-//
-//    //    private val selectedCategories: BooleanArray = BooleanArray(ExpenseType.values().size)
-//    private var expenseList = ExpenseType.values().toMutableList()
-//    private var categories = ArrayList<Int>()
-//
-//    override fun onCreateView(
-//        inflater: LayoutInflater,
-//        container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View {
-//        _binding = FragmentFinancesBinding.inflate(
-//            inflater, container, false
-//        ).apply {
-//            composeView.setContent {
-//                Main()
-//            }
-//        }
-//        return binding.root
-//    }
-//
-@Composable
-fun Finances(
-    modifier: Modifier = Modifier,
-) {
 
-}
-//
 @Composable
 fun MonthsList(
     modifier: Modifier = Modifier,
-    client: FinancesService
+    client: FinancesService,
+    navigator: DestinationsNavigator
 ) {
     var months by remember {
         mutableStateOf(getNext12Months())
@@ -182,7 +148,9 @@ fun MonthsList(
                     .padding(20.dp)
                     .fillMaxWidth()
                     .clickable {
-                        // MonthFragment(months[index], client, index == 0)
+                        navigator.navigate(
+                            MonthsScreenDestination(month, index == 0)
+                        )
                     },
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
