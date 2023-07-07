@@ -15,6 +15,7 @@ object FinanceApiRoutes {
     val MONTHS = "$BASE_URL/months"
     val SUBSCRIPTIONS = "$BASE_URL/subscriptions"
     val LOCATIONS = "$BASE_URL/locations"
+    val CATEGORIES = "$BASE_URL/categories"
     val SALARY = "$BASE_URL/salary"
     val ADD_SALARY = "$BASE_URL/pay/monthly"
     val DELETE_PAYMENT = "$BASE_URL/delete/payment"

@@ -9,6 +9,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import mk.sekuloski.success.data.remote.dto.finances.Category
 import mk.sekuloski.success.data.remote.dto.finances.FinancesMain
 import mk.sekuloski.success.data.remote.dto.finances.Location
 import mk.sekuloski.success.data.remote.dto.finances.Month
@@ -41,6 +42,7 @@ interface FinancesService {
     suspend fun deletePayment(id: Int, cash: Boolean): String
 
     suspend fun deleteMonthlyPayment(name: String): String
+    suspend fun getCategories(): List<Category>
 
     companion object {
         fun create(): FinancesService {

@@ -9,6 +9,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
+import mk.sekuloski.success.data.remote.dto.finances.Category
 import mk.sekuloski.success.data.remote.dto.finances.FinancesMain
 import mk.sekuloski.success.data.remote.dto.finances.Location
 import mk.sekuloski.success.data.remote.dto.finances.Month
@@ -337,6 +338,29 @@ class FinancesServiceImpl(
         } catch(e: Exception) {
             println(e.message)
             return ""
+        }
+    }
+
+    override suspend fun getCategories(): List<Category> {
+        return try {
+            client.get {
+                url(FinanceApiRoutes.CATEGORIES)
+            }.body()
+        } catch(e: RedirectResponseException) {
+            // 3xx - responses
+            println("Error: ${e.response.status.description}")
+            emptyList()
+        } catch(e: ClientRequestException) {
+            // 4xx - responses
+            println("Error: ${e.response.status.description}")
+            emptyList()
+        } catch(e: ServerResponseException) {
+            // 5xx - responses
+            println("Error: ${e.response.status.description}")
+            emptyList()
+        } catch(e: Exception) {
+            println("Error: ${e.message}")
+            emptyList()
         }
     }
 
