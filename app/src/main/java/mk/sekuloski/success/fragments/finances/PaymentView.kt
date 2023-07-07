@@ -48,7 +48,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
-import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
 import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.ui.theme.AppTheme
@@ -93,7 +92,7 @@ fun PaymentScreen(
                     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() })
 
                 Spacer(modifier = Modifier.height(16.dp))
-                TextRow("Category", ExpenseType.getValues()[payment.expense_type] ?: "None")
+                TextRow("Category", payment.category.name)
 
                 if (payment.monthly) {
                     LaunchedEffect(key1 = true) {
