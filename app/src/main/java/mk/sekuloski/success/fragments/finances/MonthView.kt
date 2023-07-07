@@ -148,10 +148,12 @@ fun MonthsScreen(
                 )
             }
             if (selectedButtonIndex.value == -1) {
-                Box(modifier = modifier.weight(4f)) {
+                Box(modifier = modifier.weight(5f)) {
                     if (allPayments.isNotEmpty()) {
                         AndroidView(
-                            modifier = modifier,
+                            modifier = modifier
+                                .fillMaxSize()
+                                .align(Alignment.Center),
                             factory = {
                                 PieChart(it)
                             },
@@ -162,7 +164,7 @@ fun MonthsScreen(
                     }
                 }
             } else {
-                Spacer(modifier = Modifier.weight(2f))
+                Spacer(modifier = Modifier.weight(3f))
             }
         }
     }
