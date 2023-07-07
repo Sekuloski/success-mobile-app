@@ -11,7 +11,7 @@ data class PaymentRequest (
     val date: ZonedDateTime,
     val necessary: Boolean,
     val expense_type: Int,
-//    val category_id: Int,
+    val category_id: Int,
     val cash: Boolean,
     val euros: Boolean,
     val monthly: Boolean,
