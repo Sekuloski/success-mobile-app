@@ -13,6 +13,7 @@ data class Subscription (
     val date: ZonedDateTime,
     val necessary: Boolean = false,
     val expense_type: Int,
+    val category: Category,
     val active: Boolean,
     val hypothetical: Boolean,
     val history: JsonObject

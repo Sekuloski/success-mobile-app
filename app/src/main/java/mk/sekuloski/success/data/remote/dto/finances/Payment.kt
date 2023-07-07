@@ -14,6 +14,7 @@ data class Payment (
     val necessary: Boolean = false,
     val expense_type: Int,
     val payment_type: Int,
+    val category: Category,
     val paid: Boolean = false,
     var monthly: Boolean = false,
     val location: String,
