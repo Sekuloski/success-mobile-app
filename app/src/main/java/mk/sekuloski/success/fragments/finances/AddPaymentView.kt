@@ -27,8 +27,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
-import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
+import mk.sekuloski.success.data.remote.dto.finances.Category
 import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.data.remote.dto.finances.Location
 import mk.sekuloski.success.data.remote.dto.finances.PaymentRequest
@@ -69,16 +67,18 @@ fun AddPaymentScreen(
         var dateText by remember { mutableStateOf(getDate(dayOfMonth, month, year)) }
         var timeText by remember { mutableStateOf(getTime(hour, minute)) }
         var currency by remember { mutableStateOf("Bank") }
+        var category by remember { mutableStateOf(Category(1, "Bill", -1))}
+        var categories by remember { mutableStateOf(listOf(category)) }
         var locations by remember { mutableStateOf(emptyList<Location>()) }
         var location by remember {
             mutableStateOf(locations.elementAtOrElse(0) { Location(0, "", "")})
         }
-        var expenseType by remember { mutableStateOf(ExpenseType.BILL) }
         var numberOfPayments by remember { mutableStateOf(1) }
         var necessary by remember { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
         LaunchedEffect(key1 = true) {
             locations = client.getLocations()
+            categories = client.getCategories()
         }
 
         val datePicker = DatePickerDialog(
@@ -162,8 +162,8 @@ fun AddPaymentScreen(
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Box(modifier = Modifier.weight(1f)) {
-                        ExpenseTypes(ExpenseType.values().toList(), expenseType) {
-                            expenseType = it
+                        ExpenseTypes(categories, category) {
+                            category = it
                         }
                     }
                 }
@@ -226,8 +226,7 @@ fun AddPaymentScreen(
                             name = name,
                             date = date,
                             necessary = necessary,
-                            expense_type = expenseType.ordinal,
-                            category_id = 1,
+                            category_id = category.id,
                             cash = currency == "Cash",
                             euros = false,
                             monthly = numberOfPayments > 1,
@@ -261,8 +260,7 @@ fun AddPaymentScreen(
                             name = name,
                             date = date,
                             necessary = necessary,
-                            expense_type = expenseType.ordinal,
-                            category_id = 1,
+                            category_id = category.id,
                             cash = currency == "Cash",
                             euros = currency == "Euros",
                             monthly = numberOfPayments > 1,
@@ -385,9 +383,9 @@ fun Locations(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseTypes(
-    expenseTypes: List<ExpenseType>,
-    selectedType: ExpenseType,
-    onItemSelected: (ExpenseType) -> Unit
+    categories: List<Category>,
+    selectedType: Category,
+    onItemSelected: (Category) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -413,11 +411,11 @@ fun ExpenseTypes(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                expenseTypes.forEach { expenseType ->
+                categories.forEach { category ->
                     DropdownMenuItem(
-                        text = { Text(text = expenseType.name) },
+                        text = { Text(text = category.name) },
                         onClick = {
-                            onItemSelected(expenseType)
+                            onItemSelected(category)
                             expanded = false
                         }
                     )

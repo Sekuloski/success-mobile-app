@@ -12,12 +12,11 @@ import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.github.mikephil.charting.utils.MPPointF
 import mk.sekuloski.success.R
-import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
 
 fun initPie(
     pieChart: PieChart,
     context: Context,
-    categories: ArrayList<Int>
+    categories: Map<String, Int>
 ) {
     val colors = setData(pieChart, categories)
     pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler, colors)
@@ -56,7 +55,7 @@ fun initPie(
 
 fun setData(
     pieChart: PieChart,
-    categories: ArrayList<Int>
+    categories: Map<String, Int>
 ): MutableMap<String, Int> {
     val entries = ArrayList<PieEntry>()
     val colors = HashMap<String, Int>()
@@ -78,7 +77,7 @@ fun setData(
         "#4bc0c0", // Turquoise
         "#ff9f40", // Tangerine
         "#6c757d"  // Steel Gray
-        )
+    )
         .sorted()
         .toMutableList()
 
@@ -86,19 +85,16 @@ fun setData(
     // The sort order below represents the order of colors.
     var counter = 1
 
-    for (category: ExpenseType in ExpenseType.values())
-    {
-        if (categories[category.ordinal] > 0)
-        {
-            val label = "${counter.toString().padStart(2, '0')}. ${ExpenseType.getValues()[category.ordinal]}"
+    for (category: String in categories.keys) {
+        if (categories[category]!! > 0) {
+            val label = "${counter.toString().padStart(2, '0')}. $category"
             counter++
-            entries.add(PieEntry(categories[category.ordinal].toFloat(), label))
+            entries.add(PieEntry(categories[category]!!.toFloat(), label))
             colors[label] = Color.parseColor(allColors.removeAt(0))
         }
     }
 
-    if (entries.size == 0)
-    {
+    if (entries.size == 0) {
         return colors
     }
     val finalColors = colors.toSortedMap()
@@ -127,13 +123,4 @@ fun setData(
 
     pieChart.data = data
     return finalColors
-}
-
-fun resetCategories(): ArrayList<Int> {
-    val categories = ArrayList<Int>()
-    for (category: ExpenseType in ExpenseType.values())
-    {
-        categories.add(0)
-    }
-    return categories
 }

@@ -30,10 +30,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -216,7 +212,8 @@ fun PaymentScreen(
 
 @Composable
 private fun MonthlyPayments(
-    payments: List<Payment>
+    payments: List<Payment>,
+//    navigator: DestinationsNavigator
 ) {
     LazyColumn {
         itemsIndexed(payments.sortedBy { it.name }) { _, payment ->
@@ -226,13 +223,7 @@ private fun MonthlyPayments(
                     .padding(top = 12.dp)
                     .fillMaxWidth()
                     .clickable {
-//                            (context as MainActivity).supportFragmentManager
-//                                .beginTransaction()
-//                                .apply {
-//                                    replace(R.id.flFragment, PaymentFragment(payment))
-//                                    addToBackStack(null)
-//                                    commit()
-//                                }
+//                        navigator.navigate(PaymentScreen(navigator = navigator, payment = payment))
                     },
                 verticalAlignment = Alignment.CenterVertically
             ) {

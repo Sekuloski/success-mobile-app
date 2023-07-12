@@ -10,7 +10,6 @@ data class PaymentRequest (
     @Serializable(with = DateSerializer::class)
     val date: ZonedDateTime,
     val necessary: Boolean,
-    val expense_type: Int,
     val category_id: Int,
     val cash: Boolean,
     val euros: Boolean,

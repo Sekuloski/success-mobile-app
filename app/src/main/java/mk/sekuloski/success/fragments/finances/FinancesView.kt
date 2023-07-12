@@ -45,7 +45,6 @@ import com.github.mikephil.charting.charts.PieChart
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
-import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
 import mk.sekuloski.success.data.remote.dto.finances.Month
 import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.data.remote.dto.finances.Subscription
@@ -54,7 +53,6 @@ import mk.sekuloski.success.fragments.destinations.AddPaymentScreenDestination
 import mk.sekuloski.success.fragments.destinations.MonthsScreenDestination
 import mk.sekuloski.success.ui.theme.AppTheme
 import mk.sekuloski.success.utils.initPie
-import mk.sekuloski.success.utils.resetCategories
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -158,7 +156,7 @@ fun MonthsList(
                     .padding(20.dp)
                     .fillMaxWidth()
                     .clickable {
-//                        navigator.navigate(MonthsScreenDestination(month, index == 0))
+                        navigator.navigate(MonthsScreenDestination(month, index == 0))
                     },
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -187,9 +185,9 @@ fun FloatingButton(
 ) {
     FloatingActionButton(
         onClick = {
-//            navigator.navigate(
-//                AddPaymentScreenDestination()
-//            )
+            navigator.navigate(
+                AddPaymentScreenDestination()
+            )
         },
         modifier = modifier
     ) {
@@ -323,11 +321,13 @@ fun OnAddSalary(
 //}
 
 private fun configurePie(chart: PieChart, payments: List<Payment>, context: Context) {
-    val expenseList = ExpenseType.values().toMutableList()
-    val categories = resetCategories()
+    val categories = mutableMapOf<String, Int>()
+    var category: String?
     for (payment: Payment in payments) {
-        if (ExpenseType.values()[payment.expense_type] in expenseList && payment.amount > 0)
-            categories[payment.expense_type] += payment.amount
+        if (payment.amount > 0) {
+            category = payment.category.name
+            categories[category] = (categories[category] ?: 0) + payment.amount
+        }
     }
     initPie(
         chart,

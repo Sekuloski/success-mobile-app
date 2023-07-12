@@ -12,7 +12,6 @@ data class Payment (
     @Serializable(with = DateSerializer::class)
     val date: ZonedDateTime,
     val necessary: Boolean = false,
-    val expense_type: Int,
     val payment_type: Int,
     val category: Category,
     val paid: Boolean = false,

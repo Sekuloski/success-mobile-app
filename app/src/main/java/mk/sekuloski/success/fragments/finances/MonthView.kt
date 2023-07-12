@@ -26,12 +26,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -51,7 +46,6 @@ import mk.sekuloski.success.data.remote.dto.finances.PaymentType
 import mk.sekuloski.success.data.remote.dto.finances.Subscription
 import mk.sekuloski.success.ui.theme.AppTheme
 import mk.sekuloski.success.utils.initPie
-import mk.sekuloski.success.utils.resetCategories
 import com.ramcosta.composedestinations.annotation.Destination
 import mk.sekuloski.success.fragments.destinations.PaymentScreenDestination
 
@@ -78,12 +72,12 @@ fun MonthsScreen(
             )
         }
         val client = FinancesService.create()
-        val categories = resetCategories()
+        val categories = mutableMapOf<String, Int>()
         val context = LocalContext.current
         var subscriptions by remember {
             mutableStateOf(emptyList<Subscription>())
         }
-        val selectedButtonIndex = remember { mutableStateOf(-1) }
+        var selectedButtonIndex by remember { mutableStateOf(-1) }
         val modifier: Modifier = Modifier
         modifier.fillMaxSize()
         LaunchedEffect(key1 = true) {
@@ -99,9 +93,9 @@ fun MonthsScreen(
             for (i in titles.indices) {
                 Box(
                     modifier =
-                    if (selectedButtonIndex.value == -1)
+                    if (selectedButtonIndex == -1)
                         modifier.weight(1f)
-                    else if (selectedButtonIndex.value != i)
+                    else if (selectedButtonIndex != i)
                         modifier.weight(1f)
                     else
                         modifier.weight(3f)
@@ -112,22 +106,22 @@ fun MonthsScreen(
                         allPayments[i],
                         sumPayments(allPayments[i]),
                         onClick = {
-                            if (selectedButtonIndex.value == i) {
-                                selectedButtonIndex.value = -1
+                            selectedButtonIndex = if (selectedButtonIndex == i) {
+                                -1
                             } else {
-                                selectedButtonIndex.value = i
+                                i
                             }
                         },
-                        isSelected = selectedButtonIndex.value == i,
+                        isSelected = selectedButtonIndex == i,
                         navigator
                     )
                 }
             }
             Box(
                 modifier =
-                if (selectedButtonIndex.value == -1)
+                if (selectedButtonIndex == -1)
                     modifier.weight(1f)
-                else if (selectedButtonIndex.value != titles.size)
+                else if (selectedButtonIndex != titles.size)
                     modifier.weight(1f)
                 else
                     modifier.weight(3f)
@@ -138,16 +132,16 @@ fun MonthsScreen(
                     subscriptions,
                     sumSubscriptions(subscriptions),
                     onClick = {
-                        if (selectedButtonIndex.value == titles.size) {
-                            selectedButtonIndex.value = -1
+                        selectedButtonIndex = if (selectedButtonIndex == titles.size) {
+                            -1
                         } else {
-                            selectedButtonIndex.value = titles.size
+                            titles.size
                         }
                     },
-                    isSelected = selectedButtonIndex.value == titles.size,
+                    isSelected = selectedButtonIndex == titles.size,
                 )
             }
-            if (selectedButtonIndex.value == -1) {
+            if (selectedButtonIndex == -1) {
                 Box(modifier = modifier.weight(5f)) {
                     if (allPayments.isNotEmpty()) {
                         AndroidView(
@@ -459,14 +453,16 @@ fun TopView(
 
 private fun sortPayments(
     payments: List<Payment>,
-    categories: ArrayList<Int>
+    categories: MutableMap<String, Int>
 ): List<List<Payment>> {
     val normal = ArrayList<Payment>()
     val threeMonth = ArrayList<Payment>()
     val sixMonth = ArrayList<Payment>()
     val loan = ArrayList<Payment>()
     for (payment: Payment in payments) {
-        if (payment.amount > 0) categories[payment.expense_type] += payment.amount
+        if (payment.amount > 0) {
+            categories[payment.category.name] = (categories[payment.category.name] ?: 0) + payment.amount
+        }
         when (payment.payment_type) {
             PaymentType.SINGLE_PAYMENT.ordinal -> {
                 normal.add(payment)
@@ -500,7 +496,7 @@ private fun sumPayments(payments: List<Payment>): Int {
 
 private fun sortSubscriptions(
     subscriptions: List<Subscription>,
-    categories: ArrayList<Int>,
+    categories: MutableMap<String, Int>,
     current: Boolean
 ): List<Subscription> {
     val activeSubscriptions = ArrayList<Subscription>()
@@ -511,7 +507,7 @@ private fun sortSubscriptions(
             activeSubscriptions.add(subscription)
             subscriptionSum += subscription.amount
             if (!current && subscription.hypothetical && subscription.amount > 0)
-                categories[subscription.expense_type] += subscription.amount
+                categories[subscription.category.name] = (categories[subscription.category.name] ?: 0) + subscription.amount
         }
     }
 
@@ -534,18 +530,23 @@ private fun configurePie(
     current: Boolean,
     context: Context
 ) {
-    val categories = resetCategories()
+    val categories = mutableMapOf<String, Int>()
+    var category: String?
     for (list: List<Payment> in payments) {
         for (payment: Payment in list) {
-            if (payment.amount > 0)
-                categories[payment.expense_type] += payment.amount
+            if (payment.amount > 0) {
+                category = payment.category.name
+                categories[category] = (categories[category] ?: 0) + payment.amount
+            }
         }
     }
 
     if (!current) {
         for (subscription: Subscription in subscriptions) {
-            if (subscription.amount > 0)
-                categories[subscription.expense_type] += subscription.amount
+            if (subscription.amount > 0) {
+                category = subscription.category.name
+                categories[category] = (categories[category] ?: 0) + subscription.amount
+            }
         }
     }
     initPie(
