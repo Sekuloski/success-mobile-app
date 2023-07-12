@@ -1,25 +1,36 @@
 package mk.sekuloski.success.fragments.finances
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,14 +42,14 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.PieChart
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
-import mk.sekuloski.success.data.remote.services.finances.FinancesService
-import mk.sekuloski.success.data.remote.dto.finances.Location
-import mk.sekuloski.success.data.remote.dto.finances.Month
-import mk.sekuloski.success.data.remote.dto.finances.Payment
-import mk.sekuloski.success.data.remote.dto.finances.Subscription
-import mk.sekuloski.success.fragments.destinations.AddPaymentScreenDestination
-import mk.sekuloski.success.fragments.destinations.MonthsScreenDestination
+import kotlinx.coroutines.launch
+import mk.sekuloski.success.finances.domain.model.ExpenseType
+import mk.sekuloski.success.finances.data.remote.FinancesService
+import mk.sekuloski.success.finances.domain.model.Month
+import mk.sekuloski.success.finances.domain.model.Payment
+import mk.sekuloski.success.finances.domain.model.Subscription
+import mk.sekuloski.success.destinations.AddPaymentScreenDestination
+import mk.sekuloski.success.destinations.MonthsScreenDestination
 import mk.sekuloski.success.ui.theme.AppTheme
 import mk.sekuloski.success.utils.initPie
 import mk.sekuloski.success.utils.resetCategories
@@ -87,6 +98,9 @@ fun FinancesMainScreen(
                     )
                 }
                 if (!salaryReceived) {
+                    var addSalaryOpened by remember {
+                        mutableStateOf(false)
+                    }
                     Box(
                         contentAlignment = Alignment.BottomCenter,
                         modifier = modifier
@@ -95,10 +109,16 @@ fun FinancesMainScreen(
                     ) {
                         Button(
                             onClick = {
-//                            onAddSalary()
+                                addSalaryOpened = true
                             },
                         ) {
                             Text(text = "Add Salary")
+                        }
+                    }
+
+                    if (addSalaryOpened) {
+                        OnAddSalary(client, context) {
+                            addSalaryOpened = it
                         }
                     }
                 }
@@ -108,7 +128,6 @@ fun FinancesMainScreen(
             FloatingButton(
                 modifier = Modifier
                     .padding(16.dp),
-                client,
                 navigator
             )
         }
@@ -137,9 +156,7 @@ fun MonthsList(
                     .padding(20.dp)
                     .fillMaxWidth()
                     .clickable {
-                        navigator.navigate(
-                            MonthsScreenDestination(month, index == 0)
-                        )
+//                        navigator.navigate(MonthsScreenDestination(month, index == 0))
                     },
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -164,20 +181,13 @@ fun MonthsList(
 @Composable
 fun FloatingButton(
     modifier: Modifier = Modifier,
-    client: FinancesService,
     navigator: DestinationsNavigator
 ) {
-//    var locations by remember {
-//        mutableStateOf(emptyList<Location>())
-//    }
-//    LaunchedEffect(key1 = true) {
-//        locations = client.getLocations()
-//    }
     FloatingActionButton(
         onClick = {
-            navigator.navigate(
-                AddPaymentScreenDestination()
-            )
+//            navigator.navigate(
+//                AddPaymentScreenDestination()
+//            )
         },
         modifier = modifier
     ) {
@@ -302,14 +312,7 @@ fun OnAddSalary(
 //            powerBillAmount.error = "Amount is required!"
 //        } else {
 //            launch {
-//                val response = client.addSalary(
-//                    waterBillAmount.text.toString().toInt(),
-//                    powerBillAmount.text.toString().toInt()
-//                )
-//                val toast = Toast(it.context)
-//                toast.setText(response)
-//                toast.show()
-//                dialog.dismiss()
+
 //            }
 //        }
 //    }

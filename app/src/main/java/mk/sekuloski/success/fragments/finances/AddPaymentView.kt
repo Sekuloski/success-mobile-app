@@ -39,10 +39,10 @@ import androidx.compose.ui.unit.sp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
-import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
-import mk.sekuloski.success.data.remote.services.finances.FinancesService
-import mk.sekuloski.success.data.remote.dto.finances.Location
-import mk.sekuloski.success.data.remote.dto.finances.PaymentRequest
+import mk.sekuloski.success.finances.domain.model.ExpenseType
+import mk.sekuloski.success.finances.data.remote.FinancesService
+import mk.sekuloski.success.finances.domain.model.Location
+import mk.sekuloski.success.finances.data.local.PaymentRequest
 import mk.sekuloski.success.ui.theme.AppTheme
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -71,7 +71,7 @@ fun AddPaymentScreen(
         var currency by remember { mutableStateOf("Bank") }
         var locations by remember { mutableStateOf(emptyList<Location>()) }
         var location by remember {
-            mutableStateOf(locations.elementAtOrElse(0) { Location(0, "", "")})
+            mutableStateOf(locations.elementAtOrElse(0) { Location(0, "", "") })
         }
         var expenseType by remember { mutableStateOf(ExpenseType.BILL) }
         var numberOfPayments by remember { mutableStateOf(1) }

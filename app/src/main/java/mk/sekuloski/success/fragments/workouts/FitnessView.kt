@@ -30,11 +30,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import mk.sekuloski.success.data.remote.dto.workouts.Exercise
-import mk.sekuloski.success.data.remote.dto.workouts.Workout
-import mk.sekuloski.success.data.remote.dto.workouts.WorkoutExecution
-import mk.sekuloski.success.data.remote.services.workouts.WorkoutsService
-import mk.sekuloski.success.fragments.destinations.WorkoutScreenDestination
+import mk.sekuloski.success.destinations.WorkoutScreenDestination
+import mk.sekuloski.success.workouts.data.local.Exercise
+import mk.sekuloski.success.workouts.data.local.Workout
+import mk.sekuloski.success.workouts.data.local.WorkoutExecution
+import mk.sekuloski.success.workouts.data.remote.WorkoutsService
 import mk.sekuloski.success.ui.theme.AppTheme
 import mk.sekuloski.success.utils.normalizeWorkouts
 
@@ -146,9 +146,7 @@ fun WorkoutCard(
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .clickable {
-                    navigator.navigate(
-                        WorkoutScreenDestination(workout)
-                    )
+                    navigator.navigate(WorkoutScreenDestination(workout))
                 }
         ) {
             Column(

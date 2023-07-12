@@ -1,8 +1,8 @@
 package mk.sekuloski.success.utils
 
-import mk.sekuloski.success.data.remote.dto.workouts.Exercise
-import mk.sekuloski.success.data.remote.dto.workouts.ExerciseType
-import mk.sekuloski.success.data.remote.dto.workouts.Workout
+import mk.sekuloski.success.workouts.data.local.Exercise
+import mk.sekuloski.success.workouts.data.local.ExerciseType
+import mk.sekuloski.success.workouts.data.local.Workout
 
 fun normalizeWorkouts(workouts: List<Workout>) {
     for (workout: Workout in workouts) {

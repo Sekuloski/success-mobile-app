@@ -12,7 +12,7 @@ import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.github.mikephil.charting.utils.MPPointF
 import mk.sekuloski.success.R
-import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
+import mk.sekuloski.success.finances.domain.model.ExpenseType
 
 fun initPie(
     pieChart: PieChart,

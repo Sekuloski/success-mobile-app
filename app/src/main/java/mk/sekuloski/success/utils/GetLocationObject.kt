@@ -1,6 +1,6 @@
 package mk.sekuloski.success.utils
 
-import mk.sekuloski.success.data.remote.dto.finances.Location
+import mk.sekuloski.success.finances.domain.model.Location
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin

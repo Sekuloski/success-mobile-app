@@ -17,8 +17,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -35,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -44,16 +41,17 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.PieChart
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import mk.sekuloski.success.data.remote.services.finances.FinancesService
-import mk.sekuloski.success.data.remote.dto.finances.Month
-import mk.sekuloski.success.data.remote.dto.finances.Payment
-import mk.sekuloski.success.data.remote.dto.finances.PaymentType
-import mk.sekuloski.success.data.remote.dto.finances.Subscription
+import mk.sekuloski.success.finances.data.remote.FinancesService
+import mk.sekuloski.success.finances.domain.model.Month
+import mk.sekuloski.success.finances.domain.model.Payment
+import mk.sekuloski.success.finances.domain.model.PaymentType
+import mk.sekuloski.success.finances.domain.model.Subscription
 import mk.sekuloski.success.ui.theme.AppTheme
 import mk.sekuloski.success.utils.initPie
 import mk.sekuloski.success.utils.resetCategories
 import com.ramcosta.composedestinations.annotation.Destination
-import mk.sekuloski.success.fragments.destinations.PaymentScreenDestination
+import mk.sekuloski.success.destinations.PaymentItemScreenDestination
+import mk.sekuloski.success.finances.presentation.payments.PaymentItem
 
 val titles =
     listOf("Normal Payments", "Six Month Payments", "Three Month Payments", "Loans")
@@ -353,49 +351,9 @@ fun PaymentList(
     ) {
         LazyColumn {
             itemsIndexed(payments.sortedBy { it.name }) { _, payment ->
-                val amount by animateIntAsState(targetValue = payment.amount)
-                Row(
-                    modifier
-                        .padding(12.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            navigator.navigate(
-                                PaymentScreenDestination(payment)
-                            )
-                        },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                    ) {
-                        Text(
-                            text = payment.name,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            modifier = modifier.weight(1f)
-                        )
-                        Text(
-                            text = amount.toString(),
-                            maxLines = 1,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
-                        )
-                    }
-
-                    Icon(
-                        if (payment.paid) Icons.Outlined.Check else Icons.Outlined.Close,
-                        "Payment Status",
-                        tint = if (payment.paid) Color.Green else Color.Red,
-                        modifier = Modifier.padding(start = 10.dp)
-                    )
-                }
+                PaymentItem(payment, modifier.clickable { navigator.navigate(
+                    PaymentItemScreenDestination()
+                ) })
             }
         }
     }

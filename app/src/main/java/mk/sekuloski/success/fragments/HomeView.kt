@@ -29,21 +29,18 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import mk.sekuloski.success.data.remote.dto.finances.FinancesMain
-import mk.sekuloski.success.data.remote.dto.workouts.Exercise
-import mk.sekuloski.success.data.remote.dto.workouts.Workout
-import mk.sekuloski.success.data.remote.services.finances.FinancesService
-import mk.sekuloski.success.data.remote.services.workouts.WorkoutsService
-import mk.sekuloski.success.fragments.destinations.FinancesMainScreenDestination
-import mk.sekuloski.success.fragments.destinations.FitnessScreenDestination
+import mk.sekuloski.success.finances.domain.model.FinancesMain
+import mk.sekuloski.success.workouts.data.local.Exercise
+import mk.sekuloski.success.workouts.data.local.Workout
+import mk.sekuloski.success.finances.data.remote.FinancesService
+import mk.sekuloski.success.workouts.data.remote.WorkoutsService
 import mk.sekuloski.success.ui.theme.AppTheme
 import mk.sekuloski.success.utils.normalizeWorkouts
 import java.time.LocalTime
 
 
-@RootNavGraph(start = true)
+//@RootNavGraph(start = true)
 @Destination
 @Composable
 fun HomeScreen(
@@ -73,7 +70,7 @@ private fun FinancesHome(
 ) {
     val financesService = FinancesService.create()
     var financesMain by remember {
-        mutableStateOf(FinancesMain(0, 0, 0, 0, 0.0f, 0, 0))
+        mutableStateOf(FinancesMain(0, 0, 0, 0, 0, 0.0f, 0, 0))
     }
     LaunchedEffect(key1 = true) {
         financesMain = financesService.getMainInfo()
@@ -118,7 +115,7 @@ private fun FinancesCard(
                 modifier = modifier
                     .background(MaterialTheme.colorScheme.primaryContainer)
                     .clickable {
-                        navigator.navigate(FinancesMainScreenDestination())
+//                        navigator.navigate(FinancesMainScreenDestination())
                     }
             ) {
                 Column(modifier = Modifier) {
@@ -184,9 +181,9 @@ fun WorkoutCard(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.tertiaryContainer)
                     .clickable {
-                        navigator.navigate(
-                            FitnessScreenDestination()
-                        )
+//                        navigator.navigate(
+//                            FitnessScreenDestination()
+//                        )
                     }
         ) {
             Column(
