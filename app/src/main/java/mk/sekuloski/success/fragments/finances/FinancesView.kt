@@ -1,42 +1,55 @@
 package mk.sekuloski.success.fragments.finances
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.PieChart
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
 import mk.sekuloski.success.data.remote.dto.finances.ExpenseType
-import mk.sekuloski.success.data.remote.services.finances.FinancesService
-import mk.sekuloski.success.data.remote.dto.finances.Location
 import mk.sekuloski.success.data.remote.dto.finances.Month
 import mk.sekuloski.success.data.remote.dto.finances.Payment
 import mk.sekuloski.success.data.remote.dto.finances.Subscription
+import mk.sekuloski.success.data.remote.services.finances.FinancesService
 import mk.sekuloski.success.fragments.destinations.AddPaymentScreenDestination
 import mk.sekuloski.success.fragments.destinations.MonthsScreenDestination
 import mk.sekuloski.success.ui.theme.AppTheme
@@ -87,6 +100,9 @@ fun FinancesMainScreen(
                     )
                 }
                 if (!salaryReceived) {
+                    var addSalaryOpened by remember {
+                        mutableStateOf(false)
+                    }
                     Box(
                         contentAlignment = Alignment.BottomCenter,
                         modifier = modifier
@@ -95,10 +111,16 @@ fun FinancesMainScreen(
                     ) {
                         Button(
                             onClick = {
-//                            onAddSalary()
+                                addSalaryOpened = true
                             },
                         ) {
                             Text(text = "Add Salary")
+                        }
+                    }
+
+                    if (addSalaryOpened) {
+                        OnAddSalary(client, context) {
+                            addSalaryOpened = it
                         }
                     }
                 }
@@ -108,7 +130,6 @@ fun FinancesMainScreen(
             FloatingButton(
                 modifier = Modifier
                     .padding(16.dp),
-                client,
                 navigator
             )
         }
@@ -137,9 +158,7 @@ fun MonthsList(
                     .padding(20.dp)
                     .fillMaxWidth()
                     .clickable {
-                        navigator.navigate(
-                            MonthsScreenDestination(month, index == 0)
-                        )
+//                        navigator.navigate(MonthsScreenDestination(month, index == 0))
                     },
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -164,20 +183,13 @@ fun MonthsList(
 @Composable
 fun FloatingButton(
     modifier: Modifier = Modifier,
-    client: FinancesService,
     navigator: DestinationsNavigator
 ) {
-//    var locations by remember {
-//        mutableStateOf(emptyList<Location>())
-//    }
-//    LaunchedEffect(key1 = true) {
-//        locations = client.getLocations()
-//    }
     FloatingActionButton(
         onClick = {
-            navigator.navigate(
-                AddPaymentScreenDestination()
-            )
+//            navigator.navigate(
+//                AddPaymentScreenDestination()
+//            )
         },
         modifier = modifier
     ) {
@@ -205,78 +217,80 @@ fun OnAddSalary(
     client: FinancesService,
     context: Context,
     onDismiss: (Boolean) -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = {
+            onDismiss(false)
+        }
     ) {
-        AlertDialog(
-            onDismissRequest = {
-                onDismiss(false)
-            }
+        var waterBill by remember {
+            mutableStateOf("0")
+        }
+        var powerBill by remember {
+            mutableStateOf("0")
+        }
+        val scope = rememberCoroutineScope()
+        Surface(
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight(),
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = AlertDialogDefaults.TonalElevation
         ) {
-            var waterBill by remember {
-                mutableStateOf("0")
-            }
-            var powerBill by remember {
-                mutableStateOf("0")
-            }
-            val scope = rememberCoroutineScope()
-            Surface(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .wrapContentHeight(),
-                shape = MaterialTheme.shapes.large,
-                tonalElevation = AlertDialogDefaults.TonalElevation
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Enter Water and Power bills.",
-                    )
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Enter Water and Power bills.",
+                )
 
-                    Spacer(modifier = Modifier.height(24.dp))
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = waterBill,
-                        onValueChange = { waterBill = it },
-                        label = { Text("Water Bill") },
-                        maxLines = 1,
-                    )
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = powerBill,
-                        onValueChange = { powerBill = it },
-                        label = { Text("Power Bill") },
-                        maxLines = 1,
-                    )
+                Spacer(modifier = Modifier.height(24.dp))
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = waterBill,
+                    onValueChange = { waterBill = it },
+                    label = { Text("Water Bill") },
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = powerBill,
+                    onValueChange = { powerBill = it },
+                    label = { Text("Power Bill") },
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
 
-                    Row(modifier = Modifier.align(Alignment.End)) {
-                        TextButton(
-                            onClick = {
-                                onDismiss(false)
-                            },
-                        ) {
-                            Text("Cancel")
-                        }
-                        TextButton(
-                            onClick = {
-                                if (waterBill != "" && waterBill.toInt() >= 0 && powerBill != "" && powerBill.toInt() >= 0) {
-                                    scope.launch {
-                                        val response = client.addSalary(
-                                            waterBill.toInt(),
-                                            powerBill.toInt()
-                                        )
-                                        val toast = Toast(context)
-                                        toast.setText(response)
-                                        toast.show()
+                Row(modifier = Modifier.align(Alignment.End)) {
+                    TextButton(
+                        onClick = {
+                            onDismiss(false)
+                        },
+                    ) {
+                        Text("Cancel")
+                    }
+                    TextButton(
+                        onClick = {
+                            if (waterBill != "" && waterBill.toInt() >= 0 && powerBill != "" && powerBill.toInt() >= 0) {
+                                scope.launch {
+                                    val response = client.addSalary(
+                                        waterBill.toInt(),
+                                        powerBill.toInt()
+                                    )
+                                    val toast = Toast(context)
+                                    toast.setText(response)
+                                    toast.show()
 
-                                        onDismiss(false)
-                                    }
+                                    onDismiss(false)
                                 }
-                            },
-                        ) {
-                            Text("Add Salary")
-                        }
+                            }
+                        },
+                    ) {
+                        Text("Add Salary")
                     }
                 }
             }
         }
+    }
 }
 
 //private fun onAddSalary() {
@@ -302,14 +316,7 @@ fun OnAddSalary(
 //            powerBillAmount.error = "Amount is required!"
 //        } else {
 //            launch {
-//                val response = client.addSalary(
-//                    waterBillAmount.text.toString().toInt(),
-//                    powerBillAmount.text.toString().toInt()
-//                )
-//                val toast = Toast(it.context)
-//                toast.setText(response)
-//                toast.show()
-//                dialog.dismiss()
+
 //            }
 //        }
 //    }
