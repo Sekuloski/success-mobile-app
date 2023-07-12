@@ -199,6 +199,86 @@ private fun getNext12Months(): List<Month> {
     return months
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun OnAddSalary(
+    client: FinancesService,
+    context: Context,
+    onDismiss: (Boolean) -> Unit,
+    ) {
+        AlertDialog(
+            onDismissRequest = {
+                onDismiss(false)
+            }
+        ) {
+            var waterBill by remember {
+                mutableStateOf("0")
+            }
+            var powerBill by remember {
+                mutableStateOf("0")
+            }
+            val scope = rememberCoroutineScope()
+            Surface(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .wrapContentHeight(),
+                shape = MaterialTheme.shapes.large,
+                tonalElevation = AlertDialogDefaults.TonalElevation
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Enter Water and Power bills.",
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = waterBill,
+                        onValueChange = { waterBill = it },
+                        label = { Text("Water Bill") },
+                        maxLines = 1,
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = powerBill,
+                        onValueChange = { powerBill = it },
+                        label = { Text("Power Bill") },
+                        maxLines = 1,
+                    )
+
+                    Row(modifier = Modifier.align(Alignment.End)) {
+                        TextButton(
+                            onClick = {
+                                onDismiss(false)
+                            },
+                        ) {
+                            Text("Cancel")
+                        }
+                        TextButton(
+                            onClick = {
+                                if (waterBill != "" && waterBill.toInt() >= 0 && powerBill != "" && powerBill.toInt() >= 0) {
+                                    scope.launch {
+                                        val response = client.addSalary(
+                                            waterBill.toInt(),
+                                            powerBill.toInt()
+                                        )
+                                        val toast = Toast(context)
+                                        toast.setText(response)
+                                        toast.show()
+
+                                        onDismiss(false)
+                                    }
+                                }
+                            },
+                        ) {
+                            Text("Add Salary")
+                        }
+                    }
+                }
+            }
+        }
+}
+
 //private fun onAddSalary() {
 //    val dialogLayout = layoutInflater.inflate(R.layout.add_salary, null)
 //    val waterBillAmount = dialogLayout.findViewById<EditText>(R.id.etWaterBill)
