@@ -16,7 +16,7 @@ import mk.sekuloski.success.R
 fun initPie(
     pieChart: PieChart,
     context: Context,
-    categories: Map<String, Int>
+    categories: MutableMap<String, Int>
 ) {
     val colors = setData(pieChart, categories)
     pieChart.renderer = CustomPieChartRenderer(pieChart, pieChart.animator, pieChart.viewPortHandler, colors)
@@ -55,7 +55,7 @@ fun initPie(
 
 fun setData(
     pieChart: PieChart,
-    categories: Map<String, Int>
+    categories: MutableMap<String, Int>
 ): MutableMap<String, Int> {
     val entries = ArrayList<PieEntry>()
     val colors = HashMap<String, Int>()
@@ -85,6 +85,7 @@ fun setData(
     // The sort order below represents the order of colors.
     var counter = 1
 
+    alternateSort(categories)
     for (category: String in categories.keys) {
         if (categories[category]!! > 0) {
             val label = "${counter.toString().padStart(2, '0')}. $category"
@@ -123,4 +124,30 @@ fun setData(
 
     pieChart.data = data
     return finalColors
+}
+
+fun alternateSort(categories: MutableMap<String, Int>) {
+    val sortedEntries = categories.entries.sortedBy { it.value }
+    val result = LinkedHashMap<String, Int>()
+
+    var left = 0
+    var right = sortedEntries.size - 1
+
+    while (left <= right) {
+        if (left == right) {
+            val entry = sortedEntries[left]
+            result[entry.key] = entry.value
+            break
+        }
+
+        val rightEntry = sortedEntries[right]
+        val leftEntry = sortedEntries[left]
+        result[rightEntry.key] = rightEntry.value
+        result[leftEntry.key] = leftEntry.value
+        right--
+        left++
+    }
+
+    categories.clear()
+    categories.putAll(result)
 }
